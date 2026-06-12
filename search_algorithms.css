@@ -1,0 +1,123 @@
+/* ── Global ── */
+* { font-family: 'Sarabun', sans-serif; }
+code, .mono { font-family: 'JetBrains Mono', monospace; }
+
+body {
+  box-sizing: border-box;
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* ── Navbar ── */
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  gap: 0.5rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.site-nav .logo {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+
+.site-nav .logo span { color: #3b82f6; }
+
+.site-nav .sep {
+  color: #cbd5e1;
+  font-size: 1rem;
+  user-select: none;
+}
+
+.site-nav .crumb {
+  font-size: 0.85rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes nodePulse {
+  0%   { transform: scale(1); box-shadow: 0 0 0 0 currentColor; }
+  50%  { transform: scale(1.15); }
+  100% { transform: scale(1); box-shadow: 0 0 0 15px transparent; }
+}
+@keyframes nodeGlow {
+  0%, 100% { filter: brightness(1) drop-shadow(0 0 8px currentColor); }
+  50%       { filter: brightness(1.2) drop-shadow(0 0 16px currentColor); }
+}
+@keyframes edgeFlow {
+  0% {
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    background-size: 200% 100%;
+    background-position: 200% center;
+  }
+  100% {
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    background-size: 200% 100%;
+    background-position: -200% center;
+  }
+}
+@keyframes pathHighlight {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.fade-up     { animation: fadeUp 0.7s ease forwards; opacity: 0; }
+.slide-in    { animation: slideIn 0.6s ease forwards; opacity: 0; }
+.node-active { animation: nodePulse 0.8s ease-out !important; }
+.node-glow   { animation: nodeGlow 1.2s ease-in-out infinite !important; }
+.edge-active { animation: edgeFlow 1s ease-in-out !important; }
+.path-active { animation: pathHighlight 0.4s ease forwards !important; }
+
+/* ── Graph ── */
+.graph-node {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  transition: all 0.2s;
+  cursor: pointer;
+  position: absolute;
+  will-change: transform;
+  z-index: 10;
+}
+
+.graph-edge {
+  position: absolute;
+  height: 3px;
+  transform-origin: left center;
+  transition: background 0.3s;
+  z-index: 1;
+}
+
+/* ── Tabs ── */
+.tab-btn { transition: all 0.3s; }
+.tab-btn.active {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+}
