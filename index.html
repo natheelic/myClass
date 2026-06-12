@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>myClass — หัวข้อบทเรียน</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0b1120;
+      --surface:   #131c2e;
+      --card:      #182236;
+      --border:    #1e2e48;
+      --border-h:  #2d4468;
+      --text:      #e2e8f0;
+      --muted:     #64748b;
+      --subtle:    #94a3b8;
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    /* ─── Top bar ─── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface);
+    }
+    header .logo {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    header .logo span { color: #3b82f6; }
+    header .badge {
+      margin-left: auto;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.2rem 0.65rem;
+    }
+
+    /* ─── Main ─── */
+    main {
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 3.5rem 2rem 4rem;
+    }
+
+    .hero { margin-bottom: 2.5rem; }
+    .hero h1 {
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.25;
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.02em;
+    }
+    .hero p {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ─── Section label ─── */
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.875rem;
+    }
+
+    /* ─── Lesson list ─── */
+    .lesson-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .lesson-card a {
+      display: grid;
+      grid-template-columns: 2.5rem 1fr auto;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 0.875rem;
+      color: var(--text);
+      text-decoration: none;
+      transition: background 0.18s, border-color 0.18s, transform 0.18s;
+    }
+    .lesson-card a:hover {
+      background: #1e2d45;
+      border-color: var(--border-h);
+      transform: translateY(-1px);
+    }
+
+    .lesson-num {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.5rem;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+
+    .lesson-info { min-width: 0; }
+    .lesson-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 0.2rem;
+    }
+    .lesson-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .tag {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .tag.blue  { color: #60a5fa; border-color: #1d4ed8; background: #1e3a5f22; }
+    .tag.green { color: #34d399; border-color: #065f46; background: #06402022; }
+    .tag.amber { color: #fbbf24; border-color: #92400e; background: #78350f22; }
+
+    .arrow {
+      color: var(--muted);
+      font-size: 1rem;
+      transition: color 0.18s, transform 0.18s;
+    }
+    .lesson-card a:hover .arrow {
+      color: var(--subtle);
+      transform: translateX(3px);
+    }
+
+    /* ─── Footer ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1rem 2rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+      background: var(--surface);
+    }
+
+    @media (max-width: 480px) {
+      main { padding: 2.5rem 1.25rem 3rem; }
+      header { padding: 0 1.25rem; }
+      .lesson-card a { grid-template-columns: 2.25rem 1fr auto; gap: 0.75rem; padding: 0.875rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span class="logo">my<span>Class</span></span>
+    <span class="badge">คอร์สเรียน</span>
+  </header>
+
+  <main>
+    <div class="hero">
+      <h1>หัวข้อบทเรียน</h1>
+      <p>เลือกบทเรียนที่ต้องการศึกษา พร้อมภาพอธิบายและการจำลองแบบอินเทอร์แอคทีฟ</p>
+    </div>
+
+    <p class="section-label">บทเรียนทั้งหมด</p>
+    <ul class="lesson-list">
+      <li class="lesson-card">
+        <a href="search_algorithms.html">
+          <span class="lesson-num">05</span>
+          <div class="lesson-info">
+            <div class="lesson-title">อัลกอริทึมการค้นหา</div>
+            <div class="lesson-tags">
+              <span class="tag blue">BFS</span>
+              <span class="tag green">DFS</span>
+              <span class="tag amber">A*</span>
+            </div>
+          </div>
+          <span class="arrow">›</span>
+        </a>
+      </li>
+    </ul>
+  </main>
+
+  <footer>myClass &copy; 2026</footer>
+
+</body>
+</html>
