@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="th" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Algorithms Interactive Dashboard</title>
+  
+  <!-- โหลด Tailwind CSS สำหรับจัดการ Layout และ Style -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- โหลด Lucide Icons สำหรับไอคอนประกอบ -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- โหลดฟอนต์ภาษาไทยและโค้ด -->
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- สไตล์ CSS แบบกำหนดเอง สำหรับ Animation -->
+  <style>
+    * { font-family: 'Sarabun', sans-serif; }
+    code, .mono { font-family: 'JetBrains Mono', monospace; }
+    
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes nodePulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 currentColor; }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); box-shadow: 0 0 0 15px transparent; }
+    }
+    @keyframes nodeGlow {
+      0%, 100% { filter: brightness(1) drop-shadow(0 0 8px currentColor); }
+      50% { filter: brightness(1.3) drop-shadow(0 0 20px currentColor); }
+    }
+    @keyframes edgeFlow {
+      0% { background: linear-gradient(90deg, transparent, currentColor, transparent); background-size: 200% 100%; background-position: 200% center; }
+      100% { background: linear-gradient(90deg, transparent, currentColor, transparent); background-size: 200% 100%; background-position: -200% center; }
+    }
+    @keyframes pathHighlight {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    
+    .fade-up { animation: fadeUp 0.7s ease forwards; opacity: 0; }
+    .slide-in { animation: slideIn 0.6s ease forwards; opacity: 0; }
+    .node-active { animation: nodePulse 0.8s ease-out !important; }
+    .node-glow { animation: nodeGlow 1.2s ease-in-out infinite !important; }
+    .edge-active { animation: edgeFlow 1s ease-in-out !important; }
+    .path-active { animation: pathHighlight 0.4s ease forwards !important; }
+    
+    .graph-node {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 16px; transition: all 0.2s;
+      cursor: pointer; position: absolute;
+      will-change: transform;
+      z-index: 10; /* ให้อยู่เหนือเส้นเชื่อม */
+    }
+    .graph-edge {
+      position: absolute; height: 3px; transform-origin: left center;
+      transition: background 0.3s;
+      z-index: 1; /* ให้อยู่ใต้โหนด */
+    }
+    .tab-btn { transition: all 0.3s; }
+    .tab-btn.active { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+    
+    body { box-sizing: border-box; background-color: #0f172a; color: #e2e8f0; }
+  </style>
+</head>
+<body class="h-full antialiased text-slate-200">
+  <div id="app" class="h-full w-full overflow-auto bg-slate-900">
+    
+    <!-- ส่วนหัว (Hero Section) -->
+    <header class="text-center py-12 md:py-16 px-4 fade-up" style="animation-delay: 0.1s;">
+      <h1 id="main-title" class="text-4xl md:text-5xl font-bold mb-4 text-slate-200">5. อัลกอริทึมการค้นหา</h1>
+      <p class="text-lg max-w-2xl mx-auto text-slate-400">เรียนรู้วิธีการค้นหาข้อมูลในกราฟด้วย BFS, DFS และ A* พร้อมภาพอธิบายแบบอินเทอร์แอคทีฟ</p>
+    </header>
+
+    <!-- ปุ่มนำทาง (Tabs) -->
+    <div class="flex justify-center gap-2 md:gap-4 px-4 mb-10 fade-up" style="animation-delay: 0.3s;">
+      <button class="tab-btn active px-6 py-3 rounded-xl font-semibold text-sm bg-blue-500 text-white border-none" data-tab="bfs">BFS</button> 
+      <button class="tab-btn px-6 py-3 rounded-xl font-semibold text-sm bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700" data-tab="dfs">DFS</button> 
+      <button class="tab-btn px-6 py-3 rounded-xl font-semibold text-sm bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700" data-tab="astar">A*</button>
+    </div>
+
+    <!-- ส่วนเนื้อหา (Content Sections) -->
+    <div class="max-w-4xl mx-auto px-4 pb-20">
+      
+      <!-- BFS Section -->
+      <section id="sec-bfs" class="fade-up" style="animation-delay: 0.4s;">
+        <div class="rounded-2xl p-6 md:p-10 mb-8 bg-slate-800 border border-slate-700 shadow-xl">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-500 shadow-lg shadow-blue-500/30">
+              <i data-lucide="layers" class="text-white w-6 h-6"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-200">5.1 Breadth-First Search (BFS)</h2>
+          </div>
+          <p class="mb-6 leading-relaxed text-slate-300">BFS เป็นการค้นหาแบบขยายโหนดทีละระดับ โดยจะสำรวจโหนดที่อยู่ชั้นเดียวกันให้ครบก่อนค่อยลงไปยังระดับลึกกว่า (เสมือนการโยนหินลงน้ำแล้วเกิดคลื่นกระจายออก)</p>
+          
+          <!-- BFS Visualization -->
+          <div class="rounded-xl p-6 mb-6 bg-slate-900 border border-slate-700/50 shadow-inner" style="position: relative; height: 300px;">
+            <div id="bfs-graph" style="position: relative; width: 100%; height: 100%;"></div>
+          </div>
+          
+          <button id="bfs-play" class="px-6 py-3 rounded-xl font-semibold text-sm mb-6 flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white transition-colors shadow-lg shadow-blue-500/30"> 
+            <i data-lucide="play" class="w-4 h-4"></i> เริ่มจำลอง BFS 
+          </button>
+          
+          <h3 class="text-lg font-semibold mb-3 text-slate-200">ลักษณะเด่น</h3>
+          <ul class="space-y-3 mb-6 text-slate-400">
+            <li class="flex items-start gap-3 slide-in" style="animation-delay: 0.5s;">
+              <span class="text-blue-500 mt-1">●</span> มักได้คำตอบที่สั้นที่สุดเมื่อแต่ละก้าวมีต้นทุนเท่ากัน
+            </li>
+            <li class="flex items-start gap-3 slide-in" style="animation-delay: 0.6s;">
+              <span class="text-blue-500 mt-1">●</span> เหมาะกับปัญหาที่คำตอบอยู่ไม่ลึกมาก
+            </li>
+            <li class="flex items-start gap-3 slide-in" style="animation-delay: 0.7s;">
+              <span class="text-blue-500 mt-1">●</span> ใช้หน่วยความจำมาก เพราะต้องเก็บโหนดในแต่ละระดับไว้
+            </li>
+          </ul>
+          
+          <div class="rounded-xl p-4 mono text-sm bg-slate-900 text-sky-300 border border-slate-700 flex items-center gap-2">
+            <i data-lucide="database" class="w-4 h-4 text-amber-400"></i>
+            <span>โครงสร้างข้อมูล: <span class="text-amber-400 font-bold">Queue (คิว)</span> — FIFO (First In, First Out)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- DFS Section -->
+      <section id="sec-dfs" class="hidden">
+        <div class="rounded-2xl p-6 md:p-10 mb-8 bg-slate-800 border border-slate-700 shadow-xl">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-emerald-500 shadow-lg shadow-emerald-500/30">
+              <i data-lucide="git-branch" class="text-white w-6 h-6"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-200">5.2 Depth-First Search (DFS)</h2>
+          </div>
+          <p class="mb-6 leading-relaxed text-slate-300">DFS เป็นการค้นหาแบบลงลึกไปตามกิ่งใดกิ่งหนึ่งจนสุดทางก่อน หากยังไม่พบคำตอบจึงย้อนกลับ (Backtrack) มาสำรวจกิ่งอื่นที่เหลือ</p>
+          
+          <!-- DFS Visualization -->
+          <div class="rounded-xl p-6 mb-6 bg-slate-900 border border-slate-700/50 shadow-inner" style="position: relative; height: 300px;">
+            <div id="dfs-graph" style="position: relative; width: 100%; height: 100%;"></div>
+          </div>
+          
+          <button id="dfs-play" class="px-6 py-3 rounded-xl font-semibold text-sm mb-6 flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white transition-colors shadow-lg shadow-emerald-500/30"> 
+            <i data-lucide="play" class="w-4 h-4"></i> เริ่มจำลอง DFS 
+          </button>
+          
+          <h3 class="text-lg font-semibold mb-3 text-slate-200">ลักษณะเด่น</h3>
+          <ul class="space-y-3 mb-6 text-slate-400">
+            <li class="flex items-start gap-3">
+              <span class="text-emerald-500 mt-1">●</span> ใช้หน่วยความจำน้อยกว่า BFS ในหลายๆ กรณี
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-emerald-500 mt-1">●</span> เหมาะกับปัญหาที่ต้องการสำรวจเชิงลึก หรือการเล่นเกมหมากกระดาน
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-emerald-500 mt-1">●</span> อาจไม่พบคำตอบที่สั้นที่สุด หรืออาจติดลูปในกราฟที่มีความลึกอนันต์
+            </li>
+          </ul>
+          
+          <div class="rounded-xl p-4 mono text-sm bg-slate-900 text-emerald-300 border border-slate-700 flex items-center gap-2">
+            <i data-lucide="layers" class="w-4 h-4 text-amber-400"></i>
+            <span>โครงสร้างข้อมูล: <span class="text-amber-400 font-bold">Stack (สแตก)</span> — LIFO (Last In, First Out) หรือทำซ้ำ (Recursion)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- A* Section -->
+      <section id="sec-astar" class="hidden">
+        <div class="rounded-2xl p-6 md:p-10 mb-8 bg-slate-800 border border-slate-700 shadow-xl">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-amber-500 shadow-lg shadow-amber-500/30">
+              <i data-lucide="star" class="text-white w-6 h-6"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-200">5.3 A* Search (A-Star)</h2>
+          </div>
+          <p class="mb-6 leading-relaxed text-slate-300">A* เป็นอัลกอริทึมค้นหาเส้นทางที่ฉลาดขึ้น โดยพิจารณาทั้งต้นทุนที่ใช้ไปแล้วและต้นทุนประมาณการที่เหลือ เพื่อมุ่งหน้าไปสู่เป้าหมายอย่างมีทิศทาง</p>
+          
+          <!-- A* Visualization -->
+          <div class="rounded-xl p-6 mb-6 bg-slate-900 border border-slate-700/50 shadow-inner" style="position: relative; height: 300px;">
+            <div id="astar-graph" style="position: relative; width: 100%; height: 100%;"></div>
+          </div>
+          
+          <button id="astar-play" class="px-6 py-3 rounded-xl font-semibold text-sm mb-6 flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-900 transition-colors shadow-lg shadow-amber-500/30"> 
+            <i data-lucide="play" class="w-4 h-4"></i> เริ่มจำลอง A* (สมมติหา G)
+          </button>
+          
+          <h3 class="text-lg font-semibold mb-3 text-slate-200">ฟังก์ชันประเมิน (Heuristic)</h3>
+          <div class="rounded-xl p-5 mb-6 text-center bg-slate-900 border border-amber-900/50 shadow-inner">
+            <span class="mono text-2xl font-bold text-amber-400">f(n) = g(n) + h(n)</span>
+            <div class="mt-4 text-sm text-slate-400 flex flex-col md:flex-row justify-center gap-2 md:gap-8">
+              <span><span class="text-amber-400 font-semibold text-base">g(n)</span> = ระยะทางจริงจากจุดเริ่มต้นถึง n</span>
+              <span class="hidden md:inline">|</span>
+              <span><span class="text-amber-400 font-semibold text-base">h(n)</span> = ระยะทางประมาณการจาก n ถึงเป้าหมาย</span>
+            </div>
+          </div>
+          
+          <h3 class="text-lg font-semibold mb-3 text-slate-200">ลักษณะเด่น</h3>
+          <ul class="space-y-3 mb-6 text-slate-400">
+            <li class="flex items-start gap-3">
+              <span class="text-amber-500 mt-1">●</span> รับประกันการหาเส้นทางที่สั้นที่สุดเสมอ เมื่อ h(n) เป็นค่าที่ยอมรับได้ (Admissible)
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-amber-500 mt-1">●</span> มีประสิทธิภาพการค้นหาสูงกว่า BFS และ DFS เพราะมีตัวนำทาง
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-amber-500 mt-1">●</span> นิยมใช้มากที่สุดในระบบนำทาง GPS และ AI ในวิดีโอเกม
+            </li>
+          </ul>
+          
+          <div class="rounded-xl p-4 mono text-sm bg-slate-900 text-amber-300 border border-slate-700 flex items-center gap-2">
+            <i data-lucide="list-ordered" class="w-4 h-4 text-amber-400"></i>
+            <span>โครงสร้างข้อมูล: <span class="text-amber-400 font-bold">Priority Queue</span> (คิวลำดับความสำคัญ) เรียงตามค่า f(n)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ตารางเปรียบเทียบ (Comparison) -->
+      <section class="fade-up" style="animation-delay: 0.6s;">
+        <div class="rounded-2xl p-6 md:p-10 bg-slate-800 border border-slate-700 shadow-xl overflow-hidden">
+          <h2 class="text-xl font-bold mb-6 text-slate-200 flex items-center gap-2">
+            <i data-lucide="bar-chart-2" class="w-5 h-5 text-slate-400"></i> ตารางเปรียบเทียบคุณสมบัติ
+          </h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-slate-300">
+              <thead>
+                <tr class="border-b border-slate-600 bg-slate-900/50">
+                  <th class="text-left py-4 px-4 font-semibold rounded-tl-lg">คุณสมบัติ</th>
+                  <th class="text-center py-4 px-4 font-semibold text-blue-400">BFS</th>
+                  <th class="text-center py-4 px-4 font-semibold text-emerald-400">DFS</th>
+                  <th class="text-center py-4 px-4 font-semibold text-amber-400 rounded-tr-lg">A*</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-700">
+                <tr class="hover:bg-slate-700/30 transition-colors">
+                  <td class="py-4 px-4 font-medium">โครงสร้างข้อมูลหลัก</td>
+                  <td class="text-center py-4">Queue</td>
+                  <td class="text-center py-4">Stack</td>
+                  <td class="text-center py-4">Priority Queue</td>
+                </tr>
+                <tr class="hover:bg-slate-700/30 transition-colors">
+                  <td class="py-4 px-4 font-medium">การใช้หน่วยความจำ</td>
+                  <td class="text-center py-4"><span class="px-2 py-1 rounded bg-red-500/20 text-red-300 text-xs font-bold">สูง</span></td>
+                  <td class="text-center py-4"><span class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 text-xs font-bold">ต่ำ</span></td>
+                  <td class="text-center py-4"><span class="px-2 py-1 rounded bg-red-500/20 text-red-300 text-xs font-bold">สูง</span></td>
+                </tr>
+                <tr class="hover:bg-slate-700/30 transition-colors">
+                  <td class="py-4 px-4 font-medium">หาเส้นทางสั้นสุด (Optimal)</td>
+                  <td class="text-center py-4"><i data-lucide="check" class="w-5 h-5 mx-auto text-emerald-500"></i></td>
+                  <td class="text-center py-4"><i data-lucide="x" class="w-5 h-5 mx-auto text-red-500"></i></td>
+                  <td class="text-center py-4"><i data-lucide="check" class="w-5 h-5 mx-auto text-emerald-500"></i></td>
+                </tr>
+                <tr class="hover:bg-slate-700/30 transition-colors">
+                  <td class="py-4 px-4 font-medium">หาคำตอบเจอเสมอ (Complete)</td>
+                  <td class="text-center py-4"><i data-lucide="check" class="w-5 h-5 mx-auto text-emerald-500"></i></td>
+                  <td class="text-center py-4 text-xs text-slate-400">เจอ (ถ้ากราฟไม่จำกัด)</td>
+                  <td class="text-center py-4"><i data-lucide="check" class="w-5 h-5 mx-auto text-emerald-500"></i></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      
+    </div>
+  </div>
+
+  <script>
+    // เริ่มสร้าง Icons หลังจากหน้าเว็บโหลด
+    lucide.createIcons();
+
+    // 1. ระบบควบคุม Tabs
+    const tabs = document.querySelectorAll('.tab-btn');
+    const sections = { 
+      bfs: document.getElementById('sec-bfs'), 
+      dfs: document.getElementById('sec-dfs'), 
+      astar: document.getElementById('sec-astar') 
+    };
+    
+    // ตั้งค่าสีสำหรับแต่ละแท็บเมื่อกด (Active states)
+    const activeStyles = { 
+      bfs: { bg: 'bg-blue-500', text: 'text-white', border: 'border-blue-500' },
+      dfs: { bg: 'bg-emerald-500', text: 'text-white', border: 'border-emerald-500' },
+      astar: { bg: 'bg-amber-500', text: 'text-slate-900', border: 'border-amber-500' }
+    };
+
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        
+        // ล้างสไตล์เก่าทั้งหมด
+        tabs.forEach(b => { 
+          b.classList.remove('active', 'bg-blue-500', 'bg-emerald-500', 'bg-amber-500', 'text-white', 'text-slate-900'); 
+          b.classList.add('bg-slate-800', 'text-slate-400', 'border', 'border-slate-700'); 
+        });
+        
+        // เพิ่มสไตล์ใหม่ให้แท็บที่ถูกเลือก
+        btn.classList.add('active', activeStyles[tab].bg, activeStyles[tab].text);
+        btn.classList.remove('bg-slate-800', 'text-slate-400', 'border-slate-700');
+        
+        // ซ่อนเนื้อหาทั้งหมดและโชว์เนื้อหาที่สัมพันธ์กับแท็บ
+        Object.values(sections).forEach(s => s.classList.add('hidden'));
+        sections[tab].classList.remove('hidden');
+        sections[tab].classList.add('fade-up');
+        
+        // วาดกราฟใหม่เมื่อเปิดแท็บ เพื่อให้ตำแหน่งตรงกับขนาดคอนเทนเนอร์เสมอ
+        setTimeout(initGraphs, 50); 
+      });
+    });
+
+    // 2. ข้อมูลกราฟจำลอง (ตำแหน่งโหนดเป็นเปอร์เซ็นต์ เพื่อให้ Responsive)
+    const treeNodes = [
+      { id: 'A', x: 50, y: 15 }, // Root
+      { id: 'B', x: 25, y: 45 }, { id: 'C', x: 75, y: 45 }, // Level 1
+      { id: 'D', x: 12, y: 85 }, { id: 'E', x: 38, y: 85 }, { id: 'F', x: 62, y: 85 }, { id: 'G', x: 88, y: 85 }, // Level 2
+    ];
+    const treeEdges = [['A','B'],['A','C'],['B','D'],['B','E'],['C','F'],['C','G']];
+
+    // ฟังก์ชันวาดกราฟ
+    function buildGraph(containerId, color) {
+      const container = document.getElementById(containerId);
+      if(!container) return {};
+      
+      container.innerHTML = '';
+      const w = container.offsetWidth;
+      const h = container.offsetHeight;
+      const nodeMap = {};
+      const nodeRadius = 22; // รัศมีโหนด (44px/2)
+      
+      // วาดเส้นเชื่อม (Edges)
+      treeEdges.forEach(([from, to]) => {
+        const n1 = treeNodes.find(n => n.id === from);
+        const n2 = treeNodes.find(n => n.id === to);
+        
+        // คำนวณจุดศูนย์กลางของโหนด
+        const x1 = n1.x * w / 100;
+        const y1 = n1.y * h / 100;
+        const x2 = n2.x * w / 100;
+        const y2 = n2.y * h / 100;
+        
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const len = Math.sqrt(dx*dx + dy*dy);
+        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        
+        const edge = document.createElement('div');
+        edge.className = 'graph-edge bg-slate-700';
+        edge.style.cssText = `left:${x1}px; top:${y1}px; width:${len}px; transform:rotate(${angle}deg);`;
+        edge.dataset.from = from; 
+        edge.dataset.to = to;
+        container.appendChild(edge);
+      });
+
+      // วาดโหนด (Nodes)
+      treeNodes.forEach(n => {
+        const el = document.createElement('div');
+        el.className = 'graph-node bg-slate-800 text-slate-400 border-2 border-slate-600 shadow-md';
+        el.dataset.id = n.id;
+        
+        // วางตำแหน่งลบด้วยรัศมี เพื่อให้จุดศูนย์กลางตรงกับพิกัดที่คำนวณไว้
+        el.style.cssText = `left:${(n.x * w / 100) - nodeRadius}px; top:${(n.y * h / 100) - nodeRadius}px;`;
+        el.textContent = n.id;
+        container.appendChild(el);
+        nodeMap[n.id] = el;
+      });
+      
+      return nodeMap;
+    }
+
+    let bfsNodes, dfsNodes, astarNodes;
+    
+    // เตรียมกราฟทั้งหมด
+    function initGraphs() {
+      bfsNodes = buildGraph('bfs-graph', '#3b82f6');
+      dfsNodes = buildGraph('dfs-graph', '#10b981');
+      astarNodes = buildGraph('astar-graph', '#f59e0b');
+    }
+
+    // 3. ฟังก์ชันควบคุมแอนิเมชัน
+    let animationTimeouts = [];
+
+    function animateTraversal(nodeMap, order, colorHex, containerId) {
+      // ยกเลิกแอนิเมชันเก่าที่ค้างอยู่ (ถ้ามี)
+      animationTimeouts.forEach(clearTimeout);
+      animationTimeouts = [];
+
+      const container = document.getElementById(containerId);
+      
+      // รีเซ็ตสถานะโหนดและเส้นทั้งหมดกลับเป็นค่าเริ่มต้น
+      Object.values(nodeMap).forEach(el => {
+        el.className = 'graph-node bg-slate-800 text-slate-400 border-2 border-slate-600 shadow-md';
+        el.style.color = ''; 
+        el.style.background = '';
+        el.style.borderColor = '';
+      });
+      container.querySelectorAll('.graph-edge').forEach(e => {
+        e.className = 'graph-edge bg-slate-700';
+        e.style.color = '';
+      });
+
+      // ลูปสร้างแอนิเมชันตามลำดับ Order ของอัลกอริทึม
+      order.forEach((id, i) => {
+        const t1 = setTimeout(() => {
+          const el = nodeMap[id];
+          if(!el) return;
+
+          // เปลี่ยนสีโหนดเมื่อถูก Visit
+          el.style.color = (colorHex === '#f59e0b') ? '#0f172a' : '#fff'; // ถ้าสีส้ม ใช้ตัวหนังสือดำ
+          el.style.background = colorHex;
+          el.style.borderColor = colorHex;
+          
+          // เล่น Effect กระเพื่อม (Pulse)
+          el.classList.remove('node-active', 'node-glow');
+          void el.offsetWidth; // Force CSS Reflow เพื่อรีสตาร์ท Animation
+          el.classList.add('node-active');
+          
+          // เพิ่ม Effect เรืองแสง (Glow) ค้างไว้หลังกระเพื่อมเสร็จ
+          const t2 = setTimeout(() => {
+            el.classList.add('node-glow');
+          }, 850);
+          animationTimeouts.push(t2);
+
+          // หาเส้นเชื่อมที่เชื่อมจากโหนดก่อนหน้า เพื่อทำแอนิเมชันเส้นทาง
+          if (i > 0) {
+            const prev = order[i-1];
+            container.querySelectorAll('.graph-edge').forEach(e => {
+              if ((e.dataset.from === prev && e.dataset.to === id) || (e.dataset.from === id && e.dataset.to === prev)) {
+                e.style.color = colorHex;
+                e.classList.remove('edge-active');
+                void e.offsetWidth; 
+                e.classList.add('edge-active');
+              }
+            });
+          }
+        }, i * 800); // ดีเลย์ระหว่างโหนด 0.8 วินาที
+        
+        animationTimeouts.push(t1);
+      });
+    }
+
+    // กำหนด Event Listeners ให้กับปุ่มเริ่มจำลอง
+    document.getElementById('bfs-play').addEventListener('click', () => {
+      animateTraversal(bfsNodes, ['A','B','C','D','E','F','G'], '#3b82f6', 'bfs-graph');
+    });
+    
+    document.getElementById('dfs-play').addEventListener('click', () => {
+      animateTraversal(dfsNodes, ['A','B','D','E','C','F','G'], '#10b981', 'dfs-graph');
+    });
+    
+    document.getElementById('astar-play').addEventListener('click', () => {
+      // A* สมมติว่าต้องการหา G และมี Heuristic ที่นำพามาฝั่งขวา
+      animateTraversal(astarNodes, ['A','C','F','G'], '#f59e0b', 'astar-graph');
+    });
+
+    // เริ่มต้นระบบเมื่อโหลดหน้าเสร็จ
+    window.addEventListener('DOMContentLoaded', () => {
+      initGraphs();
+    });
+
+    // วาดกราฟใหม่เมื่อปรับขนาดหน้าจอ เพื่อป้องกันตำแหน่งเบี้ยว
+    window.addEventListener('resize', () => {
+      // ยกเลิกแอนิเมชันที่เล่นอยู่เพื่อความสะอาดของหน้าจอตอนปรับขนาด
+      animationTimeouts.forEach(clearTimeout);
+      initGraphs();
+    });
+  </script>
+</body>
+</html>
