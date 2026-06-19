@@ -1,0 +1,262 @@
+/* ── Global ── */
+* { font-family: 'Sarabun', sans-serif; }
+code, .mono { font-family: 'JetBrains Mono', monospace; }
+
+body {
+  box-sizing: border-box;
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* ── Navbar (เหมือนหน้าอื่น ๆ ใน myClass) ── */
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  gap: 0.5rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.site-nav .logo {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+.site-nav .logo span { color: #7c3aed; }
+.site-nav .sep { color: #cbd5e1; font-size: 1rem; user-select: none; }
+.site-nav .crumb {
+  font-size: 0.85rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes fanSpin { to { transform: rotate(360deg); } }
+
+.fade-up  { animation: fadeUp 0.7s ease forwards; opacity: 0; }
+.slide-in { animation: slideIn 0.6s ease forwards; opacity: 0; }
+
+/* ── Jump nav ── */
+.jump {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  text-decoration: none;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  transition: all 0.18s;
+}
+.jump:hover { color: #7c3aed; border-color: #c4b5fd; background: #faf5ff; }
+
+/* ── Card ── */
+.lesson-card {
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+@media (min-width: 768px) { .lesson-card { padding: 2.5rem; } }
+
+.icon-badge {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+/* ── Demo box (พื้นที่อินเทอร์แอคทีฟ) ── */
+.demo {
+  border-radius: 0.9rem;
+  padding: 1.25rem;
+  background: #faf5ff;
+  border: 1px solid #e9d5ff;
+}
+.demo + .demo { margin-top: 1rem; }
+
+.chart-box {
+  position: relative;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+.chart-box svg { display: block; width: 100%; height: auto; }
+
+/* ── Sliders ── */
+.ctrl-row { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-bottom: 1rem; }
+.ctrl { flex: 1 1 180px; min-width: 160px; }
+.ctrl label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 0.4rem;
+}
+.ctrl label .val {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: #7c3aed;
+}
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: #e9d5ff;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #7c3aed;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #7c3aed; border: 2px solid #fff; cursor: pointer;
+}
+
+/* ── Segmented control (เลือกชนิด MF) ── */
+.seg { display: inline-flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+.seg button {
+  padding: 0.45rem 0.9rem;
+  border-radius: 0.6rem;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.seg button:hover { background: #f1f5f9; }
+.seg button.active {
+  background: #7c3aed;
+  color: #fff;
+  border-color: #7c3aed;
+  box-shadow: 0 2px 6px rgba(124, 58, 237, 0.3);
+}
+
+/* ── Legend (สีของพจน์ภาษา) ── */
+.legend { display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 0.75rem; }
+.legend span { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: #475569; font-weight: 600; }
+.legend .dot { width: 12px; height: 12px; border-radius: 3px; }
+
+/* ── Operator bars ── */
+.op-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem 1.25rem; }
+@media (min-width: 640px) { .op-grid { grid-template-columns: repeat(3, 1fr); } }
+.op-cell {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.6rem;
+  padding: 0.75rem;
+}
+.op-cell .op-name { font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 0.3rem; }
+.op-cell .op-val { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 700; color: #0f172a; }
+.op-bar { height: 8px; border-radius: 999px; background: #ede9fe; margin-top: 0.5rem; overflow: hidden; }
+.op-bar > div { height: 100%; border-radius: 999px; background: #7c3aed; transition: width 0.25s; }
+
+/* ── Rule cards (ระบบควบคุมพัดลม) ── */
+.rule {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.6rem;
+  padding: 0.7rem 0.85rem;
+  margin-bottom: 0.5rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.rule.fired { border-color: #c4b5fd; box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
+.rule .rule-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+.rule .rule-text { font-size: 0.8rem; color: #334155; }
+.rule .rule-text b { color: #6d28d9; }
+.rule .rule-str { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 700; color: #7c3aed; white-space: nowrap; }
+.rule .op-bar { margin-top: 0.5rem; }
+
+/* ── Output gauge / fan ── */
+.fan-out {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+}
+.fan-icon { color: #7c3aed; flex-shrink: 0; }
+.fan-icon.spin { animation: fanSpin linear infinite; transform-origin: 50% 50%; }
+.fan-readout .big {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #6d28d9;
+  line-height: 1;
+}
+.fan-readout .lab { font-size: 0.78rem; color: #64748b; margin-top: 0.2rem; }
+.fan-meter { flex: 1 1 160px; }
+.fan-meter .op-bar { height: 12px; }
+
+/* ── Code block (เฉลยแบบฝึกหัด) ── */
+.code-block {
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.7;
+  white-space: pre;
+  tab-size: 4;
+}
+.code-block .cmt { color: #64748b; }
+.code-block .kw  { color: #c4b5fd; }
+.code-block .str { color: #6ee7b7; }
+.code-block .fn  { color: #93c5fd; }
+
+/* ── Pills ── */
+.pill {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+}
+.pill.cold { color: #2563eb; background: #dbeafe; }
+.pill.warm { color: #d97706; background: #fef3c7; }
+.pill.hot  { color: #dc2626; background: #fee2e2; }

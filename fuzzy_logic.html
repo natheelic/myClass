@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="th" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ตรรกศาสตร์คลุมเครือ (Fuzzy Logic) — myClass</title>
+
+  <!-- Tailwind สำหรับ Layout -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- ฟอนต์ไทย + โค้ด -->
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- สไตล์แยกไฟล์ -->
+  <link rel="stylesheet" href="fuzzy_logic.css">
+</head>
+<body class="antialiased text-slate-800">
+  <div class="min-h-full w-full bg-slate-50">
+
+    <!-- Navbar -->
+    <nav class="site-nav">
+      <a href="index.html" class="logo">my<span>Class</span></a>
+      <span class="sep">/</span>
+      <span class="crumb">บทที่ 6 — ตรรกศาสตร์คลุมเครือ</span>
+    </nav>
+
+    <!-- Hero -->
+    <header class="text-center py-12 md:py-16 px-4 fade-up">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-violet-600 shadow-lg shadow-violet-600/25 mb-5">
+        <i data-lucide="git-merge" class="text-white w-7 h-7"></i>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-bold mb-4 text-slate-800">ตรรกศาสตร์คลุมเครือ</h1>
+      <p class="text-lg max-w-2xl mx-auto text-slate-500">Fuzzy Logic — ค่าความจริงต่อเนื่องในช่วง [0, 1] สำหรับจัดการความไม่แน่นอนเชิงภาษา พร้อมการจำลองแบบอินเทอร์แอคทีฟ</p>
+    </header>
+
+    <!-- Jump nav -->
+    <div class="flex flex-wrap justify-center gap-2 px-4 mb-10 fade-up">
+      <a href="#s1" class="jump">5.1 หลักการ</a>
+      <a href="#s2" class="jump">5.2 ฟัซซีเซต</a>
+      <a href="#s3" class="jump">5.3 ตัวดำเนินการ</a>
+      <a href="#s4" class="jump">5.4 ระบบควบคุม</a>
+      <a href="#s5" class="jump">5.5 การประยุกต์</a>
+      <a href="#s6" class="jump">6. แบบฝึกหัด</a>
+    </div>
+
+    <main class="max-w-4xl mx-auto px-4 pb-24">
+
+      <p class="text-xs font-bold tracking-widest text-violet-500 uppercase mb-4">5. เนื้อหาสาระ</p>
+
+      <!-- ───── 5.1 หลักการ ───── -->
+      <section id="s1" class="lesson-card fade-up">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="icon-badge bg-violet-600"><i data-lucide="scale" class="w-6 h-6"></i></div>
+          <h2 class="text-2xl font-bold text-slate-800">5.1 หลักการตรรกศาสตร์คลุมเครือ</h2>
+        </div>
+        <p class="mb-5 leading-relaxed text-slate-600">
+          ตรรกศาสตร์คลุมเครือ (Fuzzy Logic) ที่เสนอโดย <b>Lotfi Zadeh (1965)</b> ขยายแนวคิดเซตทั่วไปจากค่าความเป็นไปได้
+          <span class="mono text-slate-800">{0, 1}</span> ไปสู่ค่าต่อเนื่องในช่วง <span class="mono text-violet-700 font-semibold">[0, 1]</span>
+          ซึ่งสะท้อนความไม่แน่นอนเชิงภาษาธรรมชาติ เช่น "อุ่น" "ค่อนข้างร้อน" ได้ดีกว่าตรรกศาสตร์ทวิภาค (Boolean)
+        </p>
+        <div class="demo">
+          <p class="text-sm font-semibold text-slate-600 mb-2">เปรียบเทียบ "ร้อน": ตรรกศาสตร์ทวิภาค (เส้นขั้นบันได) กับ ฟัซซี (เส้นลาดต่อเนื่อง)</p>
+          <div class="legend">
+            <span><span class="dot" style="background:#ef4444"></span> Crisp — ร้อน/ไม่ร้อน (0 หรือ 1)</span>
+            <span><span class="dot" style="background:#7c3aed"></span> Fuzzy — ระดับความร้อน (0…1)</span>
+          </div>
+          <div id="crisp-fuzzy-chart" class="chart-box"></div>
+        </div>
+      </section>
+
+      <!-- ───── 5.2 ฟัซซีเซตและฟังก์ชันสมาชิก ───── -->
+      <section id="s2" class="lesson-card fade-up">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="icon-badge bg-violet-600"><i data-lucide="spline" class="w-6 h-6"></i></div>
+          <h2 class="text-2xl font-bold text-slate-800">5.2 ฟัซซีเซตและฟังก์ชันสมาชิก</h2>
+        </div>
+        <p class="mb-5 leading-relaxed text-slate-600">
+          ฟัซซีเซต A นิยามด้วยฟังก์ชันสมาชิก (Membership Function) <span class="mono text-violet-700 font-semibold">μ<sub>A</sub>(x): X → [0,1]</span>
+          รูปแบบที่นิยม ได้แก่ Triangular, Trapezoidal, Gaussian และ Sigmoidal เลือกใช้ตามรูปร่างของข้อมูลและลักษณะเชิงภาษา
+        </p>
+
+        <div class="demo">
+          <p class="text-sm font-semibold text-slate-600 mb-3">🎚️ ลองปรับชนิดและพารามิเตอร์ของฟังก์ชันสมาชิก</p>
+          <div id="mf-seg" class="seg">
+            <button data-mf="tri" class="active">Triangular</button>
+            <button data-mf="trap">Trapezoidal</button>
+            <button data-mf="gauss">Gaussian</button>
+            <button data-mf="sig">Sigmoidal</button>
+          </div>
+          <div id="mf-params" class="ctrl-row"></div>
+          <div id="mf-chart" class="chart-box"></div>
+          <p id="mf-formula" class="text-xs text-slate-500 mt-2 mono"></p>
+          <div class="ctrl mt-2" style="max-width:320px">
+            <label>ทดสอบค่า x = <span class="val" id="mf-xq-val">15</span> → μ = <span class="val" id="mf-mu-val">0.00</span></label>
+            <input type="range" id="mf-xq" min="0" max="40" step="0.5" value="15">
+          </div>
+        </div>
+      </section>
+
+      <!-- ───── 5.3 ตัวดำเนินการฟัซซี ───── -->
+      <section id="s3" class="lesson-card fade-up">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="icon-badge bg-violet-600"><i data-lucide="combine" class="w-6 h-6"></i></div>
+          <h2 class="text-2xl font-bold text-slate-800">5.3 ตัวดำเนินการฟัซซี</h2>
+        </div>
+        <p class="mb-5 leading-relaxed text-slate-600">
+          ตัวดำเนินการหลัก: <b class="text-violet-700">AND</b> = <span class="mono">min(μ<sub>A</sub>, μ<sub>B</sub>)</span>,
+          <b class="text-violet-700">OR</b> = <span class="mono">max(μ<sub>A</sub>, μ<sub>B</sub>)</span>,
+          <b class="text-violet-700">NOT</b> = <span class="mono">1 − μ<sub>A</sub></span>
+          (ทั่วไปคือ T-norm และ S-norm ตามลำดับ)
+        </p>
+        <div class="demo">
+          <p class="text-sm font-semibold text-slate-600 mb-3">🎚️ เลื่อนค่าสมาชิกของ A และ B เพื่อดูผลของตัวดำเนินการ</p>
+          <div class="ctrl-row">
+            <div class="ctrl">
+              <label>μ<sub>A</sub> = <span class="val" id="opA-val">0.70</span></label>
+              <input type="range" id="opA" min="0" max="1" step="0.01" value="0.7">
+            </div>
+            <div class="ctrl">
+              <label>μ<sub>B</sub> = <span class="val" id="opB-val">0.40</span></label>
+              <input type="range" id="opB" min="0" max="1" step="0.01" value="0.4">
+            </div>
+          </div>
+          <div class="op-grid" id="op-grid"></div>
+        </div>
+      </section>
+
+      <!-- ───── 5.4 ระบบควบคุมแบบฟัซซี ───── -->
+      <section id="s4" class="lesson-card fade-up">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="icon-badge bg-violet-600"><i data-lucide="sliders-horizontal" class="w-6 h-6"></i></div>
+          <h2 class="text-2xl font-bold text-slate-800">5.4 การสร้างระบบควบคุมแบบฟัซซี</h2>
+        </div>
+        <p class="mb-4 leading-relaxed text-slate-600">ระบบควบคุมแบบฟัซซี (Mamdani) มี 4 ขั้นตอน:</p>
+        <ol class="grid sm:grid-cols-2 gap-3 mb-6 text-sm">
+          <li class="flex gap-3 items-start bg-slate-50 border border-slate-200 rounded-lg p-3"><span class="font-bold text-violet-600">1</span><span><b>Fuzzification</b> — แปลงค่าตัวเลขเป็นค่าฟัซซี</span></li>
+          <li class="flex gap-3 items-start bg-slate-50 border border-slate-200 rounded-lg p-3"><span class="font-bold text-violet-600">2</span><span><b>Inference</b> — ประเมินกฎ IF-THEN (Mamdani/Sugeno)</span></li>
+          <li class="flex gap-3 items-start bg-slate-50 border border-slate-200 rounded-lg p-3"><span class="font-bold text-violet-600">3</span><span><b>Aggregation</b> — รวมผลของทุกกฎ</span></li>
+          <li class="flex gap-3 items-start bg-slate-50 border border-slate-200 rounded-lg p-3"><span class="font-bold text-violet-600">4</span><span><b>Defuzzification</b> — แปลงกลับเป็นตัวเลข (Centroid)</span></li>
+        </ol>
+
+        <div class="demo">
+          <p class="text-sm font-semibold text-slate-600 mb-1">🌀 ระบบควบคุมพัดลมแบบฟัซซี — ปรับอุณหภูมิและความชื้น แล้วดูผลแบบ Real-time</p>
+          <p class="text-xs text-slate-500 mb-4">(เดโมนี้คือคำตอบของแบบฝึกหัด 6.2 และ 6.3 ที่ทำงานจริงในเบราว์เซอร์)</p>
+
+          <!-- inputs -->
+          <div class="ctrl-row">
+            <div class="ctrl">
+              <label>🌡️ อุณหภูมิ (°C) <span class="val" id="fc-temp-val">28</span></label>
+              <input type="range" id="fc-temp" min="0" max="40" step="0.5" value="28">
+            </div>
+            <div class="ctrl">
+              <label>💧 ความชื้น (%) <span class="val" id="fc-humid-val">70</span></label>
+              <input type="range" id="fc-humid" min="0" max="100" step="1" value="70">
+            </div>
+          </div>
+
+          <!-- fuzzification charts -->
+          <div class="grid md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <div class="legend">
+                <span><span class="dot" style="background:#2563eb"></span> เย็น</span>
+                <span><span class="dot" style="background:#d97706"></span> อุ่น</span>
+                <span><span class="dot" style="background:#dc2626"></span> ร้อน</span>
+              </div>
+              <div id="fc-temp-chart" class="chart-box"></div>
+            </div>
+            <div>
+              <div class="legend">
+                <span><span class="dot" style="background:#06b6d4"></span> ชื้นต่ำ</span>
+                <span><span class="dot" style="background:#ea580c"></span> ชื้นสูง</span>
+              </div>
+              <div id="fc-humid-chart" class="chart-box"></div>
+            </div>
+          </div>
+
+          <!-- rules -->
+          <p class="text-sm font-semibold text-slate-600 mb-2">กฎ IF-THEN (4 กฎ) และระดับการทำงาน (firing strength)</p>
+          <div id="fc-rules" class="mb-4"></div>
+
+          <!-- output -->
+          <p class="text-sm font-semibold text-slate-600 mb-2">ผลรวมของกฎ (Aggregation) และจุด Defuzzification (Centroid)</p>
+          <div class="legend">
+            <span><span class="dot" style="background:#94a3b8"></span> ช้า</span>
+            <span><span class="dot" style="background:#94a3b8"></span> กลาง</span>
+            <span><span class="dot" style="background:#94a3b8"></span> เร็ว</span>
+            <span><span class="dot" style="background:#7c3aed"></span> พื้นที่ผลรวม</span>
+          </div>
+          <div id="fc-out-chart" class="chart-box mb-4"></div>
+
+          <div class="fan-out">
+            <i data-lucide="fan" id="fc-fan" class="fan-icon w-12 h-12"></i>
+            <div class="fan-readout">
+              <div class="big"><span id="fc-speed">0</span><span class="text-lg">%</span></div>
+              <div class="lab">ความเร็วพัดลม (Defuzzified)</div>
+            </div>
+            <div class="fan-meter">
+              <div class="op-bar"><div id="fc-speed-bar" style="width:0%"></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───── 5.5 การประยุกต์ ───── -->
+      <section id="s5" class="lesson-card fade-up">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="icon-badge bg-violet-600"><i data-lucide="cpu" class="w-6 h-6"></i></div>
+          <h2 class="text-2xl font-bold text-slate-800">5.5 การประยุกต์ใช้ในงานจริง</h2>
+        </div>
+        <p class="mb-5 leading-relaxed text-slate-600">ระบบควบคุมแบบฟัซซีถูกใช้อย่างแพร่หลายในอุปกรณ์และระบบอัจฉริยะหลายชนิด:</p>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div class="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4"><i data-lucide="air-vent" class="w-6 h-6 text-violet-600"></i><span class="text-sm text-slate-700 font-medium">เครื่องปรับอากาศ — ปรับอุณหภูมิ/ความแรงลมนุ่มนวล</span></div>
+          <div class="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4"><i data-lucide="washing-machine" class="w-6 h-6 text-violet-600"></i><span class="text-sm text-slate-700 font-medium">เครื่องซักผ้า — เลือกรอบซักตามปริมาณ/ความสกปรก</span></div>
+          <div class="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4"><i data-lucide="car-front" class="w-6 h-6 text-violet-600"></i><span class="text-sm text-slate-700 font-medium">รถยนต์ขับเคลื่อนอัตโนมัติ — เบรก/เร่งตามสถานการณ์</span></div>
+          <div class="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4"><i data-lucide="wrench" class="w-6 h-6 text-violet-600"></i><span class="text-sm text-slate-700 font-medium">ระบบแนะนำการบำรุงรักษาฮาร์ดแวร์</span></div>
+        </div>
+      </section>
+
+      <!-- ───── 6. แบบฝึกหัด ───── -->
+      <p class="text-xs font-bold tracking-widest text-violet-500 uppercase mb-4 mt-12">6. แบบฝึกหัด / แบบทดสอบ</p>
+
+      <section id="s6" class="lesson-card fade-up">
+        <!-- 6.1 -->
+        <div class="flex items-center gap-3 mb-3">
+          <span class="icon-badge bg-violet-100 text-violet-700" style="width:2.5rem;height:2.5rem;font-weight:700;">6.1</span>
+          <h3 class="text-lg font-bold text-slate-800">ออกแบบ Triangular MF สำหรับอุณหภูมิ (เย็น/อุ่น/ร้อน) ในช่วง 0–40 °C</h3>
+        </div>
+        <p class="text-sm text-slate-600 mb-3">ตัวอย่างคำตอบ (ปรับได้ในเดโม 5.2/5.4): กำหนดจุด <span class="mono">[a, b, c]</span> ของแต่ละพจน์</p>
+        <div class="flex flex-wrap gap-3 mb-6 text-sm">
+          <span class="pill cold mono">เย็น = trimf[0, 0, 20]</span>
+          <span class="pill warm mono">อุ่น = trimf[10, 20, 30]</span>
+          <span class="pill hot mono">ร้อน = trimf[20, 40, 40]</span>
+        </div>
+
+        <!-- 6.2 -->
+        <div class="flex items-center gap-3 mb-3">
+          <span class="icon-badge bg-violet-100 text-violet-700" style="width:2.5rem;height:2.5rem;font-weight:700;">6.2</span>
+          <h3 class="text-lg font-bold text-slate-800">เขียนกฎฟัซซี IF-THEN สำหรับควบคุมพัดลม 4 กฎ</h3>
+        </div>
+        <ul class="space-y-2 mb-6 text-sm text-slate-700">
+          <li class="bg-slate-50 border border-slate-200 rounded-lg p-3 mono">R1: <b class="text-violet-700">IF</b> ร้อน <b class="text-violet-700">OR</b> ชื้นสูง <b class="text-violet-700">THEN</b> พัดลม = เร็ว</li>
+          <li class="bg-slate-50 border border-slate-200 rounded-lg p-3 mono">R2: <b class="text-violet-700">IF</b> อุ่น <b class="text-violet-700">THEN</b> พัดลม = กลาง</li>
+          <li class="bg-slate-50 border border-slate-200 rounded-lg p-3 mono">R3: <b class="text-violet-700">IF</b> เย็น <b class="text-violet-700">AND</b> ชื้นต่ำ <b class="text-violet-700">THEN</b> พัดลม = ช้า</li>
+          <li class="bg-slate-50 border border-slate-200 rounded-lg p-3 mono">R4: <b class="text-violet-700">IF</b> อุ่น <b class="text-violet-700">AND</b> ชื้นสูง <b class="text-violet-700">THEN</b> พัดลม = เร็ว</li>
+        </ul>
+
+        <!-- 6.3 -->
+        <div class="flex items-center gap-3 mb-3">
+          <span class="icon-badge bg-violet-100 text-violet-700" style="width:2.5rem;height:2.5rem;font-weight:700;">6.3</span>
+          <h3 class="text-lg font-bold text-slate-800">ใช้ scikit-fuzzy สร้างระบบควบคุมพัดลมและทดสอบ</h3>
+        </div>
+        <p class="text-sm text-slate-600 mb-3">เฉลย (ไฟล์ <span class="mono text-violet-700">fuzzy_fan_control.py</span>) — ติดตั้งด้วย <span class="mono">pip install scikit-fuzzy</span></p>
+<div class="code-block"><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> skfuzzy <span class="kw">as</span> fuzz
+<span class="kw">from</span> skfuzzy <span class="kw">import</span> control <span class="kw">as</span> ctrl
+
+<span class="cmt"># 1) ตัวแปรเข้า (Antecedent) และตัวแปรออก (Consequent)</span>
+temp  = ctrl.<span class="fn">Antecedent</span>(np.<span class="fn">arange</span>(0, 41, 1), <span class="str">'temp'</span>)
+humid = ctrl.<span class="fn">Antecedent</span>(np.<span class="fn">arange</span>(0, 101, 1), <span class="str">'humid'</span>)
+fan   = ctrl.<span class="fn">Consequent</span>(np.<span class="fn">arange</span>(0, 101, 1), <span class="str">'fan'</span>)
+
+<span class="cmt"># 2) ฟังก์ชันสมาชิก (Triangular)</span>
+temp[<span class="str">'cold'</span>] = fuzz.<span class="fn">trimf</span>(temp.universe, [0, 0, 20])
+temp[<span class="str">'warm'</span>] = fuzz.<span class="fn">trimf</span>(temp.universe, [10, 20, 30])
+temp[<span class="str">'hot'</span>]  = fuzz.<span class="fn">trimf</span>(temp.universe, [20, 40, 40])
+humid[<span class="str">'low'</span>]  = fuzz.<span class="fn">trimf</span>(humid.universe, [0, 0, 60])
+humid[<span class="str">'high'</span>] = fuzz.<span class="fn">trimf</span>(humid.universe, [40, 100, 100])
+fan[<span class="str">'slow'</span>]   = fuzz.<span class="fn">trimf</span>(fan.universe, [0, 0, 50])
+fan[<span class="str">'medium'</span>] = fuzz.<span class="fn">trimf</span>(fan.universe, [25, 50, 75])
+fan[<span class="str">'fast'</span>]   = fuzz.<span class="fn">trimf</span>(fan.universe, [50, 100, 100])
+
+<span class="cmt"># 3) กฎ IF-THEN (4 กฎ ตามข้อ 6.2)</span>
+r1 = ctrl.<span class="fn">Rule</span>(temp[<span class="str">'hot'</span>] | humid[<span class="str">'high'</span>], fan[<span class="str">'fast'</span>])
+r2 = ctrl.<span class="fn">Rule</span>(temp[<span class="str">'warm'</span>], fan[<span class="str">'medium'</span>])
+r3 = ctrl.<span class="fn">Rule</span>(temp[<span class="str">'cold'</span>] & humid[<span class="str">'low'</span>], fan[<span class="str">'slow'</span>])
+r4 = ctrl.<span class="fn">Rule</span>(temp[<span class="str">'warm'</span>] & humid[<span class="str">'high'</span>], fan[<span class="str">'fast'</span>])
+
+<span class="cmt"># 4) สร้างระบบ + ทดสอบกับอินพุต</span>
+system = ctrl.<span class="fn">ControlSystem</span>([r1, r2, r3, r4])
+sim = ctrl.<span class="fn">ControlSystemSimulation</span>(system)
+sim.input[<span class="str">'temp'</span>]  = 28
+sim.input[<span class="str">'humid'</span>] = 70
+sim.<span class="fn">compute</span>()
+<span class="fn">print</span>(<span class="str">f"ความเร็วพัดลม = {sim.output['fan']:.1f} %"</span>)  <span class="cmt"># ≈ ตรงกับเดโมด้านบน</span></div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    /* ========== ฟังก์ชันสมาชิก (Membership Functions) ========== */
+    function tri(x, a, b, c) {
+      if (x < a || x > c) return 0;
+      if (x < b) return b === a ? 1 : (x - a) / (b - a);
+      if (x > b) return c === b ? 1 : (c - x) / (c - b);
+      return 1;
+    }
+    function trap(x, a, b, c, d) {
+      if (x < a || x > d) return 0;
+      if (x < b) return b === a ? 1 : (x - a) / (b - a);
+      if (x <= c) return 1;
+      return d === c ? 1 : (d - x) / (d - c);
+    }
+    const gauss = (x, mean, sigma) => Math.exp(-0.5 * Math.pow((x - mean) / sigma, 2));
+    const sigmoid = (x, a, c) => 1 / (1 + Math.exp(-a * (x - c)));
+    const clamp01 = v => Math.max(0, Math.min(1, v));
+
+    /* ========== ตัววาดกราฟ SVG (responsive) ========== */
+    function samplePoints(fn, xMin, xMax, n) {
+      const pts = [];
+      for (let i = 0; i <= n; i++) {
+        const x = xMin + (xMax - xMin) * i / n;
+        pts.push({ x, y: clamp01(fn(x)) });
+      }
+      return pts;
+    }
+    function drawChart(el, opts) {
+      const W = 600, H = 220, padL = 34, padR = 12, padT = 12, padB = 26;
+      const sx = x => padL + (x - opts.xMin) / (opts.xMax - opts.xMin) * (W - padL - padR);
+      const sy = y => (H - padB) - y * (H - padT - padB);
+      const pPath = pts => pts.map((p, i) => (i ? 'L' : 'M') + sx(p.x).toFixed(1) + ' ' + sy(p.y).toFixed(1)).join(' ');
+      let svg = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">`;
+      // y grid
+      [0, 0.5, 1].forEach(v => {
+        svg += `<line x1="${padL}" y1="${sy(v)}" x2="${W - padR}" y2="${sy(v)}" stroke="#eef2f7"/>`;
+        svg += `<text x="${padL - 5}" y="${sy(v) + 3}" text-anchor="end" font-size="9" fill="#94a3b8" font-family="monospace">${v}</text>`;
+      });
+      // x ticks
+      for (let i = 0; i <= 5; i++) {
+        const xv = opts.xMin + (opts.xMax - opts.xMin) * i / 5;
+        svg += `<text x="${sx(xv)}" y="${H - padB + 15}" text-anchor="middle" font-size="9" fill="#94a3b8" font-family="monospace">${Math.round(xv)}</text>`;
+      }
+      // shaded aggregated area
+      if (opts.shade && opts.shade.points.length) {
+        let d = `M ${sx(opts.xMin)} ${sy(0)} ` + opts.shade.points.map(p => `L ${sx(p.x).toFixed(1)} ${sy(p.y).toFixed(1)}`).join(' ') + ` L ${sx(opts.xMax)} ${sy(0)} Z`;
+        svg += `<path d="${d}" fill="${opts.shade.color}" opacity="0.85"/>`;
+      }
+      // series
+      (opts.series || []).forEach(s => {
+        const pts = s.points || samplePoints(s.fn, opts.xMin, opts.xMax, 140);
+        const d = pPath(pts);
+        if (s.fill) svg += `<path d="${d} L ${sx(opts.xMax)} ${sy(0)} L ${sx(opts.xMin)} ${sy(0)} Z" fill="${s.color}" opacity="0.12"/>`;
+        svg += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="${s.width || 2}" stroke-linejoin="round" ${s.dash ? `stroke-dasharray="${s.dash}"` : ''}/>`;
+      });
+      // cursors
+      (opts.cursors || []).forEach(c => {
+        svg += `<line x1="${sx(c.x)}" y1="${padT}" x2="${sx(c.x)}" y2="${H - padB}" stroke="${c.color}" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+        if (c.label != null) svg += `<text x="${Math.min(W - padR - 2, Math.max(padL + 14, sx(c.x)))}" y="${padT + 8}" text-anchor="middle" font-size="9.5" fill="${c.color}" font-weight="700" font-family="monospace">${c.label}</text>`;
+      });
+      svg += `</svg>`;
+      el.innerHTML = svg;
+    }
+
+    /* ========== 5.1 crisp vs fuzzy ========== */
+    drawChart(document.getElementById('crisp-fuzzy-chart'), {
+      xMin: 0, xMax: 40,
+      series: [
+        { fn: x => x >= 25 ? 1 : 0, color: '#ef4444', width: 2.5 },
+        { fn: x => trap(x, 15, 30, 40, 40), color: '#7c3aed', width: 2.5, fill: true },
+      ],
+    });
+
+    /* ========== 5.2 MF Explorer ========== */
+    const mfTypes = {
+      tri: { params: [{ k: 'a', lab: 'a', min: 0, max: 40, step: 0.5, v: 5 }, { k: 'b', lab: 'b', min: 0, max: 40, step: 0.5, v: 20 }, { k: 'c', lab: 'c', min: 0, max: 40, step: 0.5, v: 35 }],
+             fn: p => x => tri(x, p.a, p.b, p.c), formula: 'Triangular: กำหนดด้วยจุด a ≤ b ≤ c' },
+      trap: { params: [{ k: 'a', lab: 'a', min: 0, max: 40, step: 0.5, v: 4 }, { k: 'b', lab: 'b', min: 0, max: 40, step: 0.5, v: 12 }, { k: 'c', lab: 'c', min: 0, max: 40, step: 0.5, v: 26 }, { k: 'd', lab: 'd', min: 0, max: 40, step: 0.5, v: 36 }],
+              fn: p => x => trap(x, p.a, p.b, p.c, p.d), formula: 'Trapezoidal: กำหนดด้วยจุด a ≤ b ≤ c ≤ d' },
+      gauss: { params: [{ k: 'mean', lab: 'mean', min: 0, max: 40, step: 0.5, v: 20 }, { k: 'sigma', lab: 'σ', min: 1, max: 18, step: 0.5, v: 6 }],
+               fn: p => x => gauss(x, p.mean, p.sigma), formula: 'Gaussian: μ(x) = exp(−½·((x − mean)/σ)²)' },
+      sig: { params: [{ k: 'a', lab: 'a (ความชัน)', min: -2, max: 2, step: 0.1, v: 0.6 }, { k: 'c', lab: 'c (กึ่งกลาง)', min: 0, max: 40, step: 0.5, v: 20 }],
+             fn: p => x => sigmoid(x, p.a, p.c), formula: 'Sigmoidal: μ(x) = 1 / (1 + e^(−a·(x − c)))' },
+    };
+    let mfCur = 'tri';
+    function renderMfParams() {
+      const cfg = mfTypes[mfCur];
+      const box = document.getElementById('mf-params');
+      box.innerHTML = cfg.params.map(p =>
+        `<div class="ctrl"><label>${p.lab} = <span class="val" id="mf-${p.k}-val">${p.v}</span></label>
+         <input type="range" id="mf-${p.k}" data-k="${p.k}" min="${p.min}" max="${p.max}" step="${p.step}" value="${p.v}"></div>`
+      ).join('');
+      box.querySelectorAll('input').forEach(inp => inp.addEventListener('input', updateMf));
+      updateMf();
+    }
+    function updateMf() {
+      const cfg = mfTypes[mfCur];
+      const p = {};
+      cfg.params.forEach(pp => {
+        const inp = document.getElementById('mf-' + pp.k);
+        p[pp.k] = parseFloat(inp.value);
+        document.getElementById('mf-' + pp.k + '-val').textContent = inp.value;
+      });
+      const fn = cfg.fn(p);
+      const xq = parseFloat(document.getElementById('mf-xq').value);
+      const mu = clamp01(fn(xq));
+      document.getElementById('mf-xq-val').textContent = xq;
+      document.getElementById('mf-mu-val').textContent = mu.toFixed(2);
+      document.getElementById('mf-formula').textContent = cfg.formula;
+      drawChart(document.getElementById('mf-chart'), {
+        xMin: 0, xMax: 40,
+        series: [{ fn, color: '#7c3aed', width: 2.5, fill: true }],
+        cursors: [{ x: xq, color: '#0f172a', label: 'μ=' + mu.toFixed(2) }],
+      });
+    }
+    document.querySelectorAll('#mf-seg button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#mf-seg button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        mfCur = btn.dataset.mf;
+        renderMfParams();
+      });
+    });
+    document.getElementById('mf-xq').addEventListener('input', updateMf);
+
+    /* ========== 5.3 ตัวดำเนินการ ========== */
+    function updateOps() {
+      const a = parseFloat(document.getElementById('opA').value);
+      const b = parseFloat(document.getElementById('opB').value);
+      document.getElementById('opA-val').textContent = a.toFixed(2);
+      document.getElementById('opB-val').textContent = b.toFixed(2);
+      const cells = [
+        { n: 'μA', v: a }, { n: 'μB', v: b },
+        { n: 'A AND B = min', v: Math.min(a, b) },
+        { n: 'A OR B = max', v: Math.max(a, b) },
+        { n: 'NOT A = 1−μA', v: 1 - a },
+        { n: 'NOT B = 1−μB', v: 1 - b },
+      ];
+      document.getElementById('op-grid').innerHTML = cells.map(c =>
+        `<div class="op-cell"><div class="op-name">${c.n}</div><div class="op-val">${c.v.toFixed(2)}</div>
+         <div class="op-bar"><div style="width:${(c.v * 100).toFixed(0)}%"></div></div></div>`
+      ).join('');
+    }
+    document.getElementById('opA').addEventListener('input', updateOps);
+    document.getElementById('opB').addEventListener('input', updateOps);
+
+    /* ========== 5.4 ระบบควบคุมพัดลมแบบฟัซซี (Mamdani) ========== */
+    // ฟังก์ชันสมาชิกของแต่ละพจน์
+    const TEMP = { cold: x => tri(x, 0, 0, 20), warm: x => tri(x, 10, 20, 30), hot: x => tri(x, 20, 40, 40) };
+    const HUM = { low: x => tri(x, 0, 0, 60), high: x => tri(x, 40, 100, 100) };
+    const FAN = { slow: x => tri(x, 0, 0, 50), medium: x => tri(x, 25, 50, 75), fast: x => tri(x, 50, 100, 100) };
+
+    function fanControl() {
+      const t = parseFloat(document.getElementById('fc-temp').value);
+      const h = parseFloat(document.getElementById('fc-humid').value);
+      document.getElementById('fc-temp-val').textContent = t;
+      document.getElementById('fc-humid-val').textContent = h;
+
+      // 1) Fuzzification
+      const muT = { cold: TEMP.cold(t), warm: TEMP.warm(t), hot: TEMP.hot(t) };
+      const muH = { low: HUM.low(h), high: HUM.high(h) };
+
+      // 2) Inference — ความแรงของแต่ละกฎ
+      const rules = [
+        { txt: 'IF <b>ร้อน</b> OR <b>ชื้นสูง</b> THEN เร็ว', str: Math.max(muT.hot, muH.high), out: 'fast' },
+        { txt: 'IF <b>อุ่น</b> THEN กลาง', str: muT.warm, out: 'medium' },
+        { txt: 'IF <b>เย็น</b> AND <b>ชื้นต่ำ</b> THEN ช้า', str: Math.min(muT.cold, muH.low), out: 'slow' },
+        { txt: 'IF <b>อุ่น</b> AND <b>ชื้นสูง</b> THEN เร็ว', str: Math.min(muT.warm, muH.high), out: 'fast' },
+      ];
+      const strength = { slow: 0, medium: 0, fast: 0 };
+      rules.forEach(r => { strength[r.out] = Math.max(strength[r.out], r.str); });
+
+      // 3) Aggregation — μ_agg(x) = max ของ min(strength, MFเอาต์พุต)
+      const agg = x => Math.max(
+        Math.min(strength.slow, FAN.slow(x)),
+        Math.min(strength.medium, FAN.medium(x)),
+        Math.min(strength.fast, FAN.fast(x)),
+      );
+      // 4) Defuzzification — Centroid
+      let num = 0, den = 0;
+      const aggPts = [];
+      for (let x = 0; x <= 100; x += 1) {
+        const m = agg(x);
+        aggPts.push({ x, y: m });
+        num += x * m; den += m;
+      }
+      const speed = den > 0 ? num / den : 0;
+
+      // ── วาดกราฟ fuzzification ──
+      drawChart(document.getElementById('fc-temp-chart'), {
+        xMin: 0, xMax: 40,
+        series: [{ fn: TEMP.cold, color: '#2563eb' }, { fn: TEMP.warm, color: '#d97706' }, { fn: TEMP.hot, color: '#dc2626' }],
+        cursors: [{ x: t, color: '#0f172a', label: t + '°C' }],
+      });
+      drawChart(document.getElementById('fc-humid-chart'), {
+        xMin: 0, xMax: 100,
+        series: [{ fn: HUM.low, color: '#06b6d4' }, { fn: HUM.high, color: '#ea580c' }],
+        cursors: [{ x: h, color: '#0f172a', label: h + '%' }],
+      });
+      // ── วาดกราฟ output + aggregation ──
+      drawChart(document.getElementById('fc-out-chart'), {
+        xMin: 0, xMax: 100,
+        shade: { points: aggPts, color: '#c4b5fd' },
+        series: [{ fn: FAN.slow, color: '#94a3b8' }, { fn: FAN.medium, color: '#94a3b8' }, { fn: FAN.fast, color: '#94a3b8' }],
+        cursors: [{ x: speed, color: '#7c3aed', label: speed.toFixed(0) + '%' }],
+      });
+
+      // ── การ์ดกฎ ──
+      document.getElementById('fc-rules').innerHTML = rules.map((r, i) =>
+        `<div class="rule ${r.str > 0.001 ? 'fired' : ''}">
+           <div class="rule-head"><span class="rule-text">R${i + 1}: ${r.txt}</span><span class="rule-str">${r.str.toFixed(2)}</span></div>
+           <div class="op-bar"><div style="width:${(r.str * 100).toFixed(0)}%"></div></div>
+         </div>`
+      ).join('');
+
+      // ── ผลลัพธ์พัดลม ──
+      document.getElementById('fc-speed').textContent = speed.toFixed(0);
+      document.getElementById('fc-speed-bar').style.width = speed.toFixed(0) + '%';
+      const fan = document.getElementById('fc-fan');
+      if (speed > 1) {
+        fan.classList.add('spin');
+        fan.style.animationDuration = (2.4 - speed / 100 * 2.1).toFixed(2) + 's';
+      } else {
+        fan.classList.remove('spin');
+      }
+    }
+    document.getElementById('fc-temp').addEventListener('input', fanControl);
+    document.getElementById('fc-humid').addEventListener('input', fanControl);
+
+    /* ========== เริ่มต้น ========== */
+    renderMfParams();
+    updateOps();
+    fanControl();
+    lucide.createIcons();
+  </script>
+</body>
+</html>
