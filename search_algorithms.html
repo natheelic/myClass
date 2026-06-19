@@ -54,14 +54,23 @@
           </div>
           <p class="mb-6 leading-relaxed text-slate-600">BFS เป็นการค้นหาแบบขยายโหนดทีละระดับ โดยจะสำรวจโหนดที่อยู่ชั้นเดียวกันให้ครบก่อนค่อยลงไปยังระดับลึกกว่า (เสมือนการโยนหินลงน้ำแล้วเกิดคลื่นกระจายออก)</p>
           
+          <!-- เลือกโหนดเริ่มต้น/ปลายทาง (เหมือน Python ที่พิมพ์เลือกเองได้) -->
+          <div class="algo-controls">
+            <label>เริ่มต้น (Start) <select id="bfs-start" class="algo-select"></select></label>
+            <label>เป้าหมาย (Goal) <select id="bfs-goal" class="algo-select"></select></label>
+          </div>
+
           <!-- BFS Visualization -->
           <div class="rounded-xl p-6 mb-6 bg-slate-50 border border-slate-200 shadow-inner" style="position: relative; height: 300px;">
             <div id="bfs-graph" style="position: relative; width: 100%; height: 100%;"></div>
           </div>
-          
+
           <button id="bfs-play" class="px-6 py-3 rounded-xl font-semibold text-sm mb-6 flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white transition-colors shadow-md shadow-blue-500/20">
             <i data-lucide="play" class="w-4 h-4"></i> เริ่มจำลอง BFS
           </button>
+
+          <!-- ผลลัพธ์ (ลำดับการเยี่ยม + เส้นทาง) แบบ Python -->
+          <div id="bfs-result" class="algo-result mono text-sm hidden"></div>
           
           <h3 class="text-lg font-semibold mb-3 text-slate-700">ลักษณะเด่น</h3>
           <ul class="space-y-3 mb-6 text-slate-600">
@@ -94,14 +103,23 @@
           </div>
           <p class="mb-6 leading-relaxed text-slate-600">DFS เป็นการค้นหาแบบลงลึกไปตามกิ่งใดกิ่งหนึ่งจนสุดทางก่อน หากยังไม่พบคำตอบจึงย้อนกลับ (Backtrack) มาสำรวจกิ่งอื่นที่เหลือ</p>
           
+          <!-- เลือกโหนดเริ่มต้น/ปลายทาง -->
+          <div class="algo-controls">
+            <label>เริ่มต้น (Start) <select id="dfs-start" class="algo-select"></select></label>
+            <label>เป้าหมาย (Goal) <select id="dfs-goal" class="algo-select"></select></label>
+          </div>
+
           <!-- DFS Visualization -->
           <div class="rounded-xl p-6 mb-6 bg-slate-50 border border-slate-200 shadow-inner" style="position: relative; height: 300px;">
             <div id="dfs-graph" style="position: relative; width: 100%; height: 100%;"></div>
           </div>
-          
+
           <button id="dfs-play" class="px-6 py-3 rounded-xl font-semibold text-sm mb-6 flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white transition-colors shadow-md shadow-emerald-500/20">
             <i data-lucide="play" class="w-4 h-4"></i> เริ่มจำลอง DFS
           </button>
+
+          <!-- ผลลัพธ์ -->
+          <div id="dfs-result" class="algo-result mono text-sm hidden"></div>
           
           <h3 class="text-lg font-semibold mb-3 text-slate-700">ลักษณะเด่น</h3>
           <ul class="space-y-3 mb-6 text-slate-600">
@@ -134,14 +152,23 @@
           </div>
           <p class="mb-6 leading-relaxed text-slate-600">A* เป็นอัลกอริทึมค้นหาเส้นทางที่ฉลาดขึ้น โดยพิจารณาทั้งต้นทุนที่ใช้ไปแล้วและต้นทุนประมาณการที่เหลือ เพื่อมุ่งหน้าไปสู่เป้าหมายอย่างมีทิศทาง</p>
           
+          <!-- เลือกโหนดเริ่มต้น/ปลายทาง -->
+          <div class="algo-controls">
+            <label>เริ่มต้น (Start) <select id="astar-start" class="algo-select"></select></label>
+            <label>เป้าหมาย (Goal) <select id="astar-goal" class="algo-select"></select></label>
+          </div>
+
           <!-- A* Visualization -->
           <div class="rounded-xl p-6 mb-6 bg-slate-50 border border-slate-200 shadow-inner" style="position: relative; height: 300px;">
             <div id="astar-graph" style="position: relative; width: 100%; height: 100%;"></div>
           </div>
-          
+
           <button id="astar-play" class="px-6 py-3 rounded-xl font-semibold text-sm mb-6 flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-900 transition-colors shadow-md shadow-amber-500/20">
-            <i data-lucide="play" class="w-4 h-4"></i> เริ่มจำลอง A* (สมมติหา N)
+            <i data-lucide="play" class="w-4 h-4"></i> เริ่มจำลอง A*
           </button>
+
+          <!-- ผลลัพธ์ -->
+          <div id="astar-result" class="algo-result mono text-sm hidden"></div>
           
           <h3 class="text-lg font-semibold mb-3 text-slate-700">ฟังก์ชันประเมิน (Heuristic)</h3>
           <div class="rounded-xl p-5 mb-6 text-center bg-amber-50 border border-amber-200 shadow-inner">
@@ -283,6 +310,95 @@
       ['H','P'], ['H','Q'], ['I','R'], ['I','S'], ['J','T'], ['J','U']
     ];
 
+    // ── สร้าง adjacency list แบบไม่มีทิศทาง (เหมือน nx.Graph ใน Python) ──
+    // เรียงเพื่อนบ้านตามตัวอักษร เพื่อให้ผลลัพธ์คงที่ (เหมือน sorted(G.neighbors))
+    const ADJ = {};
+    treeNodes.forEach(n => { ADJ[n.id] = []; });
+    treeEdges.forEach(([u, v]) => { ADJ[u].push(v); ADJ[v].push(u); });
+    Object.keys(ADJ).forEach(k => ADJ[k].sort());
+
+    // ตำแหน่งโหนด ใช้คำนวณน้ำหนัก edge และ heuristic ของ A* (ระยะทางยุคลิด)
+    const POS = {};
+    treeNodes.forEach(n => { POS[n.id] = { x: n.x, y: n.y }; });
+    const dist = (a, b) => Math.hypot(POS[a].x - POS[b].x, POS[a].y - POS[b].y);
+    const round1 = x => Math.round(x * 10) / 10;
+
+    function reconstruct(parent, goal) {
+      const path = [];
+      let node = goal;
+      while (node !== null && node !== undefined) { path.push(node); node = parent[node]; }
+      return path.reverse();
+    }
+    function pathCost(path) {
+      if (!path || path.length < 2) return 0;
+      let c = 0;
+      for (let i = 1; i < path.length; i++) c += dist(path[i - 1], path[i]);
+      return round1(c);
+    }
+
+    // ── BFS: ใช้คิว (FIFO) เหมือน collections.deque ──
+    function bfs(start, goal) {
+      const queue = [start];                 // อาเรย์ทำหน้าที่เป็นคิว (shift = popleft)
+      const visited = new Set([start]);
+      const parent = { [start]: null };
+      const order = [];
+      while (queue.length) {
+        const node = queue.shift();          // ดึงจากหัวคิว
+        order.push(node);
+        if (node === goal) return { order, path: reconstruct(parent, goal) };
+        for (const nb of ADJ[node]) {
+          if (!visited.has(nb)) {
+            visited.add(nb);
+            parent[nb] = node;
+            queue.push(nb);
+          }
+        }
+      }
+      return { order, path: null };
+    }
+
+    // ── DFS: recursion (call stack ทำหน้าที่เป็น stack) ──
+    function dfs(start, goal) {
+      const visited = new Set();
+      const order = [];
+      function visit(node, path) {
+        visited.add(node);
+        order.push(node);
+        if (node === goal) return path.slice();
+        for (const nb of ADJ[node]) {
+          if (!visited.has(nb)) {
+            const res = visit(nb, path.concat(nb));
+            if (res) return res;             // เจอ goal ในกิ่งนี้ ส่งต่อขึ้นไป
+          }
+        }
+        return null;                         // กิ่งนี้ตัน ถอยกลับ (backtrack)
+      }
+      return { order, path: visit(start, [start]) };
+    }
+
+    // ── A*: priority queue ด้วย heuristic ระยะตรง (เลียนแบบ heapq) ──
+    function astar(start, goal) {
+      const h = n => dist(n, goal);                          // heuristic: ระยะตรงไป goal
+      const open = [{ f: h(start), g: 0, node: start, path: [start] }];
+      const bestG = { [start]: 0 };
+      const order = [];
+      while (open.length) {
+        let mi = 0;                                          // หา f ต่ำสุดใน open
+        for (let i = 1; i < open.length; i++) if (open[i].f < open[mi].f) mi = i;
+        const cur = open.splice(mi, 1)[0];
+        order.push(cur.node);
+        if (cur.node === goal) return { order, path: cur.path, cost: round1(cur.g) };
+        for (const nb of ADJ[cur.node]) {
+          const ng = cur.g + dist(cur.node, nb);             // g(n) = ต้นทุนจริงสะสม
+          if (!(nb in bestG) || ng < bestG[nb]) {            // เจอทางที่ถูกกว่าเดิม
+            bestG[nb] = ng;
+            open.push({ f: ng + h(nb), g: ng, node: nb, path: cur.path.concat(nb) });
+          }
+        }
+      }
+      return { order, path: null, cost: null };
+    }
+
     // ฟังก์ชันวาดกราฟ
     function buildGraph(containerId, color) {
       const container = document.getElementById(containerId);
@@ -346,93 +462,143 @@
     // 3. ฟังก์ชันควบคุมแอนิเมชัน
     let animationTimeouts = [];
 
-    function animateTraversal(nodeMap, order, colorHex, containerId, targetId = null) {
-      // ยกเลิกแอนิเมชันเก่าที่ค้างอยู่ (ถ้ามี)
-      animationTimeouts.forEach(clearTimeout);
-      animationTimeouts = [];
-
-      const container = document.getElementById(containerId);
-      
-      // รีเซ็ตสถานะโหนดและเส้นทั้งหมดกลับเป็นค่าเริ่มต้น
+    // รีเซ็ตกราฟกลับสู่สถานะเริ่มต้น
+    function resetGraph(nodeMap, container) {
       Object.values(nodeMap).forEach(el => {
         el.className = 'graph-node bg-white text-slate-500 border-2 border-slate-300 shadow-sm';
-        el.style.color = ''; 
+        el.style.color = '';
         el.style.background = '';
         el.style.borderColor = '';
+        el.style.boxShadow = '';
       });
       container.querySelectorAll('.graph-edge').forEach(e => {
         e.className = 'graph-edge bg-slate-300';
         e.style.color = '';
       });
+    }
 
-      // ลูปสร้างแอนิเมชันตามลำดับ Order ของอัลกอริทึม
+    // แอนิเมชัน 2 เฟส: (1) ไล่สำรวจตาม order  (2) ไฮไลต์เส้นทางสุดท้าย
+    function animate(nodeMap, containerId, colorHex, result, start, goal) {
+      animationTimeouts.forEach(clearTimeout);
+      animationTimeouts = [];
+      const container = document.getElementById(containerId);
+      resetGraph(nodeMap, container);
+
+      const order = result.order;
+      const path = result.path || [];
+      const STEP = 550;            // ดีเลย์ต่อโหนดในเฟสสำรวจ
+      const darkText = colorHex === '#f59e0b';
+
+      // ── เฟส 1: โหนดที่ "เยี่ยม" เป็นเส้นขอบสีจาง (exploration) ──
       order.forEach((id, i) => {
-        const t1 = setTimeout(() => {
+        const t = setTimeout(() => {
           const el = nodeMap[id];
-          if(!el) return;
-
-          // เปลี่ยนสีโหนดเมื่อถูก Visit
-          el.style.color = (colorHex === '#f59e0b') ? '#0f172a' : '#fff'; // ถ้าสีส้ม ใช้ตัวหนังสือดำ
-          el.style.background = colorHex;
+          if (!el) return;
           el.style.borderColor = colorHex;
-          
-          // เล่น Effect กระเพื่อม (Pulse)
-          el.classList.remove('node-active', 'node-glow');
-          void el.offsetWidth; // Force CSS Reflow เพื่อรีสตาร์ท Animation
+          el.style.color = colorHex;
+          el.style.background = '#fff';
+          el.classList.remove('node-active');
+          void el.offsetWidth;     // force reflow เพื่อรีสตาร์ท animation
           el.classList.add('node-active');
-          
-          if (targetId && id === targetId) {
-            animationTimeouts.forEach(clearTimeout);
-            animationTimeouts = [];
-            return;
-          }
+        }, i * STEP);
+        animationTimeouts.push(t);
+      });
 
-          // เพิ่ม Effect เรืองแสง (Glow) ค้างไว้หลังกระเพื่อมเสร็จ
-          const t2 = setTimeout(() => {
+      // ── เฟส 2: ไฮไลต์เส้นทางคำตอบ (โหนดทึบ + เส้นเชื่อม) ──
+      const phase2 = order.length * STEP + 250;
+      path.forEach((id, i) => {
+        const t = setTimeout(() => {
+          const el = nodeMap[id];
+          if (el) {
+            el.style.background = colorHex;
+            el.style.borderColor = colorHex;
+            el.style.color = darkText ? '#0f172a' : '#fff';
+            el.classList.remove('node-glow');
+            void el.offsetWidth;
             el.classList.add('node-glow');
-          }, 850);
-          animationTimeouts.push(t2);
-
-          // หาเส้นเชื่อมที่เชื่อมจากโหนดก่อนหน้า เพื่อทำแอนิเมชันเส้นทาง
+          }
           if (i > 0) {
-            const prev = order[i-1];
+            const prev = path[i - 1];
             container.querySelectorAll('.graph-edge').forEach(e => {
-              if ((e.dataset.from === prev && e.dataset.to === id) || (e.dataset.from === id && e.dataset.to === prev)) {
+              if ((e.dataset.from === prev && e.dataset.to === id) ||
+                  (e.dataset.from === id && e.dataset.to === prev)) {
                 e.style.color = colorHex;
                 e.classList.remove('edge-active');
-                void e.offsetWidth; 
+                void e.offsetWidth;
                 e.classList.add('edge-active');
               }
             });
           }
-        }, i * 800); // ดีเลย์ระหว่างโหนด 0.8 วินาที
-        
-        animationTimeouts.push(t1);
+        }, phase2 + i * 320);
+        animationTimeouts.push(t);
+      });
+
+      // มาร์คจุดเริ่มต้น (เขียว) และเป้าหมาย (แดง) เหมือน Python
+      const tMark = setTimeout(() => {
+        if (nodeMap[start]) nodeMap[start].classList.add('node-start');
+        if (path.length && nodeMap[goal]) nodeMap[goal].classList.add('node-goal');
+      }, phase2 + Math.max(path.length, 1) * 320);
+      animationTimeouts.push(tMark);
+    }
+
+    // แสดงผลลัพธ์แบบ console ของ Python (ลำดับการเยี่ยม + เส้นทาง + ต้นทุน)
+    function showResult(el, name, result, start, goal) {
+      el.classList.remove('hidden');
+      if (!result.path) {
+        el.innerHTML = `<span class="label">[${name}]</span> ไปจาก ${start} ถึง ${goal} ไม่ได้ (คนละกลุ่มของกราฟ)`;
+        return;
+      }
+      const hops = result.path.length - 1;
+      const cost = (result.cost != null) ? result.cost : pathCost(result.path);
+      el.innerHTML =
+        `<div><span class="label">[${name}] เยี่ยม ${result.order.length} โหนด:</span> ${result.order.join(' → ')}</div>` +
+        `<div style="margin-top:.5rem"><span class="label">เส้นทาง (${hops} ขั้น, cost ${cost}):</span> ` +
+        `<span class="sol">${result.path.join(' → ')}</span></div>`;
+    }
+
+    // 4. ผูกอัลกอริทึมเข้ากับแต่ละแท็บ แล้วรันตามโหนดที่ผู้ใช้เลือก
+    const algos = {
+      bfs:   { fn: bfs,   color: '#3b82f6', nodes: () => bfsNodes,   container: 'bfs-graph' },
+      dfs:   { fn: dfs,   color: '#10b981', nodes: () => dfsNodes,   container: 'dfs-graph' },
+      astar: { fn: astar, color: '#f59e0b', nodes: () => astarNodes, container: 'astar-graph' },
+    };
+
+    function runAlgo(name) {
+      const cfg = algos[name];
+      const start = document.getElementById(name + '-start').value;
+      const goal  = document.getElementById(name + '-goal').value;
+      const result = cfg.fn(start, goal);            // ★ คำนวณจริงเหมือน Python
+      showResult(document.getElementById(name + '-result'), name.toUpperCase(), result, start, goal);
+      animate(cfg.nodes(), cfg.container, cfg.color, result, start, goal);
+    }
+
+    ['bfs', 'dfs', 'astar'].forEach(name => {
+      document.getElementById(name + '-play').addEventListener('click', () => runAlgo(name));
+    });
+
+    // เติมรายชื่อโหนดลงใน dropdown ทั้งหมด พร้อมตั้งค่าเริ่มต้น (A → N)
+    function populateSelects() {
+      const ids = treeNodes.map(n => n.id);
+      ['bfs', 'dfs', 'astar'].forEach(name => {
+        const startSel = document.getElementById(name + '-start');
+        const goalSel  = document.getElementById(name + '-goal');
+        ids.forEach(id => {
+          startSel.add(new Option(id, id));
+          goalSel.add(new Option(id, id));
+        });
+        startSel.value = 'A';
+        goalSel.value = 'N';
       });
     }
 
-    // กำหนด Event Listeners ให้กับปุ่มเริ่มจำลอง
-    document.getElementById('bfs-play').addEventListener('click', () => {
-      animateTraversal(bfsNodes, ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U'], '#3b82f6', 'bfs-graph', 'N');
-    });
-    
-    document.getElementById('dfs-play').addEventListener('click', () => {
-      animateTraversal(dfsNodes, ['A','B','D','H','P','Q','I','R','S','E','J','T','U','K','C','F','L','M','G','N','O'], '#10b981', 'dfs-graph', 'N');
-    });
-    
-    document.getElementById('astar-play').addEventListener('click', () => {
-      // A* สมมติว่าต้องการหา N และมี Heuristic ที่นำพามาฝั่งขวา
-      animateTraversal(astarNodes, ['A','C','G','N'], '#f59e0b', 'astar-graph', 'N');
-    });
-
     // เริ่มต้นระบบเมื่อโหลดหน้าเสร็จ
     window.addEventListener('DOMContentLoaded', () => {
+      populateSelects();
       initGraphs();
     });
 
     // วาดกราฟใหม่เมื่อปรับขนาดหน้าจอ เพื่อป้องกันตำแหน่งเบี้ยว
     window.addEventListener('resize', () => {
-      // ยกเลิกแอนิเมชันที่เล่นอยู่เพื่อความสะอาดของหน้าจอตอนปรับขนาด
       animationTimeouts.forEach(clearTimeout);
       initGraphs();
     });

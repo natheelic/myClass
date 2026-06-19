@@ -121,3 +121,53 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
 }
+
+/* ── ตัวเลือกโหนด Start / Goal ── */
+.algo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.algo-controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #475569;
+  font-weight: 600;
+}
+.algo-select {
+  padding: 0.45rem 0.75rem;
+  border-radius: 0.6rem;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.algo-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+/* ── กล่องผลลัพธ์ (เลียนแบบ console ของ Python) ── */
+.algo-result {
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  background: #0f172a;
+  color: #e2e8f0;
+  line-height: 1.6;
+  word-break: break-word;
+}
+.algo-result .label { color: #94a3b8; }
+.algo-result .sol   { font-weight: 700; color: #fff; }
+
+/* ── จุดเริ่มต้น (เขียว) / เป้าหมาย (แดง) ── */
+.node-start { box-shadow: 0 0 0 4px #10b981 !important; }
+.node-goal  { box-shadow: 0 0 0 4px #ef4444 !important; }
