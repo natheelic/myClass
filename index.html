@@ -5,602 +5,539 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="myClass รวมบทเรียนแบบอินเทอร์แอคทีฟสำหรับอัลกอริทึมการค้นหาและตรรกศาสตร์คลุมเครือ">
   <title>myClass — หัวข้อบทเรียน</title>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f5f7fb;
-      --bg-alt: #ecf3ff;
-      --surface: rgba(255, 255, 255, 0.88);
-      --surface-solid: #ffffff;
-      --card: #ffffff;
-      --border: rgba(148, 163, 184, 0.24);
-      --border-strong: rgba(59, 130, 246, 0.25);
-      --text: #0f172a;
-      --muted: #64748b;
-      --subtle: #94a3b8;
-      --brand: #2563eb;
-      --brand-2: #7c3aed;
-      --success: #059669;
-      --warning: #d97706;
-      --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
-      --shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.06);
-      --radius-xl: 1.5rem;
-      --radius-lg: 1rem;
-      --radius-md: 0.85rem;
+      --geist-foreground: #000;
+      --geist-background: #fff;
+      --accents-1: #fafafa;
+      --accents-2: #eaeaea;
+      --accents-3: #999;
+      --accents-4: #888;
+      --accents-5: #666;
+      --accents-6: #444;
+      --accents-7: #333;
+      --accents-8: #111;
+      
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+      --radius-xl: 12px;
+      
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
+      --shadow-md: 0 4px 8px rgba(0,0,0,0.04);
+      --shadow-lg: 0 8px 16px rgba(0,0,0,0.08);
+      --shadow-hover: 0 12px 24px rgba(0,0,0,0.12);
+      
+      --brand-blue: #0070f3;
+      --brand-purple: #7928ca;
+      --brand-pink: #ff0080;
     }
 
     *, *::before, *::after { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      font-family: 'Sarabun', sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 34%),
-        radial-gradient(circle at top right, rgba(124, 58, 237, 0.10), transparent 28%),
-        linear-gradient(180deg, #ffffff 0%, var(--bg) 45%, #f8fbff 100%);
-      min-height: 100vh;
+      font-family: 'Inter', 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      color: var(--geist-foreground);
+      background-color: var(--geist-background);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
     }
 
-    a { color: inherit; }
+    a { color: inherit; text-decoration: none; }
+    
     .skip-link {
       position: absolute;
       left: 1rem;
-      top: 0.75rem;
-      padding: 0.65rem 1rem;
-      border-radius: 999px;
-      background: var(--surface-solid);
-      border: 1px solid var(--border);
-      color: var(--text);
-      transform: translateY(-160%);
-      transition: transform 0.2s ease;
+      top: -3rem;
+      padding: 0.5rem 1rem;
+      background: var(--geist-foreground);
+      color: var(--geist-background);
+      border-radius: var(--radius-md);
       z-index: 1000;
-      text-decoration: none;
+      transition: top 0.2s;
     }
-    .skip-link:focus { transform: translateY(0); outline: none; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.16); }
+    .skip-link:focus { top: 1rem; }
 
+    /* Topbar */
     .topbar {
       position: sticky;
       top: 0;
       z-index: 100;
-      backdrop-filter: blur(18px);
       background: rgba(255, 255, 255, 0.8);
-      border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+      backdrop-filter: saturate(180%) blur(10px);
+      border-bottom: 1px solid var(--accents-2);
     }
     .topbar-inner {
-      max-width: 1180px;
+      max-width: 1040px;
       margin: 0 auto;
-      min-height: 68px;
-      padding: 0 1.25rem;
+      height: 64px;
+      padding: 0 1.5rem;
       display: flex;
       align-items: center;
-      gap: 1rem;
+      justify-content: space-between;
     }
     .brand {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 0.7rem;
-      text-decoration: none;
+      gap: 0.75rem;
       font-weight: 700;
-      letter-spacing: -0.03em;
-      white-space: nowrap;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
     }
-    .brand-mark {
-      width: 2.25rem;
-      height: 2.25rem;
-      border-radius: 0.8rem;
+    .brand svg {
+      width: 24px;
+      height: 24px;
+      fill: var(--geist-foreground);
+    }
+    .brand-text span {
+      color: var(--accents-5);
+      font-weight: 400;
+    }
+    .topbar-cta {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    /* Buttons */
+    .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, var(--brand), var(--brand-2));
-      color: #fff;
-      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.24);
-      flex: 0 0 auto;
-    }
-    .brand span { color: var(--brand); }
-    .nav-note {
+      height: 40px;
+      padding: 0 1.25rem;
       font-size: 0.875rem;
-      color: var(--muted);
-      padding-left: 0.25rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      font-weight: 500;
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+      cursor: pointer;
+      line-height: 1;
     }
-    .topbar-cta {
-      margin-left: auto;
-      display: inline-flex;
-      gap: 0.65rem;
-      align-items: center;
+    .btn-primary {
+      background: var(--geist-foreground);
+      color: var(--geist-background);
+      border: 1px solid var(--geist-foreground);
+    }
+    .btn-primary:hover {
+      background: var(--geist-background);
+      color: var(--geist-foreground);
+    }
+    .btn-secondary {
+      background: var(--geist-background);
+      color: var(--accents-5);
+      border: 1px solid var(--accents-2);
+    }
+    .btn-secondary:hover {
+      color: var(--geist-foreground);
+      border-color: var(--geist-foreground);
     }
 
+    /* Layout */
     .container {
-      max-width: 1180px;
+      max-width: 1040px;
       margin: 0 auto;
-      padding: 2rem 1.25rem 3rem;
+      padding: 0 1.5rem;
     }
 
+    /* Hero */
     .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
-      gap: 1.5rem;
-      align-items: stretch;
-      margin-top: 1rem;
+      padding: 6rem 0 4rem;
+      text-align: center;
     }
-    .hero-card,
-    .panel-card,
-    .lesson-card,
-    .feature-card,
-    .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-soft);
-      backdrop-filter: blur(10px);
-    }
-
-    .hero-card {
-      border-radius: var(--radius-xl);
-      padding: clamp(1.4rem, 3vw, 2.4rem);
-      position: relative;
-      overflow: hidden;
-    }
-    .hero-card::before {
-      content: '';
-      position: absolute;
-      inset: auto -6rem -8rem auto;
-      width: 18rem;
-      height: 18rem;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(37, 99, 235, 0.18), transparent 64%);
-      pointer-events: none;
-    }
-
-    .eyebrow {
+    .hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.35rem 0.75rem;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--brand);
-      background: rgba(37, 99, 235, 0.08);
-      border: 1px solid rgba(37, 99, 235, 0.12);
+      padding: 0.25rem 0.75rem;
+      background: var(--accents-1);
+      border: 1px solid var(--accents-2);
+      border-radius: 99px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--accents-5);
+      margin-bottom: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    .hero-badge:hover {
+      border-color: var(--accents-4);
     }
     .hero h1 {
-      margin: 1rem 0 0.8rem;
-      font-size: clamp(2.25rem, 5vw, 4rem);
-      line-height: 1.04;
-      letter-spacing: -0.05em;
-      max-width: 12ch;
+      font-size: clamp(3rem, 6vw, 5rem);
+      line-height: 1.05;
+      letter-spacing: -0.06em;
+      font-weight: 800;
+      margin: 0 auto 1.5rem;
+      max-width: 900px;
+    }
+    .hero-gradient {
+      background: linear-gradient(to right, var(--brand-blue), var(--brand-purple), var(--brand-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     .hero p {
-      margin: 0;
-      max-width: 60ch;
-      color: var(--muted);
-      font-size: 1.05rem;
-      line-height: 1.7;
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-      margin-top: 1.5rem;
-    }
-    .button {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.55rem;
-      padding: 0.9rem 1.15rem;
-      border-radius: 999px;
-      text-decoration: none;
-      font-weight: 700;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-    }
-    .button-primary {
-      color: #fff;
-      background: linear-gradient(135deg, var(--brand), var(--brand-2));
-      box-shadow: 0 14px 26px rgba(37, 99, 235, 0.22);
-    }
-    .button-secondary {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.92);
-      border: 1px solid var(--border);
-    }
-    .button:hover { transform: translateY(-1px); }
-    .button:focus-visible,
-    .lesson-card a:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.16);
-    }
-
-    .hero-meta {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.85rem;
-      margin-top: 1.75rem;
-    }
-    .stat-card {
-      border-radius: var(--radius-lg);
-      padding: 1rem;
-    }
-    .stat-value {
-      display: block;
-      font-size: 1.55rem;
-      font-weight: 700;
-      letter-spacing: -0.04em;
-    }
-    .stat-label {
-      display: block;
-      margin-top: 0.2rem;
-      color: var(--muted);
-      font-size: 0.88rem;
-      line-height: 1.45;
-    }
-
-    .panel-card {
-      border-radius: var(--radius-xl);
-      padding: 1.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .panel-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: start;
-      gap: 1rem;
-    }
-    .panel-title h2,
-    .section-head h2,
-    .feature-card h3 {
-      margin: 0;
-      letter-spacing: -0.03em;
-    }
-    .panel-title p,
-    .section-head p,
-    .feature-card p {
-      margin: 0;
-      color: var(--muted);
+      font-size: 1.25rem;
+      color: var(--accents-5);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
       line-height: 1.6;
     }
-    .timeline {
-      display: grid;
-      gap: 0.75rem;
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .hero-actions .btn {
+      height: 48px;
+      padding: 0 2rem;
+      font-size: 1rem;
+    }
+
+    /* Stats / Meta */
+    .metrics {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      padding-top: 4rem;
+      border-top: 1px solid var(--accents-2);
+      margin-top: 4rem;
+    }
+    .metric {
+      text-align: center;
+    }
+    .metric h4 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      margin: 0 0 0.25rem;
+    }
+    .metric p {
+      font-size: 0.875rem;
+      color: var(--accents-5);
       margin: 0;
-      padding: 0;
-      list-style: none;
     }
-    .timeline li {
-      padding: 0.9rem 0.95rem;
-      border-radius: 0.9rem;
-      background: rgba(248, 250, 252, 0.95);
-      border: 1px solid rgba(226, 232, 240, 0.95);
-    }
-    .timeline strong {
-      display: block;
-      margin-bottom: 0.2rem;
-      font-size: 0.95rem;
-    }
-    .timeline span { color: var(--muted); font-size: 0.92rem; line-height: 1.5; }
 
+    /* Grid Section */
     .section {
-      margin-top: 1.75rem;
+      padding: 6rem 0;
+      border-top: 1px solid var(--accents-2);
     }
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: end;
-      gap: 1rem;
-      margin-bottom: 1rem;
+    .section-header {
+      margin-bottom: 3rem;
+      text-align: center;
     }
-    .section-head small {
-      color: var(--muted);
-      font-weight: 600;
-      letter-spacing: 0.02em;
+    .section-header h2 {
+      font-size: 2.25rem;
+      letter-spacing: -0.04em;
+      margin: 0 0 1rem;
+      font-weight: 700;
     }
-
-    .lesson-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1rem;
-    }
-    .lesson-card {
-      border-radius: var(--radius-xl);
-      text-decoration: none;
-      padding: 1.2rem;
-      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-      display: grid;
-      gap: 1rem;
-      min-height: 100%;
-    }
-    .lesson-card:hover {
-      transform: translateY(-3px);
-      border-color: var(--border-strong);
-      box-shadow: var(--shadow);
+    .section-header p {
+      font-size: 1.125rem;
+      color: var(--accents-5);
+      margin: 0;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
-    .lesson-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: start;
-      gap: 1rem;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
     }
-    .lesson-badge {
-      width: 2.75rem;
-      height: 2.75rem;
-      border-radius: 0.9rem;
-      display: inline-flex;
+
+    /* Cards */
+    .card {
+      background: var(--geist-background);
+      border: 1px solid var(--accents-2);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .card:hover {
+      border-color: var(--accents-4);
+      box-shadow: var(--shadow-hover);
+    }
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background: var(--accents-1);
+      border: 1px solid var(--accents-2);
+      display: flex;
       align-items: center;
       justify-content: center;
-      flex: 0 0 auto;
-      font-weight: 800;
-      color: var(--brand);
-      background: rgba(37, 99, 235, 0.08);
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      color: var(--geist-foreground);
     }
-    .lesson-card h3 {
-      margin: 0.1rem 0 0.35rem;
-      font-size: 1.2rem;
-      letter-spacing: -0.03em;
+    .card h3 {
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.5rem;
+      font-weight: 600;
     }
-    .lesson-card p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.65;
+    .card p {
+      color: var(--accents-5);
+      font-size: 0.875rem;
+      margin: 0 0 1.5rem;
+      flex-grow: 1;
     }
-    .lesson-tags {
+    .card-tags {
       display: flex;
+      gap: 0.5rem;
       flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-top: auto;
     }
     .tag {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.34rem 0.65rem;
-      border-radius: 999px;
-      background: #f8fafc;
-      border: 1px solid rgba(226, 232, 240, 0.95);
-      color: var(--muted);
       font-size: 0.75rem;
-      font-weight: 700;
-    }
-    .tag.blue { color: var(--brand); background: rgba(37, 99, 235, 0.08); border-color: rgba(37, 99, 235, 0.10); }
-    .tag.violet { color: var(--brand-2); background: rgba(124, 58, 237, 0.08); border-color: rgba(124, 58, 237, 0.10); }
-    .tag.green { color: var(--success); background: rgba(5, 150, 105, 0.08); border-color: rgba(5, 150, 105, 0.10); }
-    .tag.amber { color: var(--warning); background: rgba(217, 119, 6, 0.08); border-color: rgba(217, 119, 6, 0.10); }
-    .lesson-arrow {
-      color: var(--subtle);
-      font-size: 1.4rem;
-      line-height: 1;
-      transition: transform 0.18s ease, color 0.18s ease;
-    }
-    .lesson-card:hover .lesson-arrow {
-      color: var(--brand);
-      transform: translateX(4px);
+      padding: 0.25rem 0.6rem;
+      border-radius: 99px;
+      background: var(--accents-1);
+      border: 1px solid var(--accents-2);
+      color: var(--accents-6);
+      font-weight: 500;
     }
 
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1rem;
+    /* Path Panel */
+    .path-panel {
+      background: var(--geist-foreground);
+      color: var(--geist-background);
+      border-radius: var(--radius-xl);
+      padding: 3rem;
+      margin-top: 2rem;
+      position: relative;
+      overflow: hidden;
     }
-    .feature-card {
-      border-radius: var(--radius-lg);
-      padding: 1.1rem;
+    .path-panel::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(0, 112, 243, 0.15) 0%, transparent 70%);
+      transform: translate(30%, -30%);
     }
-    .feature-icon {
-      width: 2.6rem;
-      height: 2.6rem;
-      border-radius: 0.85rem;
-      display: inline-flex;
+    .path-panel h2 {
+      font-size: 2rem;
+      letter-spacing: -0.04em;
+      margin: 0 0 0.5rem;
+    }
+    .path-panel > p {
+      color: var(--accents-4);
+      margin: 0 0 2rem;
+      font-size: 1.125rem;
+      max-width: 500px;
+    }
+    .timeline {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .timeline li {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .timeline-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accents-8);
+      border: 1px solid var(--accents-6);
+      display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 0.9rem;
-      background: rgba(37, 99, 235, 0.08);
-      color: var(--brand);
-      font-size: 1.1rem;
-      font-weight: 700;
+      font-size: 0.875rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .timeline-content h4 {
+      margin: 0 0 0.25rem;
+      font-size: 1.125rem;
+      font-weight: 500;
+    }
+    .timeline-content p {
+      margin: 0;
+      color: var(--accents-4);
+      font-size: 0.875rem;
     }
 
+    /* Footer */
     footer {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 0 1.25rem 2rem;
-      color: var(--muted);
-      font-size: 0.9rem;
+      border-top: 1px solid var(--accents-2);
+      padding: 3rem 0;
+      margin-top: 4rem;
     }
-    .footer-bar {
-      border-top: 1px solid rgba(226, 232, 240, 0.95);
-      padding-top: 1rem;
+    .footer-content {
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
+      align-items: center;
       gap: 1rem;
-      flex-wrap: wrap;
+      text-align: center;
+    }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .footer-logo svg {
+      width: 20px;
+      height: 20px;
+    }
+    .footer-text {
+      color: var(--accents-5);
+      font-size: 0.875rem;
     }
 
-    @media (max-width: 960px) {
-      .hero,
-      .lesson-grid,
-      .feature-grid {
-        grid-template-columns: 1fr;
-      }
-      .hero-meta { grid-template-columns: 1fr; }
-      .panel-title,
-      .section-head { align-items: start; flex-direction: column; }
-    }
-
-    @media (max-width: 640px) {
-      .topbar-inner { padding-inline: 1rem; }
-      .nav-note { display: none; }
-      .topbar-cta { margin-left: 0; }
-      .container { padding: 1.25rem 1rem 2rem; }
-      .hero-card,
-      .panel-card { border-radius: 1.2rem; }
-      .button { width: 100%; justify-content: center; }
-      .actions { flex-direction: column; }
-      .lesson-card { padding: 1rem; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.5rem; }
+      .metrics { flex-direction: column; gap: 2rem; align-items: center; }
+      .path-panel { padding: 2rem; }
+      .hero-actions { flex-direction: column; }
     }
   </style>
 </head>
 <body>
-  <a class="skip-link" href="#main">ข้ามไปยังเนื้อหา</a>
+  <a href="#main" class="skip-link">Skip to content</a>
 
   <header class="topbar">
     <div class="topbar-inner">
-      <a class="brand" href="index.html" aria-label="myClass หน้าหลัก">
-        <span class="brand-mark">m</span>
-        <span>my<span>Class</span></span>
+      <a href="index.html" class="brand">
+        <!-- Vercel-like Triangle Logo -->
+        <svg viewBox="0 0 76 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
+        </svg>
+        <div class="brand-text">myClass <span>/ Curriculum</span></div>
       </a>
-      <div class="nav-note">คอร์สเรียนแบบอินเทอร์แอคทีฟที่ออกแบบให้ดูดีและใช้งานง่ายบนทุกขนาดหน้าจอ</div>
       <div class="topbar-cta">
-        <a class="button button-secondary" href="#lessons">ดูบทเรียน</a>
-        <a class="button button-primary" href="search_algorithms.html">เริ่มเรียน</a>
+        <a href="#lessons" class="btn btn-secondary">Lessons</a>
+        <a href="search_algorithms.html" class="btn btn-primary">Start Learning</a>
       </div>
     </div>
   </header>
 
-  <main id="main" class="container">
-    <section class="hero" aria-labelledby="hero-title">
-      <article class="hero-card">
-        <span class="eyebrow">myClass curriculum</span>
-        <h1 id="hero-title">หัวข้อบทเรียนที่อ่านง่าย ใช้งานไว และพร้อมเรียนต่อได้ทันที</h1>
-        <p>หน้าแรกถูกปรับให้มีลำดับข้อมูลชัดขึ้น พร้อมคำอธิบายสั้น ๆ ปุ่มนำทางที่เด่นขึ้น และการ์ดบทเรียนที่เหมาะกับการใช้งานจริงในงานสอนหรือเดโมโครงการ.</p>
+  <main id="main">
+    <section class="hero container">
+      <a href="#lessons" class="hero-badge">
+        <span style="display:inline-block; width:8px; height:8px; background:var(--brand-blue); border-radius:50%;"></span>
+        New: Interactive Environments
+      </a>
+      <h1>
+        Learn Algorithms with <br />
+        <span class="hero-gradient">Interactive Visuals</span>
+      </h1>
+      <p>
+        myClass provides a modern, interactive learning path for Search Algorithms and Fuzzy Logic. Designed for clarity, speed, and deep understanding.
+      </p>
+      
+      <div class="hero-actions">
+        <a href="search_algorithms.html" class="btn btn-primary">Explore Search Algorithms</a>
+        <a href="fuzzy_logic.html" class="btn btn-secondary">Learn Fuzzy Logic</a>
+      </div>
 
-        <div class="actions">
-          <a class="button button-primary" href="search_algorithms.html">ไปที่อัลกอริทึมการค้นหา</a>
-          <a class="button button-secondary" href="fuzzy_logic.html">ไปที่ตรรกศาสตร์คลุมเครือ</a>
+      <div class="metrics">
+        <div class="metric">
+          <h4>2</h4>
+          <p>Core Modules</p>
         </div>
+        <div class="metric">
+          <h4>100%</h4>
+          <p>Interactive UI</p>
+        </div>
+        <div class="metric">
+          <h4><0.1s</h4>
+          <p>Render Speed</p>
+        </div>
+      </div>
+    </section>
 
-        <div class="hero-meta" aria-label="ข้อมูลสรุป">
-          <div class="stat-card">
-            <span class="stat-value">02</span>
-            <span class="stat-label">บทเรียนหลักในชุดนี้</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-value">100%</span>
-            <span class="stat-label">โครงสร้างตอบสนองบนมือถือ</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-value">UI</span>
-            <span class="stat-label">ปรับให้ดูเป็นมืออาชีพมากขึ้น</span>
-          </div>
-        </div>
-      </article>
+    <section class="section container" id="lessons">
+      <div class="section-header">
+        <h2>Curriculum Overview</h2>
+        <p>Select a module to begin. Each lesson features real-time visualizations and step-by-step breakdowns.</p>
+      </div>
 
-      <aside class="panel-card" aria-labelledby="roadmap-title">
-        <div class="panel-title">
-          <div>
-            <small class="eyebrow" style="padding-inline: 0.65rem;">learning path</small>
-            <h2 id="roadmap-title" style="margin-top: 0.9rem;">เส้นทางเริ่มต้น</h2>
+      <div class="grid">
+        <a href="search_algorithms.html" class="card">
+          <div class="card-icon">05</div>
+          <h3>Search Algorithms</h3>
+          <p>Understand BFS, DFS, and A* through step-by-step visual node traversal, pathfinding simulations, and interactive grids.</p>
+          <div class="card-tags">
+            <span class="tag">BFS</span>
+            <span class="tag">DFS</span>
+            <span class="tag">A* Pathfinding</span>
           </div>
-          <span class="tag blue">พร้อมใช้งาน</span>
-        </div>
-        <p>เริ่มจากบทเรียนค้นหาเพื่อเข้าใจแนวคิดหลัก จากนั้นต่อด้วย fuzzy logic สำหรับการประยุกต์ใช้งานเชิงควบคุม.</p>
+        </a>
+
+        <a href="fuzzy_logic.html" class="card">
+          <div class="card-icon">06</div>
+          <h3>Fuzzy Logic</h3>
+          <p>Master fuzzy sets, membership functions, and linguistic rules. Build control systems that handle imprecise data efficiently.</p>
+          <div class="card-tags">
+            <span class="tag">Fuzzy Sets</span>
+            <span class="tag">Membership Functions</span>
+            <span class="tag">Inference</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="section container">
+      <div class="path-panel">
+        <h2>The Learning Path</h2>
+        <p>A structured approach to mastering complex logic visually.</p>
+        
         <ul class="timeline">
           <li>
-            <strong>1. อัลกอริทึมการค้นหา</strong>
-            <span>ดู BFS, DFS และ A* พร้อมภาพจำลองและลำดับขั้นตอนที่เข้าใจง่าย</span>
+            <div class="timeline-num">1</div>
+            <div class="timeline-content">
+              <h4>Search Fundamentals</h4>
+              <p>Explore basic graph traversal with Breadth-First and Depth-First Search mechanics.</p>
+            </div>
           </li>
           <li>
-            <strong>2. ตรรกศาสตร์คลุมเครือ</strong>
-            <span>สำรวจ membership, fuzzy set และแนวคิดควบคุมแบบยืดหยุ่น</span>
+            <div class="timeline-num">2</div>
+            <div class="timeline-content">
+              <h4>Heuristic Search</h4>
+              <p>Apply A* algorithms to find optimal paths dynamically.</p>
+            </div>
           </li>
           <li>
-            <strong>3. ทดลองต่อยอด</strong>
-            <span>ใช้โครงสร้างหน้าเว็บที่อ่านง่ายเพื่อรองรับบทเรียนถัดไปในอนาคต</span>
+            <div class="timeline-num">3</div>
+            <div class="timeline-content">
+              <h4>Continuous Logic</h4>
+              <p>Transition from crisp Boolean logic to Fuzzy Logic controllers.</p>
+            </div>
           </li>
         </ul>
-      </aside>
-    </section>
-
-    <section class="section" id="lessons" aria-labelledby="lessons-title">
-      <div class="section-head">
-        <div>
-          <small>บทเรียนทั้งหมด</small>
-          <h2 id="lessons-title">เลือกบทเรียนที่ต้องการเรียนต่อ</h2>
-        </div>
-        <small>คลิกการ์ดเพื่อเข้าเรียน</small>
-      </div>
-
-      <div class="lesson-grid">
-        <a class="lesson-card" href="search_algorithms.html">
-          <div class="lesson-top">
-            <div>
-              <span class="lesson-badge">05</span>
-              <h3>อัลกอริทึมการค้นหา</h3>
-              <p>อธิบายแนวคิด BFS, DFS และ A* ด้วยภาพประกอบ การไล่สถานะ และการจำลองที่ช่วยให้เข้าใจโครงสร้างการค้นหาอย่างเป็นระบบ</p>
-            </div>
-            <span class="lesson-arrow" aria-hidden="true">→</span>
-          </div>
-          <div class="lesson-tags">
-            <span class="tag blue">BFS</span>
-            <span class="tag green">DFS</span>
-            <span class="tag amber">A*</span>
-          </div>
-        </a>
-
-        <a class="lesson-card" href="fuzzy_logic.html">
-          <div class="lesson-top">
-            <div>
-              <span class="lesson-badge">06</span>
-              <h3>ตรรกศาสตร์คลุมเครือ</h3>
-              <p>สรุป fuzzy set, membership function และการตัดสินใจแบบคลุมเครือในรูปแบบที่อ่านเร็วและต่อยอดได้ง่ายในงานสอน</p>
-            </div>
-            <span class="lesson-arrow" aria-hidden="true">→</span>
-          </div>
-          <div class="lesson-tags">
-            <span class="tag violet">Fuzzy Logic</span>
-            <span class="tag blue">Membership</span>
-            <span class="tag amber">Control</span>
-          </div>
-        </a>
-      </div>
-    </section>
-
-    <section class="section" aria-labelledby="features-title">
-      <div class="section-head">
-        <div>
-          <small>เหตุผลที่หน้าใหม่นี้ดูพร้อมใช้งาน</small>
-          <h2 id="features-title">ยกระดับความชัดเจนของเนื้อหา</h2>
-        </div>
-      </div>
-
-      <div class="feature-grid">
-        <article class="feature-card">
-          <div class="feature-icon">1</div>
-          <h3>โครงสร้างชัด</h3>
-          <p>แยก hero, เส้นทางเรียน และการ์ดบทเรียนออกจากกันเพื่อให้สแกนข้อมูลได้เร็วขึ้น.</p>
-        </article>
-        <article class="feature-card">
-          <div class="feature-icon">2</div>
-          <h3>Responsive จริง</h3>
-          <p>จัดวางใหม่ให้ใช้งานได้ดีบนจอเล็กด้วยการเรียงคอลัมน์และปุ่มเต็มความกว้าง.</p>
-        </article>
-        <article class="feature-card">
-          <div class="feature-icon">3</div>
-          <h3>เข้าถึงง่าย</h3>
-          <p>มี focus state, skip link และรองรับ reduced motion เพื่อประสบการณ์ที่ครบถ้วนขึ้น.</p>
-        </article>
       </div>
     </section>
   </main>
 
-  <footer>
-    <div class="footer-bar">
-      <span>myClass &copy; 2026</span>
-      <span>ออกแบบเพื่อการเรียนรู้ที่ดูเป็นมืออาชีพและใช้งานได้จริง</span>
+  <footer class="container">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <svg viewBox="0 0 76 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
+        </svg>
+        myClass
+      </div>
+      <div class="footer-text">
+        &copy; 2026 myClass Education. Designed with minimal, high-performance aesthetics.
+      </div>
     </div>
   </footer>
 </body>
