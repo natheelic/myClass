@@ -3,242 +3,605 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="myClass รวมบทเรียนแบบอินเทอร์แอคทีฟสำหรับอัลกอริทึมการค้นหาและตรรกศาสตร์คลุมเครือ">
   <title>myClass — หัวข้อบทเรียน</title>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg:        #0b1120;
-      --surface:   #131c2e;
-      --card:      #182236;
-      --border:    #1e2e48;
-      --border-h:  #2d4468;
-      --text:      #e2e8f0;
-      --muted:     #64748b;
-      --subtle:    #94a3b8;
+      --bg: #f5f7fb;
+      --bg-alt: #ecf3ff;
+      --surface: rgba(255, 255, 255, 0.88);
+      --surface-solid: #ffffff;
+      --card: #ffffff;
+      --border: rgba(148, 163, 184, 0.24);
+      --border-strong: rgba(59, 130, 246, 0.25);
+      --text: #0f172a;
+      --muted: #64748b;
+      --subtle: #94a3b8;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --success: #059669;
+      --warning: #d97706;
+      --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      --shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.06);
+      --radius-xl: 1.5rem;
+      --radius-lg: 1rem;
+      --radius-md: 0.85rem;
     }
 
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
+      margin: 0;
       font-family: 'Sarabun', sans-serif;
-      background: var(--bg);
       color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 34%),
+        radial-gradient(circle at top right, rgba(124, 58, 237, 0.10), transparent 28%),
+        linear-gradient(180deg, #ffffff 0%, var(--bg) 45%, #f8fbff 100%);
       min-height: 100vh;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
     }
 
-    /* ─── Top bar ─── */
-    header {
-      border-bottom: 1px solid var(--border);
-      padding: 0 2rem;
-      height: 56px;
+    a { color: inherit; }
+    .skip-link {
+      position: absolute;
+      left: 1rem;
+      top: 0.75rem;
+      padding: 0.65rem 1rem;
+      border-radius: 999px;
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      color: var(--text);
+      transform: translateY(-160%);
+      transition: transform 0.2s ease;
+      z-index: 1000;
+      text-decoration: none;
+    }
+    .skip-link:focus { transform: translateY(0); outline: none; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.16); }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(18px);
+      background: rgba(255, 255, 255, 0.8);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+    }
+    .topbar-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      min-height: 68px;
+      padding: 0 1.25rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      background: var(--surface);
+      gap: 1rem;
     }
-    header .logo {
-      font-size: 1rem;
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      text-decoration: none;
       font-weight: 700;
-      color: var(--text);
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
+      white-space: nowrap;
     }
-    header .logo span { color: #3b82f6; }
-    header .badge {
+    .brand-mark {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.24);
+      flex: 0 0 auto;
+    }
+    .brand span { color: var(--brand); }
+    .nav-note {
+      font-size: 0.875rem;
+      color: var(--muted);
+      padding-left: 0.25rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .topbar-cta {
       margin-left: auto;
-      font-size: 0.7rem;
-      font-weight: 600;
+      display: inline-flex;
+      gap: 0.65rem;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+      gap: 1.5rem;
+      align-items: stretch;
+      margin-top: 1rem;
+    }
+    .hero-card,
+    .panel-card,
+    .lesson-card,
+    .feature-card,
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-card {
+      border-radius: var(--radius-xl);
+      padding: clamp(1.4rem, 3vw, 2.4rem);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      inset: auto -6rem -8rem auto;
+      width: 18rem;
+      height: 18rem;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.18), transparent 64%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--muted);
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 0.2rem 0.65rem;
+      color: var(--brand);
+      background: rgba(37, 99, 235, 0.08);
+      border: 1px solid rgba(37, 99, 235, 0.12);
     }
-
-    /* ─── Main ─── */
-    main {
-      max-width: 720px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 3.5rem 2rem 4rem;
-    }
-
-    .hero { margin-bottom: 2.5rem; }
     .hero h1 {
-      font-size: clamp(1.6rem, 4vw, 2.2rem);
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.25;
-      margin-bottom: 0.6rem;
-      letter-spacing: -0.02em;
+      margin: 1rem 0 0.8rem;
+      font-size: clamp(2.25rem, 5vw, 4rem);
+      line-height: 1.04;
+      letter-spacing: -0.05em;
+      max-width: 12ch;
     }
     .hero p {
-      font-size: 0.95rem;
+      margin: 0;
+      max-width: 60ch;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-top: 1.5rem;
+    }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.9rem 1.15rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+    .button-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: 0 14px 26px rgba(37, 99, 235, 0.22);
+    }
+    .button-secondary {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--border);
+    }
+    .button:hover { transform: translateY(-1px); }
+    .button:focus-visible,
+    .lesson-card a:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.16);
+    }
+
+    .hero-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.85rem;
+      margin-top: 1.75rem;
+    }
+    .stat-card {
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+    }
+    .stat-value {
+      display: block;
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+    .stat-label {
+      display: block;
+      margin-top: 0.2rem;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .panel-card {
+      border-radius: var(--radius-xl);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .panel-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 1rem;
+    }
+    .panel-title h2,
+    .section-head h2,
+    .feature-card h3 {
+      margin: 0;
+      letter-spacing: -0.03em;
+    }
+    .panel-title p,
+    .section-head p,
+    .feature-card p {
+      margin: 0;
       color: var(--muted);
       line-height: 1.6;
     }
-
-    /* ─── Section label ─── */
-    .section-label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 0.875rem;
-    }
-
-    /* ─── Lesson list ─── */
-    .lesson-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .lesson-card a {
+    .timeline {
       display: grid;
-      grid-template-columns: 2.5rem 1fr auto;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem 1.25rem;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 0.875rem;
-      color: var(--text);
-      text-decoration: none;
-      transition: background 0.18s, border-color 0.18s, transform 0.18s;
+      gap: 0.75rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
     }
-    .lesson-card a:hover {
-      background: #1e2d45;
-      border-color: var(--border-h);
-      transform: translateY(-1px);
+    .timeline li {
+      padding: 0.9rem 0.95rem;
+      border-radius: 0.9rem;
+      background: rgba(248, 250, 252, 0.95);
+      border: 1px solid rgba(226, 232, 240, 0.95);
+    }
+    .timeline strong {
+      display: block;
+      margin-bottom: 0.2rem;
+      font-size: 0.95rem;
+    }
+    .timeline span { color: var(--muted); font-size: 0.92rem; line-height: 1.5; }
+
+    .section {
+      margin-top: 1.75rem;
+    }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .section-head small {
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.02em;
     }
 
-    .lesson-num {
-      width: 2.5rem;
-      height: 2.5rem;
-      border-radius: 0.5rem;
-      background: #0f172a;
-      border: 1px solid var(--border);
+    .lesson-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .lesson-card {
+      border-radius: var(--radius-xl);
+      text-decoration: none;
+      padding: 1.2rem;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+      display: grid;
+      gap: 1rem;
+      min-height: 100%;
+    }
+    .lesson-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow);
+    }
+
+    .lesson-top {
       display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 1rem;
+    }
+    .lesson-badge {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 0.9rem;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.7rem;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      color: var(--muted);
-      letter-spacing: 0.04em;
-      flex-shrink: 0;
+      flex: 0 0 auto;
+      font-weight: 800;
+      color: var(--brand);
+      background: rgba(37, 99, 235, 0.08);
     }
-
-    .lesson-info { min-width: 0; }
-    .lesson-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-bottom: 0.2rem;
+    .lesson-card h3 {
+      margin: 0.1rem 0 0.35rem;
+      font-size: 1.2rem;
+      letter-spacing: -0.03em;
+    }
+    .lesson-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
     }
     .lesson-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.35rem;
+      gap: 0.4rem;
+      margin-top: auto;
     }
     .tag {
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      padding: 0.15rem 0.55rem;
+      display: inline-flex;
+      align-items: center;
+      padding: 0.34rem 0.65rem;
       border-radius: 999px;
-      background: #0f172a;
-      border: 1px solid var(--border);
+      background: #f8fafc;
+      border: 1px solid rgba(226, 232, 240, 0.95);
       color: var(--muted);
-    }
-    .tag.blue   { color: #60a5fa; border-color: #1d4ed8; background: #1e3a5f22; }
-    .tag.green  { color: #34d399; border-color: #065f46; background: #06402022; }
-    .tag.amber  { color: #fbbf24; border-color: #92400e; background: #78350f22; }
-    .tag.violet { color: #a78bfa; border-color: #6d28d9; background: #4c1d9522; }
-
-    .arrow {
-      color: var(--muted);
-      font-size: 1rem;
-      transition: color 0.18s, transform 0.18s;
-    }
-    .lesson-card a:hover .arrow {
-      color: var(--subtle);
-      transform: translateX(3px);
-    }
-
-    /* ─── Footer ─── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 1rem 2rem;
-      text-align: center;
       font-size: 0.75rem;
-      color: var(--muted);
-      background: var(--surface);
+      font-weight: 700;
+    }
+    .tag.blue { color: var(--brand); background: rgba(37, 99, 235, 0.08); border-color: rgba(37, 99, 235, 0.10); }
+    .tag.violet { color: var(--brand-2); background: rgba(124, 58, 237, 0.08); border-color: rgba(124, 58, 237, 0.10); }
+    .tag.green { color: var(--success); background: rgba(5, 150, 105, 0.08); border-color: rgba(5, 150, 105, 0.10); }
+    .tag.amber { color: var(--warning); background: rgba(217, 119, 6, 0.08); border-color: rgba(217, 119, 6, 0.10); }
+    .lesson-arrow {
+      color: var(--subtle);
+      font-size: 1.4rem;
+      line-height: 1;
+      transition: transform 0.18s ease, color 0.18s ease;
+    }
+    .lesson-card:hover .lesson-arrow {
+      color: var(--brand);
+      transform: translateX(4px);
     }
 
-    @media (max-width: 480px) {
-      main { padding: 2.5rem 1.25rem 3rem; }
-      header { padding: 0 1.25rem; }
-      .lesson-card a { grid-template-columns: 2.25rem 1fr auto; gap: 0.75rem; padding: 0.875rem 1rem; }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .feature-card {
+      border-radius: var(--radius-lg);
+      padding: 1.1rem;
+    }
+    .feature-icon {
+      width: 2.6rem;
+      height: 2.6rem;
+      border-radius: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.9rem;
+      background: rgba(37, 99, 235, 0.08);
+      color: var(--brand);
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    footer {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 1.25rem 2rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .footer-bar {
+      border-top: 1px solid rgba(226, 232, 240, 0.95);
+      padding-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 960px) {
+      .hero,
+      .lesson-grid,
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-meta { grid-template-columns: 1fr; }
+      .panel-title,
+      .section-head { align-items: start; flex-direction: column; }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner { padding-inline: 1rem; }
+      .nav-note { display: none; }
+      .topbar-cta { margin-left: 0; }
+      .container { padding: 1.25rem 1rem 2rem; }
+      .hero-card,
+      .panel-card { border-radius: 1.2rem; }
+      .button { width: 100%; justify-content: center; }
+      .actions { flex-direction: column; }
+      .lesson-card { padding: 1rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">ข้ามไปยังเนื้อหา</a>
 
-  <header>
-    <span class="logo">my<span>Class</span></span>
-    <span class="badge">คอร์สเรียน</span>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html" aria-label="myClass หน้าหลัก">
+        <span class="brand-mark">m</span>
+        <span>my<span>Class</span></span>
+      </a>
+      <div class="nav-note">คอร์สเรียนแบบอินเทอร์แอคทีฟที่ออกแบบให้ดูดีและใช้งานง่ายบนทุกขนาดหน้าจอ</div>
+      <div class="topbar-cta">
+        <a class="button button-secondary" href="#lessons">ดูบทเรียน</a>
+        <a class="button button-primary" href="search_algorithms.html">เริ่มเรียน</a>
+      </div>
+    </div>
   </header>
 
-  <main>
-    <div class="hero">
-      <h1>หัวข้อบทเรียน</h1>
-      <p>เลือกบทเรียนที่ต้องการศึกษา พร้อมภาพอธิบายและการจำลองแบบอินเทอร์แอคทีฟ</p>
-    </div>
+  <main id="main" class="container">
+    <section class="hero" aria-labelledby="hero-title">
+      <article class="hero-card">
+        <span class="eyebrow">myClass curriculum</span>
+        <h1 id="hero-title">หัวข้อบทเรียนที่อ่านง่าย ใช้งานไว และพร้อมเรียนต่อได้ทันที</h1>
+        <p>หน้าแรกถูกปรับให้มีลำดับข้อมูลชัดขึ้น พร้อมคำอธิบายสั้น ๆ ปุ่มนำทางที่เด่นขึ้น และการ์ดบทเรียนที่เหมาะกับการใช้งานจริงในงานสอนหรือเดโมโครงการ.</p>
 
-    <p class="section-label">บทเรียนทั้งหมด</p>
-    <ul class="lesson-list">
-      <li class="lesson-card">
-        <a href="search_algorithms.html">
-          <span class="lesson-num">05</span>
-          <div class="lesson-info">
-            <div class="lesson-title">อัลกอริทึมการค้นหา</div>
-            <div class="lesson-tags">
-              <span class="tag blue">BFS</span>
-              <span class="tag green">DFS</span>
-              <span class="tag amber">A*</span>
-            </div>
+        <div class="actions">
+          <a class="button button-primary" href="search_algorithms.html">ไปที่อัลกอริทึมการค้นหา</a>
+          <a class="button button-secondary" href="fuzzy_logic.html">ไปที่ตรรกศาสตร์คลุมเครือ</a>
+        </div>
+
+        <div class="hero-meta" aria-label="ข้อมูลสรุป">
+          <div class="stat-card">
+            <span class="stat-value">02</span>
+            <span class="stat-label">บทเรียนหลักในชุดนี้</span>
           </div>
-          <span class="arrow">›</span>
-        </a>
-      </li>
-      <li class="lesson-card">
-        <a href="fuzzy_logic.html">
-          <span class="lesson-num">06</span>
-          <div class="lesson-info">
-            <div class="lesson-title">ตรรกศาสตร์คลุมเครือ</div>
-            <div class="lesson-tags">
-              <span class="tag violet">Fuzzy Logic</span>
-              <span class="tag blue">Membership</span>
-              <span class="tag amber">Fuzzy Control</span>
-            </div>
+          <div class="stat-card">
+            <span class="stat-value">100%</span>
+            <span class="stat-label">โครงสร้างตอบสนองบนมือถือ</span>
           </div>
-          <span class="arrow">›</span>
+          <div class="stat-card">
+            <span class="stat-value">UI</span>
+            <span class="stat-label">ปรับให้ดูเป็นมืออาชีพมากขึ้น</span>
+          </div>
+        </div>
+      </article>
+
+      <aside class="panel-card" aria-labelledby="roadmap-title">
+        <div class="panel-title">
+          <div>
+            <small class="eyebrow" style="padding-inline: 0.65rem;">learning path</small>
+            <h2 id="roadmap-title" style="margin-top: 0.9rem;">เส้นทางเริ่มต้น</h2>
+          </div>
+          <span class="tag blue">พร้อมใช้งาน</span>
+        </div>
+        <p>เริ่มจากบทเรียนค้นหาเพื่อเข้าใจแนวคิดหลัก จากนั้นต่อด้วย fuzzy logic สำหรับการประยุกต์ใช้งานเชิงควบคุม.</p>
+        <ul class="timeline">
+          <li>
+            <strong>1. อัลกอริทึมการค้นหา</strong>
+            <span>ดู BFS, DFS และ A* พร้อมภาพจำลองและลำดับขั้นตอนที่เข้าใจง่าย</span>
+          </li>
+          <li>
+            <strong>2. ตรรกศาสตร์คลุมเครือ</strong>
+            <span>สำรวจ membership, fuzzy set และแนวคิดควบคุมแบบยืดหยุ่น</span>
+          </li>
+          <li>
+            <strong>3. ทดลองต่อยอด</strong>
+            <span>ใช้โครงสร้างหน้าเว็บที่อ่านง่ายเพื่อรองรับบทเรียนถัดไปในอนาคต</span>
+          </li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="section" id="lessons" aria-labelledby="lessons-title">
+      <div class="section-head">
+        <div>
+          <small>บทเรียนทั้งหมด</small>
+          <h2 id="lessons-title">เลือกบทเรียนที่ต้องการเรียนต่อ</h2>
+        </div>
+        <small>คลิกการ์ดเพื่อเข้าเรียน</small>
+      </div>
+
+      <div class="lesson-grid">
+        <a class="lesson-card" href="search_algorithms.html">
+          <div class="lesson-top">
+            <div>
+              <span class="lesson-badge">05</span>
+              <h3>อัลกอริทึมการค้นหา</h3>
+              <p>อธิบายแนวคิด BFS, DFS และ A* ด้วยภาพประกอบ การไล่สถานะ และการจำลองที่ช่วยให้เข้าใจโครงสร้างการค้นหาอย่างเป็นระบบ</p>
+            </div>
+            <span class="lesson-arrow" aria-hidden="true">→</span>
+          </div>
+          <div class="lesson-tags">
+            <span class="tag blue">BFS</span>
+            <span class="tag green">DFS</span>
+            <span class="tag amber">A*</span>
+          </div>
         </a>
-      </li>
-    </ul>
+
+        <a class="lesson-card" href="fuzzy_logic.html">
+          <div class="lesson-top">
+            <div>
+              <span class="lesson-badge">06</span>
+              <h3>ตรรกศาสตร์คลุมเครือ</h3>
+              <p>สรุป fuzzy set, membership function และการตัดสินใจแบบคลุมเครือในรูปแบบที่อ่านเร็วและต่อยอดได้ง่ายในงานสอน</p>
+            </div>
+            <span class="lesson-arrow" aria-hidden="true">→</span>
+          </div>
+          <div class="lesson-tags">
+            <span class="tag violet">Fuzzy Logic</span>
+            <span class="tag blue">Membership</span>
+            <span class="tag amber">Control</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="features-title">
+      <div class="section-head">
+        <div>
+          <small>เหตุผลที่หน้าใหม่นี้ดูพร้อมใช้งาน</small>
+          <h2 id="features-title">ยกระดับความชัดเจนของเนื้อหา</h2>
+        </div>
+      </div>
+
+      <div class="feature-grid">
+        <article class="feature-card">
+          <div class="feature-icon">1</div>
+          <h3>โครงสร้างชัด</h3>
+          <p>แยก hero, เส้นทางเรียน และการ์ดบทเรียนออกจากกันเพื่อให้สแกนข้อมูลได้เร็วขึ้น.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">2</div>
+          <h3>Responsive จริง</h3>
+          <p>จัดวางใหม่ให้ใช้งานได้ดีบนจอเล็กด้วยการเรียงคอลัมน์และปุ่มเต็มความกว้าง.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">3</div>
+          <h3>เข้าถึงง่าย</h3>
+          <p>มี focus state, skip link และรองรับ reduced motion เพื่อประสบการณ์ที่ครบถ้วนขึ้น.</p>
+        </article>
+      </div>
+    </section>
   </main>
 
-  <footer>myClass &copy; 2026</footer>
-
+  <footer>
+    <div class="footer-bar">
+      <span>myClass &copy; 2026</span>
+      <span>ออกแบบเพื่อการเรียนรู้ที่ดูเป็นมืออาชีพและใช้งานได้จริง</span>
+    </div>
+  </footer>
 </body>
 </html>
