@@ -102,7 +102,17 @@ def run_search(G, start, goal, save_only=False):
     save_path = f"graph_search_{start}_to_{goal}.png" if save_only else None
     draw_comparison(G, results, start, goal, save_path=save_path)
     if not save_only:
-        plt.show()
+        # Show only on interactive backends; otherwise save a fallback image.
+        fig = plt.gcf()
+        if getattr(fig.canvas, "required_interactive_framework", None) is not None:
+            plt.show()
+        else:
+            fallback_path = f"graph_search_{start}_to_{goal}.png"
+            plt.savefig(fallback_path, dpi=150, bbox_inches="tight")
+            print(
+                f"ℹ️ backend '{plt.get_backend()}' ไม่รองรับการแสดงผลแบบ interactive; "
+                f"บันทึกรูปไว้ที่ {fallback_path}"
+            )
 
 
 def main():
