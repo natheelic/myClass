@@ -7,7 +7,6 @@ visualize.py
 รองรับวาดหลายอัลกอริทึมในรูปเดียว (subplots) เพื่อเปรียบเทียบ
 """
 
-import os
 import matplotlib
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -17,40 +16,14 @@ from graph_builder import get_positions
 
 
 def _setup_thai_font():
-    """โหลดฟอนต์ Sarabun จาก ~/.fonts ของ Ubuntu เพื่อรองรับภาษาไทย"""
-    # กำหนด Path ไปยังโฟลเดอร์ ~/.fonts
-    home_dir = os.path.expanduser("~")
-    fonts_dir = os.path.join(home_dir, ".fonts")
-    
-    font_loaded = False
-
-    # ตรวจสอบว่าโฟลเดอร์ .fonts มีอยู่จริงหรือไม่
-    if os.path.exists(fonts_dir):
-        # ค้นหาไฟล์ตระกูล Sarabun (รองรับทั้ง .ttf และ .otf)
-        for file in os.listdir(fonts_dir):
-            if "sarabun" in file.lower() and file.endswith((".ttf", ".otf")):
-                font_path = os.path.join(fonts_dir, file)
-                try:
-                    # เพิ่มฟอนต์เข้าไปใน fontManager ของ matplotlib
-                    font_manager.fontManager.addfont(font_path)
-                    font_loaded = True
-                except Exception:
-                    continue
-
-    if font_loaded:
-        # ตั้งค่าให้ใช้งาน Sarabun เป็นหลัก
-        matplotlib.rcParams["font.family"] = "Sarabun"
-    else:
-        # Fallback ในกรณีที่หาฟอนต์ใน ~/.fonts ไม่เจอ
-        print("Warning: Sarabun font not found in ~/.fonts, using system fallback.")
-        candidates = ["Thonburi", "Sukhumvit Set", "Sarabun", "Tahoma",
-                      "Ayuthaya", "Silom", "Noto Sans Thai"]
-        available = {f.name for f in font_manager.fontManager.ttflist}
-        for name in candidates:
-            if name in available:
-                matplotlib.rcParams["font.family"] = name
-                break
-                
+    """เลือกฟอนต์ที่รองรับภาษาไทยตัวแรกที่เจอในระบบ เพื่อไม่ให้ตัวอักษรเป็นกล่อง"""
+    candidates = ["Thonburi", "Sukhumvit Set", "Sarabun", "Tahoma",
+                  "Ayuthaya", "Silom", "Noto Sans Thai"]
+    available = {f.name for f in font_manager.fontManager.ttflist}
+    for name in candidates:
+        if name in available:
+            matplotlib.rcParams["font.family"] = name
+            break
     matplotlib.rcParams["axes.unicode_minus"] = False  # กันเครื่องหมายลบเพี้ยน
 
 
