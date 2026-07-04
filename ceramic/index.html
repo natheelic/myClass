@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องคำนวณค่าตัวเก็บประจุ (Capacitor Code)</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        /* Ceramic Capacitor Texture */
+        .bg-ceramic {
+            background-color: #e8b668;
+            /* สีส้มเหลืองแบบคาปาซิเตอร์เซรามิก */
+            background-image: radial-gradient(at 30% 30%, rgba(255, 255, 255, 0.4) 0%, transparent 50%);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo, useEffect, useRef } = React;
+
+        const TOLERANCE_CODES = {
+            "C": "±0.25 pF",
+            "D": "±0.5 pF",
+            "F": "±1%",
+            "G": "±2%",
+            "J": "±5%",
+            "K": "±10%",
+            "M": "±20%",
+            "Z": "+80% / -20%"
+        };
+
+        const App = () => {
+            // State สำหรับรหัส (Code Input)
+            const [digit1, setDigit1] = useState(1);
+            const [digit2, setDigit2] = useState(0);
+            const [multiplier, setMultiplier] = useState(4); // 10^4
+            const [tolerance, setTolerance] = useState("K");
+
+            // State สำหรับค่าที่กรอกเอง (Reverse Calculation)
+            const [manualValue, setManualValue] = useState('');
+            const [manualUnit, setManualUnit] = useState('nF'); // pF, nF, uF
+
+            // Flag เพื่อป้องกัน loop update
+            const isManualUpdate = useRef(false);
+
+            // 1. คำนวณจากรหัส -> ค่า (Forward)
+            const capacitancePF = useMemo(() => {
+                const baseVal = (digit1 * 10) + digit2;
+                return baseVal * Math.pow(10, multiplier);
+            }, [digit1, digit2, multiplier]);
+
+            // อัปเดตช่องกรอก manual เมื่อรหัสเปลี่ยน (ถ้าไม่ได้กำลังพิมพ์เอง)
+            useEffect(() => {
+                if (!isManualUpdate.current) {
+                    // แปลงค่า pF เป็นหน่วยที่เลือกใน manualUnit เพื่อแสดงผล
+                    let displayVal = capacitancePF;
+                    if (manualUnit === 'nF') displayVal = capacitancePF / 1000;
+                    if (manualUnit === 'uF') displayVal = capacitancePF / 1000000;
+
+                    // ปัดทศนิยมให้สวยงาม
+                    setManualValue(parseFloat(displayVal.toPrecision(6)).toString());
+                } else {
+                    isManualUpdate.current = false;
+                }
+            }, [capacitancePF, manualUnit]);
+
+            // 2. คำนวณจากค่าที่กรอก -> รหัส (Reverse)
+            const handleManualChange = (valStr) => {
+                setManualValue(valStr);
+                const val = parseFloat(valStr);
+
+                if (isNaN(val) || val <= 0) return;
+
+                isManualUpdate.current = true;
+
+                // แปลงเป็น pF ก่อนเสมอ
+                let pF = val;
+                if (manualUnit === 'nF') pF = val * 1000;
+                if (manualUnit === 'uF') pF = val * 1000000;
+
+                // หา Code: 2 หลักแรก + ตัวคูณ
+                // เช่น 100,000 pF -> 10 x 10^4 -> 104
+
+                // หา magnitude
+                let magnitude = Math.floor(Math.log10(pF));
+
+                // เราต้องการรูปแบบ XX * 10^Y
+                // ลอง normalize ให้เหลือเลข 2 หลัก
+                // pF = N * 10^M
+
+                // กรณีค่าน้อยมากๆ (< 10 pF) อาจจะใช้รหัสตรงๆ แต่ส่วนใหญ่ Capacitor code เริ่มใช้สูตรนี้เมื่อ >= 10pF
+                // สูตรมาตรฐาน: Digit1 Digit2 Multiplier
+
+                // ลองหารด้วย 10^(magnitude-1) เพื่อให้ได้เลข 2 หลัก
+                let digits = Math.round(pF / Math.pow(10, magnitude - 1));
+                let mult = magnitude - 1;
+
+                if (digits >= 100) {
+                    digits = Math.round(digits / 10);
+                    mult += 1;
+                }
+
+                const dStr = digits.toString();
+                const d1 = parseInt(dStr[0]) || 0;
+                const d2 = parseInt(dStr[1]) || 0;
+
+                // Limit multiplier 0-9
+                if (mult < 0) mult = 0;
+                if (mult > 9) mult = 9;
+
+                setDigit1(d1);
+                setDigit2(d2);
+                setMultiplier(mult);
+            };
+
+            const fullCode = `${digit1}${digit2}${multiplier}`;
+
+            // Helper แปลงหน่วย
+            const formatValues = (pfVal) => {
+                const nfVal = pfVal / 1000;
+                const ufVal = pfVal / 1000000;
+                return {
+                    pF: pfVal.toLocaleString() + " pF",
+                    nF: nfVal.toLocaleString() + " nF",
+                    uF: ufVal.toLocaleString() + " µF"
+                };
+            };
+
+            const values = formatValues(capacitancePF);
+
+            return (
+                <div className="min-h-screen flex flex-col items-center py-10 px-4 max-w-xl mx-auto font-sans">
+                    <header className="text-center mb-8">
+                        <h1 className="text-3xl font-bold text-orange-700 mb-2 flex justify-center items-center gap-2">
+                            <i className="fas fa-bolt"></i>
+                            อ่านค่าตัวเก็บประจุ
+                        </h1>
+                        <p className="text-slate-500">เครื่องคำนวณรหัสตัวเก็บประจุ (Ceramic / Mylar)</p>
+                    </header>
+
+                    <div className="bg-white rounded-2xl shadow-xl w-full overflow-hidden border border-orange-100">
+
+                        {/* Visual Section */}
+                        <div className="bg-slate-50 p-8 flex justify-center items-center h-64 relative border-b border-slate-100 overflow-hidden">
+
+                            {/* Background Pattern */}
+                            <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "radial-gradient(#cc7000 1px, transparent 1px)", backgroundSize: "10px 10px" }}></div>
+
+                            {/* Capacitor Legs */}
+                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-8 flex justify-center gap-8">
+                                <div className="w-1.5 h-32 bg-gray-400"></div>
+                                <div className="w-1.5 h-32 bg-gray-400"></div>
+                            </div>
+
+                            {/* Capacitor Body */}
+                            <div className="relative z-10 w-48 h-48 bg-ceramic rounded-full shadow-lg border-4 border-[#d49e4c] flex flex-col items-center justify-center transform transition-transform hover:scale-105 duration-300">
+                                {/* Top highlight */}
+                                <div className="absolute top-4 left-10 w-16 h-8 bg-white opacity-30 rounded-full transform -rotate-12"></div>
+
+                                {/* Code Marking */}
+                                <div className="text-slate-800 font-mono text-5xl font-bold tracking-widest opacity-80 drop-shadow-sm mt-[-10px]">
+                                    {fullCode}
+                                </div>
+                                <div className="text-slate-700 font-mono text-2xl font-bold mt-2 opacity-70 border-b-2 border-slate-700 leading-none pb-1 uppercase">
+                                    {tolerance}
+                                </div>
+                                <div className="text-[10px] text-slate-600 mt-1 font-bold tracking-widest uppercase">
+                                    50V
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Result Display */}
+                        <div className="bg-orange-600 text-white p-6 shadow-inner">
+                            <div className="grid grid-cols-3 gap-2 text-center divide-x divide-orange-400/50">
+                                <div>
+                                    <div className="text-xs uppercase opacity-70 mb-1">PicoFarad</div>
+                                    <div className="text-lg font-bold">{values.pF}</div>
+                                </div>
+                                <div>
+                                    <div className="text-xs uppercase opacity-70 mb-1">NanoFarad</div>
+                                    <div className="text-xl font-bold text-yellow-300">{values.nF}</div>
+                                </div>
+                                <div>
+                                    <div className="text-xs uppercase opacity-70 mb-1">MicroFarad</div>
+                                    <div className="text-lg font-bold">{values.uF}</div>
+                                </div>
+                            </div>
+                            <div className="text-center mt-4 pt-4 border-t border-orange-500 text-sm opacity-90">
+                                ความคลาดเคลื่อน: <strong>{TOLERANCE_CODES[tolerance]}</strong>
+                            </div>
+                        </div>
+
+                        {/* Controls Section */}
+                        <div className="p-8 space-y-8">
+
+                            {/* 1. Code Input Controls */}
+                            <div>
+                                <label className="block text-sm font-bold text-gray-500 mb-4 uppercase tracking-wide text-center border-b pb-2">
+                                    ปรับรหัส 3 หลัก (Code)
+                                </label>
+                                <div className="flex justify-center items-center gap-4">
+                                    {/* Digit 1 */}
+                                    <div className="flex flex-col items-center gap-2">
+                                        <span className="text-xs font-bold text-gray-400">หลัก 1</span>
+                                        <select
+                                            value={digit1}
+                                            onChange={(e) => setDigit1(Number(e.target.value))}
+                                            className="p-3 text-xl font-bold text-center bg-gray-50 border-2 border-gray-200 rounded-lg focus:border-orange-500 outline-none w-16"
+                                        >
+                                            {[...Array(10).keys()].map(n => <option key={n} value={n}>{n}</option>)}
+                                        </select>
+                                    </div>
+
+                                    {/* Digit 2 */}
+                                    <div className="flex flex-col items-center gap-2">
+                                        <span className="text-xs font-bold text-gray-400">หลัก 2</span>
+                                        <select
+                                            value={digit2}
+                                            onChange={(e) => setDigit2(Number(e.target.value))}
+                                            className="p-3 text-xl font-bold text-center bg-gray-50 border-2 border-gray-200 rounded-lg focus:border-orange-500 outline-none w-16"
+                                        >
+                                            {[...Array(10).keys()].map(n => <option key={n} value={n}>{n}</option>)}
+                                        </select>
+                                    </div>
+
+                                    {/* Multiplier */}
+                                    <div className="flex flex-col items-center gap-2">
+                                        <span className="text-xs font-bold text-gray-400">ตัวคูณ</span>
+                                        <select
+                                            value={multiplier}
+                                            onChange={(e) => setMultiplier(Number(e.target.value))}
+                                            className="p-3 text-xl font-bold text-center bg-orange-50 text-orange-700 border-2 border-orange-200 rounded-lg focus:border-orange-500 outline-none w-20"
+                                        >
+                                            {[...Array(7).keys()].map(n => <option key={n} value={n}>10^{n}</option>)}
+                                            <option value={-1}>10^-1</option> {/* For small pF */}
+                                        </select>
+                                    </div>
+
+                                    {/* Tolerance */}
+                                    <div className="flex flex-col items-center gap-2">
+                                        <span className="text-xs font-bold text-gray-400">Tol.</span>
+                                        <select
+                                            value={tolerance}
+                                            onChange={(e) => setTolerance(e.target.value)}
+                                            className="p-3 text-xl font-bold text-center bg-gray-50 border-2 border-gray-200 rounded-lg focus:border-orange-500 outline-none w-20"
+                                        >
+                                            {Object.keys(TOLERANCE_CODES).map(k => (
+                                                <option key={k} value={k}>{k}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* 2. Manual Input (Reverse) */}
+                            <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                                <label className="block text-sm font-bold text-gray-500 mb-3 uppercase tracking-wide text-center">
+                                    คำนวณย้อนกลับ (กรอกค่าที่ต้องการ)
+                                </label>
+                                <div className="flex items-center justify-center gap-2">
+                                    <input
+                                        type="number"
+                                        value={manualValue}
+                                        onChange={(e) => handleManualChange(e.target.value)}
+                                        className="w-full max-w-[160px] text-center text-2xl font-bold p-2 border-b-2 border-gray-300 focus:border-orange-500 outline-none bg-transparent placeholder-gray-300"
+                                        placeholder="100"
+                                    />
+                                    <select
+                                        value={manualUnit}
+                                        onChange={(e) => {
+                                            setManualUnit(e.target.value);
+                                            // Trigger recalculation with new unit but same value
+                                            handleManualChange(manualValue);
+                                        }}
+                                        className="text-lg font-bold bg-white border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-orange-500"
+                                    >
+                                        <option value="pF">pF</option>
+                                        <option value="nF">nF</option>
+                                        <option value="uF">µF</option>
+                                    </select>
+                                </div>
+                                <p className="text-center text-xs text-gray-400 mt-2">
+                                    ระบบจะคำนวณรหัสที่ใกล้เคียงที่สุดให้
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <footer className="mt-8 text-xs text-gray-400 text-center">
+                        &copy; Capacitor Code Tool
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

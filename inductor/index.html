@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>อ่านค่าตัวเหนี่ยวนำ (Inductor Color Code)</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo, useEffect, useRef } = React;
+
+        // --- ข้อมูลสำหรับตัวเหนี่ยวนำ ---
+        const COLORS = [
+            { name: 'ดำ', value: 0, color: '#000000', text: 'white' },
+            { name: 'น้ำตาล', value: 1, color: '#8B4513', text: 'white' },
+            { name: 'แดง', value: 2, color: '#FF0000', text: 'white' },
+            { name: 'ส้ม', value: 3, color: '#FF8C00', text: 'black' },
+            { name: 'เหลือง', value: 4, color: '#FFD700', text: 'black' },
+            { name: 'เขียว', value: 5, color: '#008000', text: 'white' },
+            { name: 'น้ำเงิน', value: 6, color: '#0000FF', text: 'white' },
+            { name: 'ม่วง', value: 7, color: '#800080', text: 'white' },
+            { name: 'เทา', value: 8, color: '#808080', text: 'white' },
+            { name: 'ขาว', value: 9, color: '#FFFFFF', text: 'black' },
+        ];
+
+        const MULTIPLIERS = [
+            { name: 'ดำ (x1)', value: 1, color: '#000000' },
+            { name: 'น้ำตาล (x10)', value: 10, color: '#8B4513' },
+            { name: 'แดง (x100)', value: 100, color: '#FF0000' },
+            { name: 'ส้ม (x1k)', value: 1000, color: '#FF8C00' },
+            { name: 'เหลือง (x10k)', value: 10000, color: '#FFD700' },
+            { name: 'ทอง (x0.1)', value: 0.1, color: '#FFD700', isMetal: true },
+            { name: 'เงิน (x0.01)', value: 0.01, color: '#C0C0C0', isMetal: true },
+        ];
+
+        // ตัวเหนี่ยวนำมักมีค่า Tolerance เฉพาะกลุ่มนี้
+        const TOLERANCES = [
+            { name: 'ดำ (±20%)', value: 20, color: '#000000', text: 'white' },
+            { name: 'น้ำตาล (±1%)', value: 1, color: '#8B4513', text: 'white' },
+            { name: 'แดง (±2%)', value: 2, color: '#FF0000', text: 'white' },
+            { name: 'ส้ม (±3%)', value: 3, color: '#FF8C00', text: 'black' },
+            { name: 'เหลือง (±4%)', value: 4, color: '#FFD700', text: 'black' },
+            { name: 'ทอง (±5%)', value: 5, color: '#FFD700', text: 'black', isMetal: true },
+            { name: 'เงิน (±10%)', value: 10, color: '#C0C0C0', text: 'black', isMetal: true },
+        ];
+
+        const InductorBand = ({ color, width = "w-4", height = "h-full", className = "" }) => (
+            <div className={`absolute top-0 ${width} ${height} ${className} shadow-sm transition-colors duration-300`} style={{ backgroundColor: color }}></div>
+        );
+
+        const SelectControl = ({ label, options, value, onChange, color }) => (
+            <div className="flex flex-col gap-1">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">{label}</label>
+                <div className="relative">
+                    <select
+                        value={value}
+                        onChange={(e) => onChange(Number(e.target.value))}
+                        className="w-full p-3 pl-10 rounded-lg border border-gray-200 bg-white text-gray-700 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm font-medium"
+                    >
+                        {options.map((opt, idx) => (
+                            <option key={idx} value={idx}>
+                                {opt.name}
+                            </option>
+                        ))}
+                    </select>
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full border border-gray-300 shadow-sm" style={{ backgroundColor: color }}></div>
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400">
+                        <i className="fas fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const App = () => {
+            // Axial 4 Band Standard for Inductors
+            const [band1, setBand1] = useState(1); // Brown
+            const [band2, setBand2] = useState(0); // Black
+            const [multiplier, setMultiplier] = useState(1); // Brown (x10)
+            const [tolerance, setTolerance] = useState(6); // Silver (10%) - Default for generic inductors
+
+            // State สำหรับค่าที่กรอกเอง
+            const [manualValue, setManualValue] = useState('');
+            const isManualChange = useRef(false);
+
+            // คำนวณค่า (หน่วยพื้นฐานคือ uH)
+            const result = useMemo(() => {
+                const val = (COLORS[band1].value * 10 + COLORS[band2].value) * MULTIPLIERS[multiplier].value;
+                // แก้ไขปัญหาทศนิยม (Floating point precision)
+                return parseFloat(val.toPrecision(10));
+            }, [band1, band2, multiplier]);
+
+            // อัปเดตช่องกรอก เมื่อค่าจากการคำนวณเปลี่ยน
+            useEffect(() => {
+                if (!isManualChange.current) {
+                    setManualValue(result);
+                } else {
+                    isManualChange.current = false;
+                }
+            }, [result]);
+
+            const handleManualInput = (e) => {
+                const valStr = e.target.value;
+                setManualValue(valStr);
+
+                const val = parseFloat(valStr);
+                if (isNaN(val) || val <= 0) return;
+
+                isManualChange.current = true;
+
+                // Logic คำนวณย้อนกลับจาก ค่า uH -> สี
+                let magnitude = Math.floor(Math.log10(val));
+                let normalized = val / Math.pow(10, magnitude);
+
+                // ต้องการ 2 หลัก
+                let digitsVal = Math.round(normalized * 10);
+                let multiplierShift = magnitude - 1;
+
+                // กรณีปัดเศษแล้วเกินหลัก (เช่น 9.95 -> 10.0)
+                if (digitsVal >= 100) {
+                    digitsVal = Math.round(digitsVal / 10);
+                    multiplierShift += 1;
+                }
+
+                const digitStr = digitsVal.toString();
+                const b1 = parseInt(digitStr[0]) || 0;
+                const b2 = parseInt(digitStr[1]) || 0;
+
+                // หาตัวคูณที่ใกล้เคียงที่สุด
+                let mIndex = -1;
+                let minDiff = Number.MAX_VALUE;
+
+                MULTIPLIERS.forEach((m, idx) => {
+                    const diff = Math.abs(Math.log10(m.value) - multiplierShift);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        mIndex = idx;
+                    }
+                });
+
+                if (mIndex !== -1) {
+                    setBand1(b1);
+                    setBand2(b2);
+                    setMultiplier(mIndex);
+                }
+            };
+
+            const formatInductance = (val) => {
+                if (val >= 1000) {
+                    return (val / 1000).toFixed(val % 1000 === 0 ? 0 : 2) + ' mH';
+                } else {
+                    return val.toFixed(val % 1 === 0 ? 0 : 2) + ' µH';
+                }
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col items-center py-8 px-4 max-w-2xl mx-auto">
+                    <header className="text-center mb-8">
+                        <h1 className="text-3xl md:text-4xl font-bold text-emerald-900 mb-2">
+                            <i className="fas fa-wave-square text-emerald-500 mr-2"></i>
+                            อ่านค่าตัวเหนี่ยวนำ
+                        </h1>
+                        <p className="text-slate-500">Inductor Color Code Calculator (แบบปกติ)</p>
+                    </header>
+
+                    <div className="bg-white rounded-2xl shadow-xl w-full overflow-hidden border border-emerald-100">
+
+                        {/* Visual Section */}
+                        <div className="bg-slate-50 p-8 md:p-12 flex justify-center items-center border-b border-slate-100 h-48 md:h-64">
+                            <div className="relative w-full flex justify-center items-center">
+                                <div className="absolute h-1.5 w-full bg-gray-400 z-0 max-w-[90%]"></div>
+                                {/* Body ของ Inductor มักจะเป็นสีเขียวอมฟ้า หรือเขียวทหาร */}
+                                <div
+                                    className="relative w-64 md:w-80 h-20 md:h-24 rounded-full shadow-lg z-10 flex justify-between items-center overflow-hidden border-2 border-emerald-600"
+                                    style={{ backgroundColor: '#4ade80' }}
+                                >
+                                    <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none"></div>
+
+                                    {/* Bands: Inductors typically have bands spaced slightly differently or wider, but similar concept */}
+                                    <div className="relative w-full h-full flex justify-between px-10 md:px-16">
+                                        <InductorBand color={COLORS[band1].color} className="left-[15%] w-5" />
+                                        <InductorBand color={COLORS[band2].color} className="left-[35%] w-5" />
+                                        <InductorBand color={MULTIPLIERS[multiplier].color} className="left-[55%] w-5" />
+                                        <InductorBand color={TOLERANCES[tolerance].color} className="right-[15%] w-5" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Result Display */}
+                        <div className="bg-emerald-600 text-white p-6 text-center shadow-inner">
+                            <div className="text-xs uppercase opacity-75 mb-1">ค่าความเหนี่ยวนำ (Inductance)</div>
+                            <div className="flex items-center justify-center gap-2">
+                                <input
+                                    type="number"
+                                    value={manualValue}
+                                    onChange={handleManualInput}
+                                    className="text-3xl font-bold text-center rounded px-2 py-1 w-48 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                                    placeholder="กรอกค่า..."
+                                />
+                                <span className="text-xl font-light">µH</span>
+                            </div>
+                            <div className="text-lg opacity-90 mt-2 font-light">
+                                {formatInductance(result)} ± {TOLERANCES[tolerance].value}%
+                            </div>
+                        </div>
+
+                        {/* Controls Section */}
+                        <div className="p-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <SelectControl label="แถบที่ 1 (หลักสิบ)" options={COLORS} value={band1} onChange={setBand1} color={COLORS[band1].color} />
+                                <SelectControl label="แถบที่ 2 (หลักหน่วย)" options={COLORS} value={band2} onChange={setBand2} color={COLORS[band2].color} />
+                                <SelectControl label="ตัวคูณ (Multiplier)" options={MULTIPLIERS} value={multiplier} onChange={setMultiplier} color={MULTIPLIERS[multiplier].color} />
+                                <SelectControl label="ความคลาดเคลื่อน" options={TOLERANCES} value={tolerance} onChange={setTolerance} color={TOLERANCES[tolerance].color} />
+                            </div>
+                        </div>
+
+                        <div className="bg-slate-50 p-4 text-center text-xs text-slate-400 border-t border-slate-100">
+                            * หน่วยพื้นฐานคือ ไมโครเฮนรี (µH) | ตัวถังสีเขียวเป็นเอกลักษณ์ของ Inductor
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+
+</body>
+
+</html>

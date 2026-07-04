@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>อ่านค่า SMD Inductor</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        /* Pattern for Inductor Body Texture */
+        .bg-pattern-dots {
+            background-image: radial-gradient(#333 1px, transparent 1px);
+            background-size: 4px 4px;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+
+        const App = () => {
+            const [code, setCode] = useState('101');
+
+            const inductance = useMemo(() => {
+                const c = code.trim().toUpperCase();
+                if (!c) return 0;
+
+                // กรณีที่มีตัว R (ทศนิยม) เช่น 4R7, R47
+                if (c.includes('R')) {
+                    return parseFloat(c.replace('R', '.'));
+                }
+
+                // กรณีรหัสตัวเลข 3 หลัก (Standard)
+                // 2 หลักแรก = ค่าคงที่, หลักที่ 3 = เลขยกกำลัง (หน่วย uH)
+                if (/^\d{3}$/.test(c)) {
+                    const digits = parseInt(c.substring(0, 2));
+                    const multiplier = parseInt(c.substring(2, 3));
+                    return digits * Math.pow(10, multiplier);
+                }
+
+                // กรณีรหัสตัวเลข 2 หลัก (บางครั้งใช้เป็น uH ตรงๆ หรือเป็นรหัสเฉพาะ แต่ในที่นี้สมมติเป็น uH ตรงๆ ถ้าไม่มีตัวคูณ)
+                // แต่โดยมาตรฐาน SMD Inductor มักใช้ 3 หลัก หรือ R
+
+                // ลองแปลงตรงๆ เผื่อเป็นเลขธรรมดา (Fallback)
+                const directVal = parseFloat(c);
+                if (!isNaN(directVal)) return directVal; // อาจจะไม่ถูกต้องตามมาตรฐานเสมอไป
+
+                return 0;
+            }, [code]);
+
+            const formatValue = (val) => {
+                if (!val && val !== 0) return '-';
+                if (val === 0) return '0 µH';
+
+                if (val >= 1000) {
+                    return (val / 1000).toFixed(val % 1000 === 0 ? 0 : 2) + ' mH'; // Millihenry
+                }
+                if (val < 1) {
+                    // กรณีค่าน้อยกว่า 1 uH อาจแสดงเป็น nH ด้วยเพื่อความชัดเจน
+                    return val.toFixed(2).replace(/\.00$/, '') + ' µH (' + (val * 1000).toFixed(0) + ' nH)';
+                }
+
+                return val.toFixed(2).replace(/\.00$/, '') + ' µH';
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col items-center py-10 px-4 max-w-lg mx-auto">
+                    <header className="text-center mb-8">
+                        <h1 className="text-3xl font-bold text-slate-800 mb-2">
+                            <i className="fas fa-magnet text-gray-600 mr-2"></i>
+                            อ่านค่า SMD Inductor
+                        </h1>
+                        <p className="text-slate-500">อ่านค่าตัวเหนี่ยวนำ (Power Inductor)</p>
+                    </header>
+
+                    <div className="bg-white rounded-2xl shadow-xl w-full overflow-hidden border border-gray-200">
+
+                        {/* Visual Section (Simulation) */}
+                        <div className="bg-slate-50 p-8 flex justify-center items-center h-56 relative border-b border-slate-100">
+
+                            {/* PCB Pad Left */}
+                            <div className="absolute left-[15%] w-12 h-16 bg-yellow-600/20 border-2 border-yellow-600/40 rounded-sm"></div>
+                            {/* PCB Pad Right */}
+                            <div className="absolute right-[15%] w-12 h-16 bg-yellow-600/20 border-2 border-yellow-600/40 rounded-sm"></div>
+
+                            {/* SMD Inductor Body (Ferrite Core Style) */}
+                            <div className="relative w-40 h-40 bg-neutral-800 rounded-lg shadow-2xl flex items-center justify-center z-10 transform transition-transform hover:scale-105 duration-300">
+                                {/* Texture */}
+                                <div className="absolute inset-0 bg-pattern-dots opacity-20 rounded-lg"></div>
+
+                                {/* Top Inner Circle (Wire winding hint) */}
+                                <div className="absolute w-32 h-32 rounded-full border-4 border-neutral-700 opacity-30"></div>
+
+                                {/* Solder Tabs (Metals) */}
+                                <div className="absolute -left-1 w-4 h-24 bg-gradient-to-r from-gray-300 to-gray-500 rounded-l-sm border-y border-l border-gray-600"></div>
+                                <div className="absolute -right-1 w-4 h-24 bg-gradient-to-l from-gray-300 to-gray-500 rounded-r-sm border-y border-r border-gray-600"></div>
+
+                                {/* Code Marking */}
+                                <span className="relative text-gray-300 font-mono text-4xl font-bold tracking-wider opacity-80 drop-shadow-md transform -rotate-0">
+                                    {code || "101"}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Result Display */}
+                        <div className="bg-slate-700 text-white p-6 text-center relative overflow-hidden">
+                            <div className="relative z-10">
+                                <div className="text-xs uppercase opacity-70 mb-1 tracking-widest">Inductance Value</div>
+                                <div className="text-4xl font-bold tracking-tight text-emerald-400">
+                                    {formatValue(inductance)}
+                                </div>
+                                <div className="text-sm mt-1 opacity-60 font-light">
+                                    หน่วยพื้นฐาน: Microhenry (µH)
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Input Section */}
+                        <div className="p-8">
+                            <div className="flex flex-col items-center">
+                                <label className="text-sm font-bold text-gray-500 mb-3 uppercase tracking-wide">
+                                    กรอกรหัส (เช่น 101, 4R7)
+                                </label>
+                                <div className="relative w-full max-w-xs">
+                                    <input
+                                        type="text"
+                                        value={code}
+                                        onChange={(e) => setCode(e.target.value.toUpperCase())}
+                                        maxLength={4}
+                                        className="w-full text-center text-3xl font-mono p-3 border-2 border-gray-300 rounded-xl focus:border-slate-500 focus:ring-4 focus:ring-slate-200 outline-none transition-all uppercase text-slate-700 placeholder-slate-300"
+                                        placeholder="101"
+                                    />
+                                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+                                        <i className="fas fa-pen"></i>
+                                    </div>
+                                </div>
+
+                                {/* Guide */}
+                                <div className="mt-8 grid grid-cols-1 gap-3 w-full text-sm text-gray-600">
+                                    <div className="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                        <div className="w-12 h-8 bg-neutral-800 text-gray-200 flex items-center justify-center font-mono text-xs rounded mr-3">101</div>
+                                        <div>
+                                            <span className="font-bold">100 µH</span> <span className="text-xs text-gray-400">(10 x 10<sup>1</sup>)</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                        <div className="w-12 h-8 bg-neutral-800 text-gray-200 flex items-center justify-center font-mono text-xs rounded mr-3">4R7</div>
+                                        <div>
+                                            <span className="font-bold">4.7 µH</span> <span className="text-xs text-gray-400">(จุดทศนิยม)</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                        <div className="w-12 h-8 bg-neutral-800 text-gray-200 flex items-center justify-center font-mono text-xs rounded mr-3">220</div>
+                                        <div>
+                                            <span className="font-bold">22 µH</span> <span className="text-xs text-gray-400">(22 x 10<sup>0</sup>)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>
