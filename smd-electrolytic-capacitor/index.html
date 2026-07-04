@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องคำนวณตัวเก็บประจุอิเล็กโทรไลต์ (Electrolytic Capacitor Decoder)</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        /* Texture for Tantalum */
+        .bg-tantalum {
+            background-color: #facc15;
+            /* Yellow-400 */
+            background-image: url("data:image/svg+xml,%3Csvg width='4' height='4' viewBox='0 0 4 4' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 3h1v1H1V3zm2-2h1v1H3V1z' fill='%23ca8a04' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        /* Texture for Aluminum */
+        .bg-aluminum {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 50%, #94a3b8 100%);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+
+        // Standard EIA Voltage Codes for Tantalum & Aluminum
+        const VOLTAGE_CODES = {
+            "e": "2.5 V", // Sometimes lower case
+            "g": "4 V",
+            "j": "6.3 V", // Common
+            "A": "10 V",
+            "C": "16 V",
+            "D": "20 V",
+            "E": "25 V",
+            "V": "35 V",
+            "H": "50 V",
+            "F": "2.5 V (or 35V in some series, check datasheet)", // Warning needed
+            "G": "4 V",
+            "J": "6.3 V",
+            "K": "8 V",
+            "0J": "6.3 V", // Common in Aluminum
+            "1A": "10 V",
+            "1C": "16 V",
+            "1E": "25 V",
+            "1V": "35 V",
+            "1H": "50 V"
+        };
+
+        // Standard Voltage Letter List for Dropdown (Simplified)
+        const VOLTAGE_OPTIONS = [
+            { code: "j / J / 0J", label: "6.3 V" },
+            { code: "A / 1A", label: "10 V" },
+            { code: "C / 1C", label: "16 V" },
+            { code: "D", label: "20 V" },
+            { code: "E / 1E", label: "25 V" },
+            { code: "V / 1V", label: "35 V" },
+            { code: "H / 1H", label: "50 V" },
+            { code: "e / F", label: "2.5 V" },
+            { code: "g / G", label: "4 V" },
+        ];
+
+        const App = () => {
+            const [type, setType] = useState('tantalum'); // 'tantalum' or 'aluminum'
+
+            // Inputs
+            const [voltageCode, setVoltageCode] = useState("C / 1C"); // Default 16V
+            const [capCode, setCapCode] = useState("106"); // Default 10uF
+
+            const result = useMemo(() => {
+                // Calculate Capacitance
+                let capacitance = 0;
+                let capDisplay = "-";
+
+                const cCode = capCode.trim();
+
+                if (/^\d{3}$/.test(cCode)) {
+                    const digits = parseInt(cCode.substring(0, 2));
+                    const mult = parseInt(cCode.substring(2, 3));
+                    const pF = digits * Math.pow(10, mult);
+
+                    const uF = pF / 1000000;
+
+                    if (uF >= 1) {
+                        capDisplay = uF + " µF";
+                    } else {
+                        capDisplay = uF + " µF (" + (pF / 1000) + " nF)";
+                    }
+                } else if (cCode.length > 0 && !isNaN(cCode)) {
+                    // Direct value assumption (rare for code input, but possible for aluminum)
+                    capDisplay = cCode + " µF (ถ้าเป็นค่าตรง)";
+                }
+
+                // Get Voltage
+                const selectedOpt = VOLTAGE_OPTIONS.find(o => o.code === voltageCode);
+                const voltageDisplay = selectedOpt ? selectedOpt.label : "? V";
+
+                return { cap: capDisplay, vol: voltageDisplay };
+            }, [capCode, voltageCode]);
+
+            // Helper to extract just the main letter for display on the component
+            const getDisplayVoltageCode = () => {
+                const code = voltageCode.split('/')[0].trim();
+                // For Aluminum, usually use single letter like C or A
+                return code.length > 1 ? code.charAt(0).toUpperCase() : code.toUpperCase();
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col items-center py-10 px-4 max-w-lg mx-auto font-sans">
+                    <header className="text-center mb-8">
+                        <h1 className="text-2xl md:text-3xl font-bold text-slate-800 mb-2">
+                            <i className="fas fa-car-battery text-yellow-500 mr-2"></i>
+                            Electrolytic Capacitor Decoder
+                        </h1>
+                        <p className="text-slate-500">ถอดรหัส SMD Tantalum และ Aluminum</p>
+                    </header>
+
+                    <div className="bg-white rounded-2xl shadow-xl w-full overflow-hidden border border-slate-200">
+
+                        {/* Tabs */}
+                        <div className="flex border-b border-slate-200 bg-slate-50">
+                            <button
+                                onClick={() => setType('tantalum')}
+                                className={`flex-1 py-3 text-sm font-bold uppercase tracking-wider transition-colors ${type === 'tantalum' ? 'bg-white text-yellow-600 border-t-4 border-yellow-500' : 'text-gray-400 hover:text-gray-600'}`}
+                            >
+                                SMD Tantalum
+                            </button>
+                            <button
+                                onClick={() => setType('aluminum')}
+                                className={`flex-1 py-3 text-sm font-bold uppercase tracking-wider transition-colors ${type === 'aluminum' ? 'bg-white text-slate-600 border-t-4 border-slate-500' : 'text-gray-400 hover:text-gray-600'}`}
+                            >
+                                SMD Aluminum
+                            </button>
+                        </div>
+
+                        {/* Visual Simulator */}
+                        <div className="bg-white p-8 flex justify-center items-center h-64 relative border-b border-slate-100">
+                            <div className="absolute inset-0 bg-slate-50 opacity-50 pattern-grid-lg"></div>
+
+                            {type === 'tantalum' ? (
+                                /* Tantalum Visual */
+                                <div className="relative w-48 h-28 bg-tantalum rounded-md shadow-lg flex flex-col items-center justify-center border border-yellow-600/30 transform transition-all">
+                                    {/* Polarity Band (Positive) */}
+                                    <div className="absolute left-0 h-full w-10 bg-neutral-800/90 rounded-l-md border-r border-neutral-600 flex items-center justify-center">
+                                        <span className="text-white/50 text-xl font-bold">+</span>
+                                    </div>
+
+                                    {/* Markings */}
+                                    <div className="pl-8 flex flex-col items-start justify-center w-full px-4">
+                                        <div className="text-neutral-700 font-mono text-lg font-bold tracking-wide opacity-60">
+                                            {/* Lot code dummy */}
+                                            475
+                                        </div>
+                                        <div className="text-neutral-800 font-mono text-3xl font-extrabold tracking-widest drop-shadow-sm">
+                                            {capCode || "106"}
+                                        </div>
+                                        <div className="text-neutral-800 font-mono text-xl font-bold mt-1">
+                                            {getDisplayVoltageCode()} <span className="text-xs opacity-50">K</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Pins */}
+                                    <div className="absolute -left-2 w-2 h-16 bg-gray-400 rounded-l-sm z-[-1]"></div>
+                                    <div className="absolute -right-2 w-2 h-16 bg-gray-400 rounded-r-sm z-[-1]"></div>
+                                </div>
+                            ) : (
+                                /* Aluminum V-Chip Visual */
+                                <div className="relative w-40 h-40">
+                                    {/* Base Plate */}
+                                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full h-10 bg-black rounded-sm skew-x-12 shadow-md z-0"></div>
+
+                                    {/* Cylinder Body (Top View perspective sort of) */}
+                                    <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-32 bg-aluminum rounded-full shadow-inner border-4 border-gray-300 flex flex-col items-center justify-center z-10 overflow-hidden">
+
+                                        {/* Negative Mark (Black Slice) */}
+                                        <div className="absolute top-0 left-0 w-full h-8 bg-black/80"></div>
+
+                                        {/* Text */}
+                                        <div className="mt-6 text-center">
+                                            <div className="text-slate-700 font-mono text-xl font-bold opacity-60">
+                                                {getDisplayVoltageCode()}
+                                            </div>
+                                            <div className="text-slate-800 font-mono text-3xl font-extrabold tracking-widest">
+                                                {capCode || "100"}
+                                            </div>
+                                            <div className="text-slate-500 font-mono text-xs font-bold mt-1">
+                                                (Series)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Result Display */}
+                        <div className={`text-white p-6 text-center shadow-inner ${type === 'tantalum' ? 'bg-yellow-600' : 'bg-slate-600'}`}>
+                            <div className="grid grid-cols-2 gap-4 divide-x divide-white/20">
+                                <div>
+                                    <div className="text-xs uppercase opacity-75 mb-1">Capacitance</div>
+                                    <div className="text-3xl font-bold">{result.cap}</div>
+                                </div>
+                                <div>
+                                    <div className="text-xs uppercase opacity-75 mb-1">Max Voltage</div>
+                                    <div className="text-3xl font-bold">{result.vol}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Controls */}
+                        <div className="p-8 bg-white">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                                {/* Voltage Selection */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-500 mb-2 uppercase">
+                                        รหัสแรงดัน (Voltage Code)
+                                    </label>
+                                    <div className="relative">
+                                        <select
+                                            value={voltageCode}
+                                            onChange={(e) => setVoltageCode(e.target.value)}
+                                            className="w-full p-3 pl-4 pr-10 bg-gray-50 border-2 border-gray-200 rounded-xl appearance-none focus:outline-none focus:border-blue-500 font-mono font-bold text-lg"
+                                        >
+                                            {VOLTAGE_OPTIONS.map((opt, idx) => (
+                                                <option key={idx} value={opt.code}>
+                                                    {opt.code} ({opt.label})
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+                                            <i className="fas fa-chevron-down"></i>
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-gray-400 mt-2">
+                                        {type === 'tantalum' ? 'เช่น A = 10V, C = 16V' : 'เช่น C = 16V, 1H = 50V'}
+                                    </p>
+                                </div>
+
+                                {/* Capacitance Input */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-500 mb-2 uppercase">
+                                        รหัสความจุ (3-Digit Code)
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            value={capCode}
+                                            onChange={(e) => setCapCode(e.target.value)}
+                                            maxLength={3}
+                                            className="w-full p-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 font-mono font-bold text-lg text-center"
+                                            placeholder="106"
+                                        />
+                                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                            <i className="fas fa-keyboard"></i>
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-gray-400 mt-2">
+                                        เช่น 106 = 10 µF, 476 = 47 µF
+                                    </p>
+                                </div>
+
+                            </div>
+
+                            {/* Info Box */}
+                            <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-100 text-sm text-blue-800 flex items-start gap-3">
+                                <i className="fas fa-info-circle mt-1 text-blue-500"></i>
+                                <div>
+                                    <strong>ข้อสังเกต:</strong>
+                                    <ul className="list-disc list-inside mt-1 space-y-1 text-blue-700/80">
+                                        <li><strong>Tantalum (สีเหลือง):</strong> ขีดสีน้ำตาล/ดำ คือขั้วบวก (+)</li>
+                                        <li><strong>Aluminum (สีเงิน):</strong> แถบสีดำบนหัว คือขั้วลบ (-)</li>
+                                        <li>รหัสแรงดันอาจแตกต่างกันในบางยี่ห้อ แต่รหัส EIA มาตรฐานคือ A=10V, C=16V, E=25V</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <footer className="mt-8 text-xs text-gray-400 text-center">
+                        &copy; Electrolytic Decoder Tool
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>
