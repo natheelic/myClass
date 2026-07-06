@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ใบงานปฏิบัติการ: การจัดการสินค้าคงคลังด้วยฟังก์ชันข้อความและวันที่</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #f8fafc;
+            background-color: #0a0a0f;
+        }
+        h1, h2, h3, h4 { color: #3b82f6; }
+        h1 { border-bottom: 2px solid #3b82f6; padding-bottom: 0.5rem; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
+        th, td { border: 1px solid #334155; padding: 0.75rem; text-align: left; }
+        th { background-color: #1e293b; color: #fff; }
+        code { background-color: #1e293b; padding: 0.2rem 0.4rem; border-radius: 4px; color: #fb7185; }
+        a { color: #60a5fa; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            padding: 0.5rem 1rem;
+            background: #1e293b;
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .back-btn:hover { background: #3b82f6; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">&larr; กลับหน้าหลัก (Back to Portal)</a>
+    <div class="content">
+        <h1>ใบงานปฏิบัติการ: การจัดการสินค้าคงคลังด้วยฟังก์ชันข้อความและวันที่</h1>
+<p><strong>ระดับชั้น:</strong> ประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.)
+<strong>รายวิชา:</strong> โปรแกรมตารางงานประยุกต์ (Applied Spreadsheet)</p>
+<hr />
+<h2>🎯 วัตถุประสงค์การเรียนรู้</h2>
+<ol>
+<li>สามารถใช้ฟังก์ชันจัดการข้อความ (<code>LEFT</code>, <code>RIGHT</code>, <code>MID</code>, <code>CONCATENATE</code> หรือ <code>&amp;</code>) ในการจัดการรหัสข้อมูลได้</li>
+<li>สามารถใช้ฟังก์ชันเกี่ยวกับวันที่ (<code>TODAY</code>, <code>DATEDIF</code>, <code>EOMONTH</code>, <code>EDATE</code>) ในการวิเคราะห์อายุของสินค้าคงคลังได้</li>
+<li>สามารถประยุกต์ใช้ฟังก์ชันตรวจสอบเงื่อนไขในการแจ้งเตือนสถานะของสินค้าได้</li>
+</ol>
+<hr />
+<h2>📝 สถานการณ์จำลอง (Scenario)</h2>
+<p>ให้นักศึกษาสวมบทบาทเป็นผู้จัดการคลังสินค้าของบริษัท <strong>"Fresh &amp; Fast Warehouse"</strong> ซึ่งมีทั้งสินค้าอุปโภคและบริโภค เนื่องจากสินค้ารับเข้ามาจากหลายแหล่งและมีรหัสสินค้าที่ซับซ้อน นอกจากนี้สินค้าบริโภคยังมีวันหมดอายุที่ต้องติดตามอย่างใกล้ชิด ผู้บริหารจึงมอบหมายให้คุณสร้างระบบประมวลผลรหัสสินค้าและติดตามวันหมดอายุเพื่อแจ้งเตือนพนักงาน</p>
+<hr />
+<h2>🛠️ ขั้นตอนการปฏิบัติงาน</h2>
+<h3>ส่วนที่ 1: การจัดการรหัสสินค้า (Sheet: <code>ProductCodes</code>)</h3>
+<p>สร้าง Sheet ใหม่ชื่อ <code>ProductCodes</code> และสร้างตารางเพื่อแยกและรวมรหัสสินค้า (Serial Number) ดังนี้:</p>
+<ol>
+<li><strong>รหัสซีเรียล (Full_Serial)</strong>: ให้นักศึกษากรอกข้อมูลรหัสแบบยาวจำนวน 10 รายการ โดยรหัสมีรูปแบบคือ <code>หมวดหมู่(3 ตัวอักษร)-รหัสย่อย(3 ตัวเลข)-ปีล็อตการผลิต(4 ตัวเลข)</code> เช่น <code>FOD-105-2025</code>, <code>ELC-302-2026</code>, <code>BEV-411-2026</code></li>
+<li><strong>หมวดหมู่สินค้า (Category)</strong>: ใช้ฟังก์ชัน <code>LEFT</code> ดึงตัวอักษร 3 ตัวแรกจากรหัสซีเรียล</li>
+<li><strong>ปีล็อตการผลิต (Batch_Year)</strong>: ใช้ฟังก์ชัน <code>RIGHT</code> ดึงตัวเลข 4 ตัวสุดท้ายจากรหัสซีเรียล</li>
+<li><strong>รหัสย่อย (Item_ID)</strong>: ใช้ฟังก์ชัน <code>MID</code> ดึงเฉพาะกลุ่มตัวเลขรหัสย่อย (3 ตัวตรงกลาง) ออกมา</li>
+<li><strong>รหัสสินค้าแบบใหม่ (New_SKU)</strong>: ใช้เครื่องหมาย <code>&amp;</code> หรือฟังก์ชัน <code>CONCATENATE</code> นำ <strong>รหัสย่อย</strong> มาต่อด้วย <strong>ปีล็อตการผลิต</strong> โดยมีเครื่องหมายขีดล่างคั่นกลาง เช่น <code>105_2025</code></li>
+</ol>
+<hr />
+<h3>ส่วนที่ 2: การคำนวณอายุและวันหมดอายุ (Sheet: <code>InventoryTracking</code>)</h3>
+<p>สร้าง Sheet ใหม่ชื่อ <code>InventoryTracking</code> เพื่อติดตามวันหมดอายุของสินค้า (จำลองข้อมูล 15 รายการ) โดยมีหัวข้อคอลัมน์ดังนี้:</p>
+<ol>
+<li><strong>ลำดับ (No.)</strong></li>
+<li><strong>รหัสสินค้า (New_SKU)</strong>: (คัดลอกข้อมูลแบบ Paste Values มาจากส่วนที่ 1)</li>
+<li><strong>ชื่อสินค้า (Product_Name)</strong>: (ตั้งชื่อสินค้าจำลอง)</li>
+<li><strong>วันที่รับเข้า (Received_Date)</strong>: (กรอกวันที่ในอดีตหรือปัจจุบัน เช่น 15/01/2026)</li>
+<li><strong>อายุการเก็บรักษา_เดือน (Shelf_Life_Months)</strong>: (กรอกตัวเลขจำนวนเดือน เช่น 6, 12, 18, 24)</li>
+<li><strong>วันหมดอายุ (Expiry_Date)</strong>: ใช้ฟังก์ชัน <code>EDATE</code> (หรือ <code>EOMONTH</code> กรณีสิ้นเดือน) คำนวณวันหมดอายุ โดยอ้างอิงจากวันที่รับเข้า และจำนวนเดือนในอายุการเก็บรักษา</li>
+<li><strong>วันที่ปัจจุบัน (Current_Date)</strong>: ใช้ฟังก์ชัน <code>=TODAY()</code> เพื่อแสดงวันที่ของระบบ</li>
+<li><strong>จำนวนวันที่เก็บมาแล้ว (Days_in_Storage)</strong>: ใช้ฟังก์ชัน <code>DATEDIF</code> แบบแสดงหน่วยเป็นวัน <code>"d"</code> เพื่อหาว่าเก็บสินค้าชิ้นนี้มาแล้วกี่วัน (นับจากวันที่รับเข้าถึงวันที่ปัจจุบัน)</li>
+<li><strong>วันคงเหลือจนกว่าจะหมดอายุ (Days_to_Expiry)</strong>: คำนวณจำนวนวันที่เหลือก่อนหมดอายุ (นำวันหมดอายุ - วันที่ปัจจุบัน)</li>
+<li><strong>สถานะแจ้งเตือน (Alert_Status)</strong>: ใช้ฟังก์ชัน <code>IF</code> โดยมีเงื่อนไขดังนี้:<ul>
+<li>ถ้านวนวันคงเหลือ (<code>Days_to_Expiry</code>) <strong>น้อยกว่า หรือเท่ากับ 30 วัน</strong> ให้แสดงข้อความ <strong>"รีบจำหน่าย (Urgent)"</strong></li>
+<li>นอกเหนือจากนั้น ให้แสดงข้อความ <strong>"ปกติ (Normal)"</strong></li>
+</ul>
+</li>
+</ol>
+<p><strong>คำสั่งเพิ่มเติม:</strong>
+- ใช้ <strong>Conditional Formatting</strong> ไฮไลท์แถว หรือเซลล์ในคอลัมน์ "สถานะแจ้งเตือน" ที่ขึ้นว่า "รีบจำหน่าย (Urgent)" ด้วยสีแดงหรือสีส้ม
+- จัดรูปแบบวันที่ (Date Formatting) ให้แสดงผลในรูปแบบ <code>DD-MMM-YYYY</code> (เช่น 15-Jan-2026) เพื่อป้องกันความสับสน</p>
+<hr />
+<h2>📋 เกณฑ์การประเมินผล (Rubric Score) - คะแนนเต็ม 20 คะแนน</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">รายการประเมิน</th>
+<th style="text-align: left;">รายละเอียด</th>
+<th style="text-align: center;">คะแนน</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>1. ฟังก์ชันจัดการข้อความ (LEFT, RIGHT, MID)</strong></td>
+<td style="text-align: left;">สามารถแยกส่วนประกอบของข้อความได้ถูกต้องแม่นยำ</td>
+<td style="text-align: center;">5</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>2. ฟังก์ชันต่อข้อความ (CONCATENATE / &amp;)</strong></td>
+<td style="text-align: left;">สามารถนำข้อมูลที่แยกแล้วมาประกอบเป็นรหัสใหม่ได้ตามรูปแบบที่กำหนด</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>3. ฟังก์ชันวันที่ (EDATE, TODAY)</strong></td>
+<td style="text-align: left;">สามารถคำนวณวันหมดอายุและแสดงวันที่ปัจจุบันได้อย่างถูกต้อง</td>
+<td style="text-align: center;">5</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>4. ฟังก์ชันการหาระยะเวลา (DATEDIF)</strong></td>
+<td style="text-align: left;">สามารถคำนวณจำนวนวันและระยะเวลาการเก็บรักษาสินค้าได้ถูกต้อง</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>5. การใช้ IF และ Conditional Formatting</strong></td>
+<td style="text-align: left;">สร้างเงื่อนไขแจ้งเตือนสินค้าใกล้หมดอายุและไฮไลท์สีได้ถูกต้องสวยงาม</td>
+<td style="text-align: center;">3</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>จัดทำโดย: แผนกวิชาคอมพิวเตอร์ธุรกิจ/เทคโนโลยีสารสนเทศ</em></p>
+    </div>
+</body>
+</html>

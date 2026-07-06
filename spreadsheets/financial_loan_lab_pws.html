@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ใบงานปฏิบัติการ: การคำนวณสินเชื่อและตารางผ่อนชำระ (Financial Planning)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #f8fafc;
+            background-color: #0a0a0f;
+        }
+        h1, h2, h3, h4 { color: #3b82f6; }
+        h1 { border-bottom: 2px solid #3b82f6; padding-bottom: 0.5rem; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
+        th, td { border: 1px solid #334155; padding: 0.75rem; text-align: left; }
+        th { background-color: #1e293b; color: #fff; }
+        code { background-color: #1e293b; padding: 0.2rem 0.4rem; border-radius: 4px; color: #fb7185; }
+        a { color: #60a5fa; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            padding: 0.5rem 1rem;
+            background: #1e293b;
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .back-btn:hover { background: #3b82f6; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">&larr; กลับหน้าหลัก (Back to Portal)</a>
+    <div class="content">
+        <h1>ใบงานปฏิบัติการ: การคำนวณสินเชื่อและตารางผ่อนชำระ (Financial Planning)</h1>
+<p><strong>ระดับชั้น:</strong> ประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.)
+<strong>รายวิชา:</strong> โปรแกรมตารางงานประยุกต์ (Applied Spreadsheet)</p>
+<hr />
+<h2>🎯 วัตถุประสงค์การเรียนรู้</h2>
+<ol>
+<li>สามารถใช้งานฟังก์ชันทางการเงินเบื้องต้น (<code>PMT</code>, <code>IPMT</code>, <code>PPMT</code>) เพื่อประเมินสินเชื่อได้</li>
+<li>สามารถสร้างตารางแสดงการผ่อนชำระ (Amortization Schedule) ได้</li>
+<li>เข้าใจหลักการอ้างอิงเซลล์แบบสัมบูรณ์ (Absolute Reference <code>$</code>) ในการเขียนสูตรทางการเงิน</li>
+</ol>
+<hr />
+<h2>📝 สถานการณ์จำลอง (Scenario)</h2>
+<p>ให้นักศึกษาสวมบทบาทเป็นเจ้าหน้าที่สินเชื่อของโครงการอสังหาริมทรัพย์ <strong>"Dream Home Real Estate"</strong> ลูกค้าที่เข้ามาชมบ้านตัวอย่างต้องการทราบว่าหากพวกเขาซื้อบ้านหรือคอนโด จะต้องผ่อนชำระเดือนละเท่าไร และในเงินที่ผ่อนไปนั้นเป็นเงินต้นเท่าไร เป็นดอกเบี้ยเท่าไร คุณจึงต้องสร้างเครื่องมือคำนวณสินเชื่อบ้านอัตโนมัติบน Spreadsheet เพื่อให้บริการลูกค้า</p>
+<hr />
+<h2>🛠️ ขั้นตอนการปฏิบัติงาน</h2>
+<h3>ส่วนที่ 1: เครื่องมือคำนวณสินเชื่อ (Sheet: <code>LoanCalculator</code>)</h3>
+<p>สร้าง Sheet ใหม่ชื่อ <code>LoanCalculator</code> และออกแบบแบบฟอร์มให้ลูกค้ากรอกข้อมูล โดยประกอบด้วยส่วนรับข้อมูล (Input) และส่วนแสดงผลลัพธ์ (Output):</p>
+<p><strong>1. ส่วนรับข้อมูล (Input Variables):</strong>
+   - <strong>ราคาบ้าน (Property_Price):</strong> (เช่น 3,500,000 บาท)
+   - <strong>เงินดาวน์ % (Down_Payment_Pct):</strong> (เช่น 10%)
+   - <strong>ระยะเวลาผ่อนชำระ_ปี (Years):</strong> (เช่น 30 ปี)
+   - <strong>อัตราดอกเบี้ยต่อปี % (Annual_Interest_Rate):</strong> (เช่น 5.5%)</p>
+<p><strong>2. ส่วนคำนวณผลลัพธ์ (Output Analysis):</strong>
+   - <strong>จำนวนเงินดาวน์ (Down_Payment_Amt):</strong> <code>= ราคาบ้าน * เงินดาวน์ %</code>
+   - <strong>ยอดจัดสินเชื่อสุทธิ (Loan_Amount):</strong> <code>= ราคาบ้าน - จำนวนเงินดาวน์</code>
+   - <strong>จำนวนงวดทั้งหมด_เดือน (Total_Months):</strong> <code>= ระยะเวลาผ่อนชำระ_ปี * 12</code>
+   - <strong>อัตราดอกเบี้ยต่อเดือน (Monthly_Rate):</strong> <code>= อัตราดอกเบี้ยต่อปี % / 12</code>
+   - <strong>เงินผ่อนชำระต่อเดือน (Monthly_Payment):</strong> ใช้ฟังก์ชัน <code>=PMT(อัตราดอกเบี้ยต่อเดือน, จำนวนงวดทั้งหมด, -ยอดจัดสินเชื่อสุทธิ)</code> เพื่อหาค่างวดที่ต้องจ่ายเท่ากันทุกเดือน</p>
+<h3>ส่วนที่ 2: ตารางแสดงการผ่อนชำระ (Amortization Schedule)</h3>
+<p>ใน Sheet <code>LoanCalculator</code> ด้านล่างของแบบฟอร์ม ให้สร้างตารางแจกแจงการผ่อนชำระ โดยแสดงข้อมูล <strong>24 งวดแรก (2 ปีแรก)</strong> ประกอบด้วยคอลัมน์ดังนี้:</p>
+<ol>
+<li><strong>งวดที่ (Period):</strong> พิมพ์เลข 1 ถึง 24</li>
+<li><strong>ค่างวด (Payment):</strong> อ้างอิงเซลล์ "เงินผ่อนชำระต่อเดือน" (อย่าลืมใช้ <code>$</code> ล็อคเซลล์)</li>
+<li><strong>ดอกเบี้ยจ่ายงวดนี้ (Interest):</strong> ใช้ฟังก์ชัน <code>=IPMT(อัตราดอกเบี้ยต่อเดือน, งวดที่, จำนวนงวดทั้งหมด, -ยอดจัดสินเชื่อสุทธิ)</code></li>
+<li><strong>เงินต้นที่ลดลงงวดนี้ (Principal):</strong> ใช้ฟังก์ชัน <code>=PPMT(อัตราดอกเบี้ยต่อเดือน, งวดที่, จำนวนงวดทั้งหมด, -ยอดจัดสินเชื่อสุทธิ)</code></li>
+<li><strong>ยอดหนี้คงเหลือ (Balance):</strong> ยอดจัดสินเชื่อตั้งต้น ลบด้วย "เงินต้นที่ลดลงงวดนี้" (ในงวดถัดไปให้นำยอดคงเหลือเดิม ลบเงินต้นที่ลดลงงวดใหม่)</li>
+</ol>
+<p><em>คำแนะนำ: ทดสอบรวม "ดอกเบี้ย" และ "เงินต้น" ในงวดเดียวกัน จะต้องมีค่าเท่ากับ "ค่างวด" พอดี</em></p>
+<hr />
+<h2>📋 เกณฑ์การประเมินผล (Rubric Score) - คะแนนเต็ม 20 คะแนน</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">รายการประเมิน</th>
+<th style="text-align: left;">รายละเอียด</th>
+<th style="text-align: center;">คะแนน</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>1. การออกแบบส่วน Input/Output</strong></td>
+<td style="text-align: left;">สร้างแบบฟอร์มรับข้อมูลและผูกสูตรคำนวณยอดจัดสินเชื่อได้ถูกต้อง</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>2. ฟังก์ชัน PMT</strong></td>
+<td style="text-align: left;">คำนวณยอดผ่อนชำระต่อเดือน (ค่างวด) ได้อย่างถูกต้อง</td>
+<td style="text-align: center;">5</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>3. ฟังก์ชัน IPMT และ PPMT</strong></td>
+<td style="text-align: left;">คำนวณแยกสัดส่วนดอกเบี้ยและเงินต้นของแต่ละงวดได้ถูกต้อง</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>4. ตาราง Amortization (24 งวด)</strong></td>
+<td style="text-align: left;">สร้างตารางลดยอดหนี้คงเหลือได้ถูกต้องและเชื่อมโยงข้อมูลสมบูรณ์</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>5. การใช้ Absolute Reference ($)</strong></td>
+<td style="text-align: left;">ล็อคเซลล์อ้างอิงได้อย่างถูกต้องเมื่อลากสูตรลงตาราง</td>
+<td style="text-align: center;">2</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>จัดทำโดย: แผนกวิชาคอมพิวเตอร์ธุรกิจ/เทคโนโลยีสารสนเทศ</em></p>
+    </div>
+</body>
+</html>

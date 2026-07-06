@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ใบงานปฏิบัติการ: ระบบจัดการผลการเรียนและสถิติการเข้าเรียน</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #f8fafc;
+            background-color: #0a0a0f;
+        }
+        h1, h2, h3, h4 { color: #3b82f6; }
+        h1 { border-bottom: 2px solid #3b82f6; padding-bottom: 0.5rem; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
+        th, td { border: 1px solid #334155; padding: 0.75rem; text-align: left; }
+        th { background-color: #1e293b; color: #fff; }
+        code { background-color: #1e293b; padding: 0.2rem 0.4rem; border-radius: 4px; color: #fb7185; }
+        a { color: #60a5fa; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            padding: 0.5rem 1rem;
+            background: #1e293b;
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .back-btn:hover { background: #3b82f6; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">&larr; กลับหน้าหลัก (Back to Portal)</a>
+    <div class="content">
+        <h1>ใบงานปฏิบัติการ: ระบบจัดการผลการเรียนและสถิติการเข้าเรียน</h1>
+<p><strong>ระดับชั้น:</strong> ประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.)
+<strong>รายวิชา:</strong> โปรแกรมตารางงานประยุกต์ (Applied Spreadsheet)</p>
+<hr />
+<h2>🎯 วัตถุประสงค์การเรียนรู้</h2>
+<ol>
+<li>สามารถใช้ฟังก์ชันสรุปผลและนับจำนวนแบบหลายเงื่อนไข (<code>SUMIFS</code>, <code>COUNTIFS</code>, <code>AVERAGEIFS</code>) ได้</li>
+<li>สามารถใช้ฟังก์ชันทางสถิติและการจัดอันดับ (<code>RANK.EQ</code>, <code>MAX</code>, <code>MIN</code>, <code>LARGE</code>) เพื่อวิเคราะห์ผลการเรียน</li>
+<li>สามารถประยุกต์ใช้ Data Validation แบบซับซ้อนร่วมกับ Conditional Formatting ได้</li>
+</ol>
+<hr />
+<h2>📝 สถานการณ์จำลอง (Scenario)</h2>
+<p>ให้นักศึกษาสวมบทบาทเป็นผู้ช่วยอาจารย์ประจำสถาบัน <strong>"Future Skills Academy"</strong> ซึ่งมีการสอนหลากหลายสาขาวิชา คุณจำเป็นต้องสรุปผลคะแนนสอบและการเข้าเรียนของนักศึกษา เพื่อหาค่าเฉลี่ยของแต่ละสาขาวิชา จัดอันดับนักศึกษาที่ได้คะแนนสูงสุด และสรุปสถิติเพื่อรายงานต่อผู้อำนวยการสถาบัน</p>
+<hr />
+<h2>🛠️ ขั้นตอนการปฏิบัติงาน</h2>
+<h3>ส่วนที่ 1: บันทึกข้อมูลนักศึกษาและคะแนน (Sheet: <code>Gradebook</code>)</h3>
+<p>สร้าง Sheet ใหม่ชื่อ <code>Gradebook</code> จัดทำข้อมูลจำลองนักศึกษาจำนวน 20 คน ประกอบด้วยคอลัมน์ดังนี้:</p>
+<ol>
+<li><strong>รหัสนักศึกษา (Student_ID)</strong></li>
+<li><strong>ชื่อ-นามสกุล (Student_Name)</strong></li>
+<li><strong>สาขาวิชา (Major)</strong>: (เช่น IT, Accounting, Marketing) ใช้ Data Validation แบบ Drop-down</li>
+<li><strong>เพศ (Gender)</strong>: (ชาย / หญิง)</li>
+<li><strong>คะแนนสอบกลางภาค (Midterm_Score)</strong>: (คะแนนเต็ม 40)</li>
+<li><strong>คะแนนสอบปลายภาค (Final_Score)</strong>: (คะแนนเต็ม 60)</li>
+<li><strong>คะแนนรวม (Total_Score)</strong>: หาผลรวมของ Midterm และ Final</li>
+<li><strong>อันดับที่ (Rank)</strong>: ใช้ฟังก์ชัน <code>RANK.EQ</code> เพื่อจัดอันดับคะแนนรวมของนักศึกษาเปรียบเทียบกับเพื่อนทั้งห้อง (คะแนนมากที่สุดคืออันดับ 1)</li>
+<li><strong>เวลาเรียน (Attendance_Percent)</strong>: (กรอกข้อมูลเป็นเปอร์เซ็นต์ เช่น 85%, 90%)</li>
+<li><strong>สิทธิ์สอบ (Exam_Eligibility)</strong>: ใช้สูตรตรวจสอบว่า หากเวลาเรียน &gt;= 80% ให้แสดง "มีสิทธิ์สอบ" หากน้อยกว่าให้แสดง "หมดสิทธิ์สอบ" และใช้ Conditional Formatting ไฮไลท์แถวคนที่ "หมดสิทธิ์สอบ" เป็นสีแดง</li>
+</ol>
+<h3>ส่วนที่ 2: การวิเคราะห์และสรุปสถิติ (Sheet: <code>Statistics</code>)</h3>
+<p>สร้าง Sheet ใหม่ชื่อ <code>Statistics</code> เพื่อดึงข้อมูลจาก <code>Gradebook</code> มาสรุปผลดังนี้:</p>
+<ol>
+<li><strong>ตารางสรุปข้อมูลแยกตามสาขาวิชา (Major):</strong></li>
+<li>ใช้ <code>COUNTIFS</code> เพื่อนับจำนวนนักศึกษาแยกตาม "สาขาวิชา" และ "เพศ" (เช่น นักศึกษา IT ที่เป็นผู้ชายมีกี่คน)</li>
+<li>ใช้ <code>AVERAGEIFS</code> เพื่อหา "คะแนนรวมเฉลี่ย" ของนักศึกษาแยกตามสาขาวิชา</li>
+<li><strong>ตารางสถิติภาพรวม (Overview):</strong></li>
+<li>คะแนนสูงสุดของห้อง: ใช้ฟังก์ชัน <code>MAX</code></li>
+<li>คะแนนต่ำสุดของห้อง: ใช้ฟังก์ชัน <code>MIN</code></li>
+<li>คะแนนสูงสุดอันดับที่ 2 และ 3: ใช้ฟังก์ชัน <code>LARGE(range, 2)</code> และ <code>LARGE(range, 3)</code></li>
+<li><strong>การนับเงื่อนไขเฉพาะ:</strong></li>
+<li>ใช้ <code>COUNTIFS</code> นับจำนวนนักศึกษาที่ "ได้คะแนนรวมมากกว่า 80 คะแนน" และ "มีเวลาเรียนมากกว่า 90%"</li>
+</ol>
+<hr />
+<h2>📋 เกณฑ์การประเมินผล (Rubric Score) - คะแนนเต็ม 20 คะแนน</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">รายการประเมิน</th>
+<th style="text-align: left;">รายละเอียด</th>
+<th style="text-align: center;">คะแนน</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>1. ฟังก์ชัน AVERAGEIFS &amp; COUNTIFS</strong></td>
+<td style="text-align: left;">สามารถสรุปค่าเฉลี่ยและนับจำนวนแบบหลายเงื่อนไขได้ถูกต้อง</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>2. ฟังก์ชันจัดอันดับ RANK.EQ</strong></td>
+<td style="text-align: left;">สามารถจัดอันดับคะแนนรวมของนักศึกษาได้อย่างถูกต้อง</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>3. ฟังก์ชันสถิติพื้นฐานและ LARGE</strong></td>
+<td style="text-align: left;">หาค่า MAX, MIN และคะแนนสูงสุดลำดับรองลงมาได้</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>4. เงื่อนไขสิทธิ์สอบและสี (IF &amp; Format)</strong></td>
+<td style="text-align: left;">ประเมินสิทธิ์สอบตามเปอร์เซ็นต์เวลาเรียนและไฮไลท์สีได้ถูกต้อง</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>5. ความสมบูรณ์ของข้อมูลและการตกแต่ง</strong></td>
+<td style="text-align: left;">ข้อมูลจำลองมีความสมจริง จัดตารางและรูปแบบเปอร์เซ็นต์ได้สวยงาม</td>
+<td style="text-align: center;">2</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>จัดทำโดย: แผนกวิชาคอมพิวเตอร์ธุรกิจ/เทคโนโลยีสารสนเทศ</em></p>
+    </div>
+</body>
+</html>
