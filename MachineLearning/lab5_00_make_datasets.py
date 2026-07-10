@@ -7,7 +7,8 @@ import numpy as np
 import pandas as pd
 from sklearn.datasets import load_iris, load_wine
 
-BASE = Path(__file__).resolve().parent
+# BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
 DATA = BASE / "data"
 DATA.mkdir(exist_ok=True)
 
