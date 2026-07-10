@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
 (BASE / "results").mkdir(exist_ok=True)
 
 # --- โหลดข้อมูลจากไฟล์ CSV ---

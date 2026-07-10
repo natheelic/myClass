@@ -10,7 +10,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
 df = pd.read_csv(BASE / "data" / "iris.csv")
 
 X = df.iloc[:, :4]

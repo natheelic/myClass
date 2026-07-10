@@ -11,7 +11,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import confusion_matrix, classification_report
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
 (BASE / "results").mkdir(exist_ok=True)
 df = pd.read_csv(BASE / "data" / "iris.csv")
 

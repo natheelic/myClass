@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
 (BASE / "results").mkdir(exist_ok=True)
 df = pd.read_csv(BASE / "data" / "iris.csv")
 

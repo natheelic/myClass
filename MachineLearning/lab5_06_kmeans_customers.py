@@ -9,7 +9,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
 (BASE / "results").mkdir(exist_ok=True)
 df = pd.read_csv(BASE / "data" / "customers.csv")
 print("ข้อมูลลูกค้า:", df.shape)
