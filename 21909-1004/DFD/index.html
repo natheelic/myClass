@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ใบความรู้ที่ 5 — การสร้างแบบจำลองกระบวนการด้วย Data Flow Diagram">
+  <title>DFD — ใบความรู้ที่ 5</title>
+  <link rel="stylesheet" href="../../markdown.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { padding: 28px 0; }
+    .page { width: min(980px, calc(100% - 32px)); margin: auto; background: #fff; border: 1px solid #d0d7de; border-radius: 6px; overflow: hidden; }
+    .md-nav { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 24px; border-bottom:1px solid #d0d7de; color:#57606a; font:500 12px 'IBM Plex Mono',monospace; }
+    .md-nav a { color:#57606a; }.md-nav a:hover { color:#0969da; text-decoration:none; }.md-nav strong { color:#24292f; }.md-nav span { color:#8c959f; }
+    .article { padding:42px 58px 56px; overflow-wrap:anywhere; }
+    .article h1 { padding-bottom:14px; border-bottom:1px solid #d0d7de; font-size:clamp(28px,5vw,42px); }
+    .article h2 { margin-top:38px; padding-bottom:8px; border-bottom:1px solid #d0d7de; font-size:24px; }
+    .article h3 { margin-top:30px; font-size:19px; }
+    .article p, .article li { color:#57606a; }
+    .article table { display:block; width:100%; overflow-x:auto; border-collapse:collapse; margin:18px 0 24px; font-size:14px; }
+    .article th, .article td { min-width:120px; padding:9px 12px; border:1px solid #d0d7de; text-align:left; vertical-align:top; }
+    .article th { color:#24292f; background:#f6f8fa; font-weight:600; }
+    .article blockquote { margin:20px 0; padding:12px 16px; color:#57606a; background:#f6f8fa; border-left:3px solid #0969da; }
+    .article pre { padding:16px; overflow:auto; background:#f6f8fa; border:1px solid #d8dee4; border-radius:6px; font:13px/1.6 'IBM Plex Mono',monospace; }
+    .article code { padding:2px 5px; color:#24292f; background:#f6f8fa; border-radius:4px; font:13px 'IBM Plex Mono',monospace; }
+    .article pre code { padding:0; background:transparent; }
+    .article hr { height:1px; margin:32px 0; border:0; background:#d0d7de; }
+    .loading, .error { padding:48px; text-align:center; color:#57606a; }
+    .error a { color:#0969da; }
+    footer { padding:17px 58px; color:#6e7781; border-top:1px solid #d0d7de; font:11px 'IBM Plex Mono',monospace; }
+    @media(max-width:600px){ body{padding:10px 0}.page{width:calc(100% - 20px)}.md-nav{padding:12px 16px}.md-nav span{display:none}.article{padding:28px 20px 38px}footer{padding:16px 20px}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <nav class="md-nav"><a href="../../index.html">← my-class-room</a><span>/</span><strong>21909-1004 / DFD / DFD.md</strong></nav>
+    <main id="markdown-content" class="article"><p class="loading">กำลังโหลดเอกสาร <code>DFD.md</code>…</p></main>
+    <footer>Rendered from <code>DFD.md</code> · © 2026 my-class-room</footer>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    const content = document.getElementById('markdown-content');
+    marked.setOptions({ gfm: true, breaks: false });
+    Promise.resolve(document.getElementById('source').textContent).then(markdown => {
+        content.innerHTML = marked.parse(markdown);
+        content.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+          const diagram = document.createElement('div');
+          diagram.className = 'mermaid';
+          diagram.textContent = block.textContent;
+          block.parentElement.replaceWith(diagram);
+        });
+        mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'loose' });
+        return mermaid.run({ querySelector: '.mermaid' });
+      })
+      .catch(() => {
+        content.innerHTML = '<p class="error">ไม่สามารถโหลดเอกสารอัตโนมัติได้ กรุณาเปิดไฟล์ <a href="DFD.md"><code>DFD.md</code></a> โดยตรง</p>';
+      });
+  </script>
+<script type="text/markdown" id="source">
+# ใบความรู้ที่ 5 — การสร้างแบบจำลองกระบวนการ (Data Flow Diagram)
+
+| | |
+|---|---|
+| **รหัสวิชา** | 21909-1004 พื้นฐานการวิเคราะห์และออกแบบระบบ |
+| **หน่วยที่** | 5 — การสร้างแบบจำลองกระบวนการ |
+| **สอนครั้งที่** | 9–10 (ทฤษฎี 2 ชม. / ปฏิบัติ 6 ชม.) |
+| **มาตรฐานอาชีพ** | สคช. รหัส 30101.02 อาชีพนักออกแบบและพัฒนาผลิตภัณฑ์ไอซีที ระดับ 3 |
+
+---
+
+## 1. ผลลัพธ์การเรียนรู้ระดับหน่วยการเรียน
+ออกแบบและเขียนแผนภาพกระแสข้อมูล (Data Flow Diagram) เพื่อจำลองกระบวนการทำงานของระบบจากข้อกำหนดความต้องการได้อย่างถูกต้องตามหลักการ
+
+## 2. สมรรถนะประจำหน่วย
+1. แสดงความรู้เกี่ยวกับสัญลักษณ์และหลักการสร้างแบบจำลองกระบวนการ
+2. ออกแบบและเขียนแผนภาพกระแสข้อมูล (DFD) ตามข้อกำหนดความต้องการ
+
+## 3. จุดประสงค์เชิงพฤติกรรม
+- **พุทธิพิสัย:** อธิบายสัญลักษณ์และหลักการเขียน DFD ได้ถูกต้อง
+- **ทักษะพิสัย:** เขียน Context Diagram และ DFD Level 0/1 จากกรณีที่กำหนดได้ถูกต้อง
+- **จิตพิสัย:** ทำงานประณีต เป็นระเบียบ และตรวจสอบความถูกต้องของผลงาน
+- **ประยุกต์ใช้:** ประยุกต์ DFD ในการจำลองกระบวนการของระบบงานจริงได้
+
+---
+
+## 5. เนื้อหาสาระ
+
+เมื่อได้ข้อกำหนดความต้องการของระบบแล้ว ขั้นต่อไปคือการนำความต้องการมา “จำลอง” ให้เห็นภาพการทำงานของระบบ เครื่องมือที่นิยมใช้คือ **แผนภาพกระแสข้อมูล (Data Flow Diagram: DFD)** ซึ่งแสดงการไหลของข้อมูลเข้า–ออก กระบวนการประมวลผล และแหล่งจัดเก็บข้อมูล ช่วยให้ทั้งนักวิเคราะห์ ผู้ใช้ และทีมพัฒนาเข้าใจระบบตรงกันก่อนลงมือออกแบบและเขียนโปรแกรม
+
+### 5.1 ความหมายและประโยชน์ของแบบจำลองกระบวนการ
+แบบจำลองกระบวนการ (Process Model) คือ การแสดงกระบวนการทำงานของระบบในรูปแบบภาพ เพื่อสื่อสารว่าระบบรับข้อมูลอะไร ประมวลผลอย่างไร และส่งผลลัพธ์ใดออกไป ประโยชน์สำคัญ ได้แก่ เข้าใจระบบได้ง่าย ตรวจสอบความครบถ้วนของกระบวนการ ลดความเข้าใจคลาดเคลื่อน และใช้เป็นพื้นฐานในการออกแบบระบบและฐานข้อมูล
+
+### 5.2 สัญลักษณ์ของแผนภาพกระแสข้อมูล
+
+| สัญลักษณ์ | องค์ประกอบ | ความหมายและการใช้งาน |
+|---|---|---|
+| วงกลม / สี่เหลี่ยมมุมมน | **กระบวนการ (Process)** | การประมวลผลที่แปลงข้อมูลเข้าเป็นข้อมูลออก ตั้งชื่อด้วยคำกริยา เช่น 1.0 ยืมหนังสือ |
+| เส้นลูกศร → | **กระแสข้อมูล (Data Flow)** | ทิศทางการไหลของข้อมูล กำกับด้วยชื่อข้อมูล เช่น คำขอยืม |
+| สี่เหลี่ยมเปิดด้านข้าง | **แหล่งจัดเก็บข้อมูล (Data Store)** | ที่เก็บข้อมูลของระบบ เช่น D1 หนังสือ (ใช้รหัส D นำหน้า) |
+| สี่เหลี่ยม | **สิ่งที่อยู่ภายนอกระบบ (External Entity)** | ผู้ส่ง/รับข้อมูลที่อยู่นอกระบบ เช่น สมาชิก บรรณารักษ์ |
+
+### 5.3 ระดับของ DFD
+- **แผนภาพบริบท (Context Diagram):** แสดงระบบเป็นกระบวนการเดียว (หมายเลข 0) กับสิ่งที่อยู่ภายนอกระบบ ใช้กำหนดขอบเขต — *ไม่มีแหล่งจัดเก็บข้อมูล*
+- **DFD ระดับ 0:** แตกกระบวนการหลักเป็นกระบวนการย่อย (1.0, 2.0, 3.0 …) และเริ่มแสดงแหล่งจัดเก็บข้อมูล
+- **DFD ระดับ 1:** แตกรายละเอียดของกระบวนการย่อยแต่ละตัวให้ละเอียดยิ่งขึ้น (เช่น 1.1, 1.2)
+
+### 5.4 ขั้นตอนการเขียน DFD
+1. ระบุขอบเขตของระบบและสิ่งที่อยู่ภายนอก (External Entity)
+2. ระบุข้อมูลเข้า–ออกระหว่างระบบกับสิ่งภายนอก แล้วเขียนแผนภาพบริบท
+3. แตกกระบวนการหลักเป็นกระบวนการย่อยและกำหนดแหล่งจัดเก็บข้อมูล เขียนเป็น DFD ระดับ 0
+4. แตกรายละเอียดกระบวนการที่ซับซ้อนเป็น DFD ระดับ 1 ตามความจำเป็น
+5. ตรวจสอบความถูกต้องและความสมดุล (Balancing) ของทุกระดับ
+
+### 5.5 หลักการและกฎการเขียน DFD ที่ถูกต้อง
+- ตั้งชื่อกระบวนการด้วยคำกริยา + กรรม และตั้งชื่อกระแสข้อมูลให้สื่อความหมาย
+- **ความสมดุล (Balancing):** ข้อมูลเข้า–ออกของกระบวนการแม่ต้องสอดคล้องกับข้อมูลเข้า–ออกรวมของกระบวนการย่อยในระดับถัดไป
+- ทุกกระบวนการต้องมีทั้งข้อมูลเข้าและข้อมูลออก — หลีกเลี่ยง **“หลุมดำ” (มีเข้าไม่มีออก)** และ **“ปาฏิหาริย์” (มีออกไม่มีเข้า)**
+- ข้อมูลไม่ไหลจาก store → store หรือ external → external โดยตรง โดยไม่ผ่านกระบวนการ
+- ให้หมายเลขกระบวนการอย่างเป็นระบบ (0 → 1.0, 2.0 → 1.1, 1.2)
+
+### 5.6 ข้อผิดพลาดที่พบบ่อย
+กระบวนการที่เป็นหลุมดำหรือปาฏิหาริย์ · ลืมกำกับชื่อกระแสข้อมูล · แผนภาพไม่สมดุลระหว่างระดับ · ปนแหล่งจัดเก็บข้อมูลใน Context Diagram
+
+---
+
+### 5.7 ตัวอย่างการเขียน DFD : ระบบยืม–คืนหนังสือห้องสมุด
+
+**(1) แผนภาพบริบท (Context Diagram)** — กำหนดขอบเขตของระบบและสิ่งที่อยู่ภายนอก
+
+```mermaid
+flowchart LR
+    member([สมาชิก])
+    librarian([บรรณารักษ์])
+    manager([ผู้บริหาร])
+    P0((0 ระบบยืม-คืนหนังสือ))
+
+    member -->|คำขอยืม/คืน, ข้อมูลค้นหา| P0
+    P0 -->|ใบเสร็จ, ผลค้นหา, การแจ้งเตือน| member
+    librarian -->|ข้อมูลหนังสือ/สมาชิก| P0
+    P0 -->|รายการค้างคืน, ค่าปรับ| librarian
+    manager -->|คำขอรายงาน| P0
+    P0 -->|รายงานสรุปการใช้บริการ| manager
+```
+
+**(2) DFD ระดับ 0** — แตกกระบวนการหลักเป็นกระบวนการย่อย พร้อมแหล่งจัดเก็บข้อมูล D1 หนังสือ · D2 สมาชิก · D3 การยืม–คืน
+
+```mermaid
+flowchart TB
+    member([สมาชิก])
+    librarian([บรรณารักษ์])
+    manager([ผู้บริหาร])
+
+    P1((1.0 ยืมหนังสือ))
+    P2((2.0 คืนหนังสือและคิดค่าปรับ))
+    P3((3.0 ค้นหาหนังสือ))
+    P4((4.0 จัดการข้อมูลหลัก))
+    P5((5.0 ออกรายงาน))
+
+    D1[(D1 หนังสือ)]
+    D2[(D2 สมาชิก)]
+    D3[(D3 การยืม-คืน)]
+
+    member -->|คำขอยืม| P1
+    P1 -->|ใบเสร็จการยืม| member
+    P1 -->|บันทึกการยืม| D3
+    P1 -->|ตรวจสอบสมาชิก| D2
+    P1 -->|ตรวจสอบหนังสือ| D1
+
+    member -->|คำขอคืน| P2
+    P2 -->|ใบเสร็จ/ค่าปรับ| member
+    P2 -->|ปรับปรุงการยืม-คืน| D3
+    P2 -->|รายการค้างคืน| librarian
+
+    member -->|ข้อมูลค้นหา| P3
+    D1 -->|ข้อมูลหนังสือ| P3
+    P3 -->|ผลการค้นหา| member
+
+    librarian -->|ข้อมูลหนังสือ/สมาชิก| P4
+    P4 -->|ปรับปรุงข้อมูลหนังสือ| D1
+    P4 -->|ปรับปรุงข้อมูลสมาชิก| D2
+
+    manager -->|คำขอรายงาน| P5
+    D3 -->|ข้อมูลการยืม-คืน| P5
+    P5 -->|รายงานสรุปการใช้บริการ| manager
+```
+
+**คำอธิบายสัญลักษณ์:** วงกลม = กระบวนการ · แคปซูล = สิ่งภายนอกระบบ · ทรงกระบอก = แหล่งจัดเก็บข้อมูล · ลูกศร = กระแสข้อมูล
+
+| กระบวนการ | ข้อมูลเข้า (จาก) | ข้อมูลออก (ไป) | Data Store |
+|---|---|---|---|
+| 1.0 ยืมหนังสือ | คำขอยืม (สมาชิก) | ใบเสร็จการยืม (สมาชิก) | D1, D2, D3 |
+| 2.0 คืนหนังสือและคิดค่าปรับ | คำขอคืน (สมาชิก) | ใบเสร็จ/ค่าปรับ (สมาชิก), รายการค้างคืน (บรรณารักษ์) | D1, D3 |
+| 3.0 ค้นหาหนังสือ | ข้อมูลค้นหา (สมาชิก) | ผลการค้นหา (สมาชิก) | D1 |
+| 4.0 จัดการข้อมูลหลัก | ข้อมูลหนังสือ/สมาชิก (บรรณารักษ์) | การยืนยันผล (บรรณารักษ์) | D1, D2 |
+| 5.0 ออกรายงาน | คำขอรายงาน (ผู้บริหาร) | รายงานสรุปการใช้บริการ (ผู้บริหาร) | D3 |
+
+---
+4. หลุมดำ = กระบวนการที่มีข้อมูลเข้าแต่ไม่มีออก, ปาฏิหาริย์ = มีข้อมูลออกแต่ไม่มีเข้า ทั้งสองเป็นข้อผิดพลาดที่ต้องแก้ไข
+5. ตัวอย่าง: สิ่งภายนอก = นักเรียน, อาจารย์ที่ปรึกษา, ฝ่ายทะเบียน; กระแสข้อมูลหลัก = ข้อมูลการลงทะเบียน, ผลการตรวจสอบ, ใบแจ้งผลการลงทะเบียน (คำตอบอาจต่างได้ตามเหตุผล)
+
+</script>
+</body>
+</html>

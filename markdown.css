@@ -1,0 +1,99 @@
+/* Shared Markdown-inspired visual language for every article/tool page. */
+:root {
+  --md-ink: #24292f;
+  --md-muted: #57606a;
+  --md-faint: #6e7781;
+  --md-line: #d0d7de;
+  --md-canvas: #f6f8fa;
+  --md-paper: #ffffff;
+  --md-blue: #0969da;
+  --md-code: #f6f8fa;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  color: var(--md-ink) !important;
+  background: var(--md-canvas) !important;
+  font-family: 'IBM Plex Sans Thai', 'Sarabun', system-ui, sans-serif !important;
+}
+body::selection { background: #b6e3ff; }
+
+/* Give every standalone page the appearance of a rendered Markdown document. */
+body > #root,
+body > #root-resistor,
+body > #app {
+  width: min(920px, calc(100% - 32px)) !important;
+  min-height: auto !important;
+  margin: 28px auto !important;
+  padding: 0 !important;
+  background: var(--md-paper) !important;
+  border: 1px solid var(--md-line) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 8px 24px rgba(140, 149, 159, .12) !important;
+}
+
+/* Existing article navigation becomes a Markdown breadcrumb. */
+.site-nav {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 4 !important;
+  min-height: 56px !important;
+  padding: 0 24px !important;
+  color: var(--md-muted) !important;
+  background: rgba(255,255,255,.96) !important;
+  border-bottom: 1px solid var(--md-line) !important;
+  font-family: 'IBM Plex Mono', monospace !important;
+}
+.site-nav .logo { color: var(--md-ink) !important; font-family: 'IBM Plex Mono', monospace !important; }
+.site-nav .logo span { color: var(--md-blue) !important; }
+.site-nav .sep { color: var(--md-line) !important; }
+.site-nav .crumb { color: var(--md-muted) !important; font-size: 12px !important; }
+
+/* Markdown document rhythm and headings. */
+body h1, body h2, body h3, body h4 {
+  color: var(--md-ink) !important;
+  font-family: 'IBM Plex Sans Thai', 'Sarabun', sans-serif !important;
+  letter-spacing: -.025em;
+}
+body p, body li { color: var(--md-muted); }
+body a { color: var(--md-blue); }
+body blockquote {
+  border-left-color: var(--md-line) !important;
+  background: var(--md-code) !important;
+}
+body code, body .mono, body pre, body .font-mono {
+  font-family: 'IBM Plex Mono', monospace !important;
+}
+
+/* Interactive cards use the same rendered-note surface as Markdown sections. */
+.lesson-card,
+body .rounded-2xl.bg-white,
+body .rounded-xl.bg-white,
+body #resistor-app-container > div {
+  border-color: var(--md-line) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+.lesson-card { background: var(--md-paper) !important; }
+.jump, .tab-btn { border-radius: 5px !important; font-family: 'IBM Plex Mono', monospace !important; }
+.demo, .algo-result, .code-block { border-radius: 5px !important; }
+
+/* Tool pages: retain their component visualizations, but make the shell editorial. */
+body > #root > div > header,
+body > #root-resistor > div > header {
+  border-bottom: 1px solid var(--md-line);
+}
+body input, body select, body button { font-family: inherit; }
+body input:focus, body select:focus, body button:focus-visible {
+  outline: 2px solid #54aeff !important;
+  outline-offset: 1px;
+}
+
+@media (max-width: 640px) {
+  body > #root, body > #root-resistor, body > #app {
+    width: calc(100% - 20px) !important;
+    margin: 10px auto !important;
+  }
+  .site-nav { padding: 0 14px !important; }
+  .site-nav .crumb { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}

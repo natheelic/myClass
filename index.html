@@ -3,624 +3,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="My Class Room is a professional learning hub for search algorithms, fuzzy logic, and component reference pages.">
-  <title>My Class Room — Professional Learning Hub</title>
+  <meta name="description" content="My Class Room — บล็อกส่วนตัวสำหรับบันทึกการเรียนรู้ การเขียนโปรแกรม อัลกอริทึม และอิเล็กทรอนิกส์">
+  <title>My Class Room — Notes, Code & Experiments</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --geist-foreground: #000;
-      --geist-background: #fff;
-      --accents-1: #fafafa;
-      --accents-2: #eaeaea;
-      --accents-3: #999;
-      --accents-4: #888;
-      --accents-5: #666;
-      --accents-6: #444;
-      --accents-7: #333;
-      --accents-8: #111;
-      
-      --radius-sm: 4px;
-      --radius-md: 6px;
-      --radius-lg: 8px;
-      --radius-xl: 12px;
-      
-      --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
-      --shadow-md: 0 4px 8px rgba(0,0,0,0.04);
-      --shadow-lg: 0 8px 16px rgba(0,0,0,0.08);
-      --shadow-hover: 0 12px 24px rgba(0,0,0,0.12);
-      
-      --brand-blue: #0070f3;
-      --brand-purple: #7928ca;
-      --brand-pink: #ff0080;
-    }
+    :root { --ink:#24292f; --muted:#57606a; --faint:#6e7781; --line:#d0d7de; --canvas:#f6f8fa; --paper:#fff; --blue:#0969da; --green:#1a7f37; --purple:#8250df; --orange:#bc4c00; --code:#f6f8fa; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; color:var(--ink); background:var(--canvas); font-family:'IBM Plex Sans Thai',sans-serif; line-height:1.7; -webkit-font-smoothing:antialiased; }
+    a { color:var(--blue); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    code, .mono { font-family:'IBM Plex Mono',monospace; }
+    .skip-link { position:absolute; top:-50px; left:16px; z-index:5; padding:8px 12px; color:#fff; background:var(--ink); border-radius:6px; }
+    .skip-link:focus { top:12px; }
 
-    *, *::before, *::after { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: 'Inter', 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-      color: var(--geist-foreground);
-      background-color: var(--geist-background);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      line-height: 1.6;
-    }
+    header { border-bottom:1px solid var(--line); background:var(--paper); }
+    .topbar { display:flex; align-items:center; justify-content:space-between; min-height:64px; width:min(1180px,calc(100% - 40px)); margin:auto; gap:20px; }
+    .brand { display:flex; align-items:center; gap:10px; color:var(--ink); font:600 14px 'IBM Plex Mono',monospace; }
+    .brand:hover { text-decoration:none; }
+    .brand-mark { display:grid; place-items:center; width:28px; height:28px; color:#fff; background:var(--ink); border-radius:5px; font-size:15px; }
+    .brand small { display:block; color:var(--faint); font:400 10px 'IBM Plex Sans Thai',sans-serif; }
+    nav { display:flex; gap:20px; color:var(--muted); font-size:13px; }
+    nav a { color:var(--muted); }
+    nav a:hover { color:var(--blue); }
+    .nav-github { padding:3px 8px; border:1px solid var(--line); border-radius:5px; font-family:'IBM Plex Mono',monospace; }
 
-    a { color: inherit; text-decoration: none; }
-    
-    .skip-link {
-      position: absolute;
-      left: 1rem;
-      top: -3rem;
-      padding: 0.5rem 1rem;
-      background: var(--geist-foreground);
-      color: var(--geist-background);
-      border-radius: var(--radius-md);
-      z-index: 1000;
-      transition: top 0.2s;
-    }
-    .skip-link:focus { top: 1rem; }
+    .layout { display:grid; grid-template-columns:200px minmax(0,760px); gap:54px; width:min(1014px,calc(100% - 40px)); margin:0 auto; padding:48px 0 70px; }
+    aside { position:sticky; top:24px; align-self:start; color:var(--muted); font-size:12px; }
+    .toc-title { margin:0 0 10px; color:var(--ink); font:600 12px 'IBM Plex Mono',monospace; }
+    .toc { margin:0; padding:0; list-style:none; border-left:1px solid var(--line); }
+    .toc li { padding-left:14px; }
+    .toc a { display:block; padding:4px 0; color:var(--muted); }
+    .toc a:hover { color:var(--blue); text-decoration:none; }
+    .toc .active { color:var(--blue); font-weight:600; }
+    .aside-note { margin-top:30px; padding:12px; background:#fff; border:1px solid var(--line); border-radius:6px; font-size:11px; line-height:1.6; }
+    .aside-note code { color:var(--green); }
 
-    /* Topbar */
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: saturate(180%) blur(10px);
-      border-bottom: 1px solid var(--accents-2);
-    }
-    .topbar-inner {
-      max-width: 1040px;
-      margin: 0 auto;
-      height: 64px;
-      padding: 0 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-weight: 700;
-      font-size: 1.1rem;
-      letter-spacing: -0.02em;
-    }
-    .brand svg {
-      width: 24px;
-      height: 24px;
-      fill: var(--geist-foreground);
-    }
-    .brand-text span {
-      color: var(--accents-5);
-      font-weight: 400;
-    }
-    .topbar-cta {
-      display: flex;
-      gap: 0.75rem;
-      align-items: center;
-    }
+    main { min-width:0; background:var(--paper); border:1px solid var(--line); border-radius:6px; }
+    .article { padding:42px 48px 50px; }
+    .eyebrow { margin:0 0 12px; color:var(--faint); font:500 12px 'IBM Plex Mono',monospace; }
+    h1, h2, h3 { color:var(--ink); line-height:1.35; }
+    h1 { margin:0 0 15px; font-size:clamp(32px,5vw,46px); letter-spacing:-.04em; }
+    h2 { margin:0 0 12px; padding-bottom:8px; border-bottom:1px solid var(--line); font-size:25px; }
+    h3 { margin:0 0 6px; font-size:17px; }
+    .lead { max-width:650px; margin:0; color:var(--muted); font-size:16px; }
+    .status { display:inline-flex; align-items:center; gap:7px; margin:22px 0 0; padding:3px 9px; color:var(--green); background:#dafbe1; border:1px solid #aceebb; border-radius:20px; font:500 11px 'IBM Plex Mono',monospace; }
+    .status::before { content:''; width:7px; height:7px; background:var(--green); border-radius:50%; }
+    hr { height:1px; margin:38px 0; border:0; background:var(--line); }
+    blockquote { margin:24px 0 34px; padding:10px 16px; color:var(--muted); background:#f6f8fa; border-left:3px solid var(--line); font-size:14px; }
+    blockquote strong { color:var(--ink); }
 
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      height: 40px;
-      padding: 0 1.25rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      border-radius: var(--radius-md);
-      transition: all 0.2s ease;
-      cursor: pointer;
-      line-height: 1;
-    }
-    .btn-primary {
-      background: var(--geist-foreground);
-      color: var(--geist-background);
-      border: 1px solid var(--geist-foreground);
-    }
-    .btn-primary:hover {
-      background: var(--geist-background);
-      color: var(--geist-foreground);
-    }
-    .btn-secondary {
-      background: var(--geist-background);
-      color: var(--accents-5);
-      border: 1px solid var(--accents-2);
-    }
-    .btn-secondary:hover {
-      color: var(--geist-foreground);
-      border-color: var(--geist-foreground);
-    }
+    .featured { display:grid; grid-template-columns:115px 1fr; gap:20px; padding:17px; background:#f6f8fa; border:1px solid var(--line); border-radius:6px; }
+    .featured-icon { display:grid; place-items:center; min-height:115px; color:var(--blue); background:#ddf4ff; border-radius:5px; font:600 22px 'IBM Plex Mono',monospace; }
+    .label { color:var(--faint); font:500 11px 'IBM Plex Mono',monospace; }
+    .featured h3 { margin-top:5px; font-size:19px; }
+    .featured p { margin:0 0 8px; color:var(--muted); font-size:13px; }
+    .meta { color:var(--faint); font:400 11px 'IBM Plex Mono',monospace; }
 
-    /* Layout */
-    .container {
-      max-width: 1040px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-    }
+    .section { margin-top:42px; }
+    .section-heading { display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin-bottom:17px; }
+    .section-heading h2 { flex:1; }
+    .section-heading a { font:400 11px 'IBM Plex Mono',monospace; white-space:nowrap; }
+    .posts { display:grid; grid-template-columns:repeat(2,1fr); gap:0 28px; }
+    .post { padding:18px 0 20px; border-bottom:1px solid var(--line); }
+    .post:nth-child(-n+2) { padding-top:5px; }
+    .post h3 a { color:var(--ink); }
+    .post h3 a:hover { color:var(--blue); }
+    .post p { margin:0 0 8px; color:var(--muted); font-size:13px; line-height:1.6; }
+    .post-label { display:block; margin-bottom:5px; font:500 11px 'IBM Plex Mono',monospace; }
+    .post-label.blue { color:var(--blue); }.post-label.green { color:var(--green); }.post-label.purple { color:var(--purple); }.post-label.orange { color:var(--orange); }
 
-    /* Hero */
-    .hero {
-      padding: 6rem 0 4rem;
-      text-align: center;
-    }
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.25rem 0.75rem;
-      background: var(--accents-1);
-      border: 1px solid var(--accents-2);
-      border-radius: 99px;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: var(--accents-5);
-      margin-bottom: 1.5rem;
-      transition: border-color 0.2s;
-    }
-    .hero-badge:hover {
-      border-color: var(--accents-4);
-    }
-    .hero h1 {
-      font-size: clamp(3rem, 6vw, 5rem);
-      line-height: 1.05;
-      letter-spacing: -0.06em;
-      font-weight: 800;
-      margin: 0 auto 1.5rem;
-      max-width: 900px;
-    }
-    .hero-gradient {
-      background: linear-gradient(to right, var(--brand-blue), var(--brand-purple), var(--brand-pink));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero p {
-      font-size: 1.25rem;
-      color: var(--accents-5);
-      max-width: 600px;
-      margin: 0 auto 2.5rem;
-      line-height: 1.6;
-    }
-    .hero-actions {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-    }
-    .hero-actions .btn {
-      height: 48px;
-      padding: 0 2rem;
-      font-size: 1rem;
-    }
+    .category-grid { display:flex; flex-wrap:wrap; gap:8px; }
+    .category-grid a { padding:7px 11px; color:var(--muted); background:var(--code); border:1px solid var(--line); border-radius:5px; font:400 12px 'IBM Plex Mono',monospace; }
+    .category-grid a:hover { color:var(--blue); border-color:#54aeff; text-decoration:none; }
+    footer { padding:25px 0; color:var(--faint); font:400 11px 'IBM Plex Mono',monospace; }
+    .footer-inner { display:flex; justify-content:space-between; width:min(1014px,calc(100% - 40px)); margin:auto; gap:20px; }
 
-    /* Stats / Meta */
-    .metrics {
-      display: flex;
-      justify-content: center;
-      gap: 3rem;
-      padding-top: 4rem;
-      border-top: 1px solid var(--accents-2);
-      margin-top: 4rem;
-    }
-    .metric {
-      text-align: center;
-    }
-    .metric h4 {
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: -0.04em;
-      margin: 0 0 0.25rem;
-    }
-    .metric p {
-      font-size: 0.875rem;
-      color: var(--accents-5);
-      margin: 0;
-    }
-
-    /* Grid Section */
-    .section {
-      padding: 6rem 0;
-      border-top: 1px solid var(--accents-2);
-    }
-    .section-header {
-      margin-bottom: 3rem;
-      text-align: center;
-    }
-    .section-header h2 {
-      font-size: 2.25rem;
-      letter-spacing: -0.04em;
-      margin: 0 0 1rem;
-      font-weight: 700;
-    }
-    .section-header p {
-      font-size: 1.125rem;
-      color: var(--accents-5);
-      margin: 0;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-
-    /* Cards */
-    .card {
-      background: var(--geist-background);
-      border: 1px solid var(--accents-2);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      transition: all 0.2s ease;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-    .card:hover {
-      border-color: var(--accents-4);
-      box-shadow: var(--shadow-hover);
-    }
-    .card-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: var(--radius-md);
-      background: var(--accents-1);
-      border: 1px solid var(--accents-2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1.5rem;
-      font-weight: 600;
-      color: var(--geist-foreground);
-    }
-    .card h3 {
-      font-size: 1.25rem;
-      letter-spacing: -0.02em;
-      margin: 0 0 0.5rem;
-      font-weight: 600;
-    }
-    .card p {
-      color: var(--accents-5);
-      font-size: 0.875rem;
-      margin: 0 0 1.5rem;
-      flex-grow: 1;
-    }
-    .card-tags {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .tag {
-      font-size: 0.75rem;
-      padding: 0.25rem 0.6rem;
-      border-radius: 99px;
-      background: var(--accents-1);
-      border: 1px solid var(--accents-2);
-      color: var(--accents-6);
-      font-weight: 500;
-    }
-
-    /* Path Panel */
-    .path-panel {
-      background: var(--geist-foreground);
-      color: var(--geist-background);
-      border-radius: var(--radius-xl);
-      padding: 3rem;
-      margin-top: 2rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .path-panel::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 400px;
-      height: 400px;
-      background: radial-gradient(circle, rgba(0, 112, 243, 0.15) 0%, transparent 70%);
-      transform: translate(30%, -30%);
-    }
-    .path-panel h2 {
-      font-size: 2rem;
-      letter-spacing: -0.04em;
-      margin: 0 0 0.5rem;
-    }
-    .path-panel > p {
-      color: var(--accents-4);
-      margin: 0 0 2rem;
-      font-size: 1.125rem;
-      max-width: 500px;
-    }
-    .timeline {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      position: relative;
-      z-index: 1;
-    }
-    .timeline li {
-      display: flex;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-    .timeline-num {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--accents-8);
-      border: 1px solid var(--accents-6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.875rem;
-      font-weight: 600;
-      flex-shrink: 0;
-    }
-    .timeline-content h4 {
-      margin: 0 0 0.25rem;
-      font-size: 1.125rem;
-      font-weight: 500;
-    }
-    .timeline-content p {
-      margin: 0;
-      color: var(--accents-4);
-      font-size: 0.875rem;
-    }
-
-    /* Footer */
-    footer {
-      border-top: 1px solid var(--accents-2);
-      padding: 3rem 0;
-      margin-top: 4rem;
-    }
-    .footer-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-      text-align: center;
-    }
-    .footer-logo {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 600;
-      font-size: 1rem;
-    }
-    .footer-logo svg {
-      width: 20px;
-      height: 20px;
-    }
-    .footer-text {
-      color: var(--accents-5);
-      font-size: 0.875rem;
-    }
-
-    @media (max-width: 768px) {
-      .hero h1 { font-size: 2.5rem; }
-      .metrics { flex-direction: column; gap: 2rem; align-items: center; }
-      .path-panel { padding: 2rem; }
-      .hero-actions { flex-direction: column; }
-    }
+    @media (max-width:800px) { .layout { grid-template-columns:1fr; gap:22px; padding-top:30px; } aside { position:static; } .toc { display:flex; flex-wrap:wrap; gap:0 16px; border:0; } .toc li { padding:0; } .toc-title,.aside-note { display:none; } }
+    @media (max-width:560px) { .topbar { width:calc(100% - 28px); } nav a:not(.nav-github) { display:none; } .layout,.footer-inner { width:calc(100% - 28px); } .article { padding:28px 20px 34px; } .posts { grid-template-columns:1fr; } .featured { grid-template-columns:1fr; } .featured-icon { min-height:75px; } .section-heading { display:block; } .section-heading a { display:inline-block; margin-top:3px; } .footer-inner { flex-direction:column; gap:4px; } }
   </style>
 </head>
 <body>
-  <a href="#main" class="skip-link">Skip to content</a>
-
-  <header class="topbar">
-    <div class="topbar-inner">
-      <a href="index.html" class="brand">
-        <!-- Vercel-like Triangle Logo -->
-        <svg viewBox="0 0 76 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
-        </svg>
-        <div class="brand-text">My Class Room <span>/ Learning Hub</span></div>
-      </a>
-      <div class="topbar-cta">
-        <a href="#lessons" class="btn btn-secondary">Lessons</a>
-        <a href="search-algorithms/index.html" class="btn btn-primary">Start Learning</a>
+  <a href="#content" class="skip-link">ข้ามไปยังเนื้อหา</a>
+  <header>
+    <div class="topbar">
+      <a href="index.html" class="brand"><span class="brand-mark">&gt;_</span><span>my-class-room<small>notes / code / experiments</small></span></a>
       </div>
-    </div>
   </header>
 
-  <main id="main">
-    <section class="hero container">
-      <a href="#lessons" class="hero-badge">
-        <span style="display:inline-block; width:8px; height:8px; background:var(--brand-blue); border-radius:50%;"></span>
-        Professional Learning Resources
-      </a>
-      <h1>
-        Build Skills with <br />
-        <span class="hero-gradient">My Class Room</span>
-      </h1>
-      <p>
-        A polished learning space for algorithms, logic, and electronics references, organized for clear study and efficient exploration.
-      </p>
-      
-      <div class="hero-actions">
-        <a href="search-algorithms/index.html" class="btn btn-primary">Explore Search Algorithms</a>
-        <a href="fuzzy-logic/index.html" class="btn btn-secondary">Learn Fuzzy Logic</a>
-      </div>
+  <div class="layout">
+    <aside aria-label="สารบัญ">
+      <p class="toc-title">สารบัญ</p>
+      <ul class="toc"><li><a class="active" href="#home">หน้าแรก</a></li><li><a href="#featured">บทความเด่น</a></li><li><a href="#latest">บทความล่าสุด</a></li><li><a href="#topics">หัวข้อที่เขียน</a></li></ul>
+      <div class="aside-note"><code>// about</code><br>พื้นที่เล็ก ๆ สำหรับจดบันทึกสิ่งที่กำลังเรียนรู้และทดลอง</div>
+    </aside>
 
-      <div class="metrics">
-        <div class="metric">
-          <h4>10</h4>
-          <p>Linked Pages</p>
-        </div>
-        <div class="metric">
-          <h4>100%</h4>
-          <p>Interactive UI</p>
-        </div>
-        <div class="metric">
-          <h4><0.1s</h4>
-          <p>Render Speed</p>
-        </div>
-      </div>
-    </section>
+    <main id="content">
+      <article class="article" id="home">
+        <p class="eyebrow"># hello_world.md</p>
+        <h1>บันทึกการเรียนรู้<br>และการทดลอง</h1>
+        <p class="lead">สวัสดีครับ ที่นี่คือ My Class Room — บล็อกส่วนตัวที่รวมโน้ตเกี่ยวกับโค้ด อัลกอริทึม อิเล็กทรอนิกส์ และเครื่องมือที่ผมกำลังลองทำความเข้าใจ</p>
+        <span class="status">สถานะ: กำลังเรียนรู้</span>
 
-    <section class="section container" id="lessons">
-      <div class="section-header">
-        <h2>Learning Modules</h2>
-        <p>Browse every page in My Class Room from one organized, professional starting point.</p>
-      </div>
+        <blockquote><strong>แนวคิดของบล็อกนี้</strong><br>เขียนสิ่งที่เข้าใจ เพื่อทบทวนตัวเอง และแบ่งปันเผื่อจะเป็นประโยชน์กับใครบางคน</blockquote>
 
-      <div class="grid">
-        <a href="search-algorithms/index.html" class="card">
-          <div class="card-icon">01</div>
-          <h3>Search Algorithms</h3>
-          <p>Understand BFS, DFS, and A* through step-by-step visual node traversal, pathfinding simulations, and interactive grids.</p>
-          <div class="card-tags">
-            <span class="tag">BFS</span>
-            <span class="tag">DFS</span>
-            <span class="tag">A* Pathfinding</span>
+
+        <section class="section" id="latest">
+          <div class="section-heading"><h2>## บทความล่าสุด</h2><a href="#topics">ดูหัวข้อทั้งหมด →</a></div>
+          <div class="posts">
+            <article class="post"><span class="post-label purple">logic / 6 min read</span><h3><a href="31909-2004/fuzzy-logic/index.html">เมื่อความจริงไม่ได้มีแค่ใช่หรือไม่ใช่: รู้จัก Fuzzy Logic</a></h3><p>ทำความรู้จักแนวคิดเบื้องหลังการตัดสินใจแบบคลุมเครือและการนำไปใช้กับระบบควบคุม</p><span class="meta">18 มีนาคม 2026</span></article>
+            <article class="post"><span class="post-label orange">electronics / 4 min read</span><h3><a href="electronics/resistor/index.html">อ่านค่าตัวต้านทานจากแถบสีแบบไม่ต้องเดา</a></h3><p>รวมวิธีดูแถบสี คำนวณค่า และตรวจสอบค่าความคลาดเคลื่อนอย่างรวดเร็ว</p><span class="meta">10 มีนาคม 2026</span></article>
+            <article class="post"><span class="post-label green">tools / 7 min read</span><h3><a href="30001-1003/spreadsheets/index.html">สเปรดชีตไม่ได้มีไว้แค่ทำตาราง</a></h3><p>บันทึกการลองใช้ VLOOKUP, INDEX/MATCH, PMT และฟังก์ชันที่ช่วยทำงานได้เร็วขึ้น</p><span class="meta">5 มีนาคม 2026</span></article>
+            <article class="post"><span class="post-label blue">electronics / 3 min read</span><h3><a href="electronics/ceramic-capacitor/index.html">ตัวเลขเล็ก ๆ บนตัวเก็บประจุเซรามิกแปลว่าอะไร</a></h3><p>วิธีถอดรหัสค่าความจุจากตัวเลขบนชิ้นส่วนที่เราเจอกันบ่อยที่สุด</p><span class="meta">28 กุมภาพันธ์ 2026</span></article>
+            <article class="post"><span class="post-label orange">electronics / 5 min read</span><h3><a href="electronics/smd-resistor/index.html">ถอดรหัส SMD Resistor ในไม่กี่ขั้นตอน</a></h3><p>ทำความเข้าใจรหัสสามหลักและสี่หลักบนตัวต้านทานแบบติดพื้นผิว</p><span class="meta">22 กุมภาพันธ์ 2026</span></article>
+            <article class="post"><span class="post-label green">electronics / 4 min read</span><h3><a href="electronics/inductor/index.html">บันทึกเรื่องตัวเหนี่ยวนำและการอ่านรหัสสี</a></h3><p>สรุปสิ่งที่ควรรู้ก่อนเลือกใช้ตัวเหนี่ยวนำในวงจรพื้นฐาน</p><span class="meta">15 กุมภาพันธ์ 2026</span></article>
+            <article class="post"><span class="post-label blue">electronics / 4 min read</span><h3><a href="electronics/electrolytic-capacitor/index.html">ทำความเข้าใจตัวเก็บประจุอิเล็กโทรไลต์แบบขาเสียบ</a></h3><p>ดูขั้วบวก ขั้วลบ และความสัมพันธ์ระหว่างค่าความจุ แรงดัน และความถี่</p><span class="meta">8 กุมภาพันธ์ 2026</span></article>
+            <article class="post"><span class="post-label purple">electronics / 3 min read</span><h3><a href="electronics/smd-electrolytic-capacitor/index.html">ถอดรหัสตัวเก็บประจุ SMD จากรหัสบนตัวอุปกรณ์</a></h3><p>บันทึกสั้น ๆ สำหรับอ่านรหัสแรงดันและค่าความจุของชิ้นส่วน SMD</p><span class="meta">1 กุมภาพันธ์ 2026</span></article>
+            <article class="post"><span class="post-label orange">electronics / 3 min read</span><h3><a href="electronics/smd-inductor/index.html">SMD Inductor: อ่านรหัส 101, 4R7 และ 220</a></h3><p>วิธีแปลงรหัสตัวเหนี่ยวนำแบบติดพื้นผิวเป็นค่าความเหนี่ยวนำที่ใช้งานได้จริง</p><span class="meta">25 มกราคม 2026</span></article>
           </div>
-        </a>
+        </section>
 
-        <a href="fuzzy-logic/index.html" class="card">
-          <div class="card-icon">02</div>
-          <h3>Fuzzy Logic</h3>
-          <p>Master fuzzy sets, membership functions, and linguistic rules. Build control systems that handle imprecise data efficiently.</p>
-          <div class="card-tags">
-            <span class="tag">Fuzzy Sets</span>
-            <span class="tag">Membership Functions</span>
-            <span class="tag">Inference</span>
-          </div>
-        </a>
+        <section class="section" id="topics">
+          <div class="section-heading"><h2>## หัวข้อที่เขียน</h2></div>
+          <div class="category-grid"><a href="31909-2004/search-algorithms/index.html">[ algorithms ]</a><a href="31909-2004/fuzzy-logic/index.html">[ logic ]</a><a href="electronics/ceramic-capacitor/index.html">[ ceramic-capacitor ]</a><a href="electronics/electrolytic-capacitor/index.html">[ electrolytic-capacitor ]</a><a href="electronics/smd-electrolytic-capacitor/index.html">[ smd-electrolytic ]</a><a href="electronics/inductor/index.html">[ inductor ]</a><a href="electronics/smd-inductor/index.html">[ smd-inductor ]</a><a href="electronics/resistor/index.html">[ resistor ]</a><a href="electronics/smd-resistor/index.html">[ smd-resistor ]</a><a href="30001-1003/spreadsheets/index.html">[ spreadsheets ]</a><a href="21909-1004/DFD/index.html">[ DFD ]</a><a href="21909-1004/ERD/index.html">[ ERD ]</a></div>
+        </section>
+      </article>
+    </main>
+  </div>
 
-        <a href="ceramic-capacitor/index.html" class="card">
-          <div class="card-icon">03</div>
-          <h3>Ceramic Capacitor</h3>
-          <p>Read ceramic capacitor codes and values with a compact calculator for quick component lookup.</p>
-          <div class="card-tags">
-            <span class="tag">Capacitor Code</span>
-            <span class="tag">Component Lookup</span>
-          </div>
-        </a>
-
-        <a href="electrolytic-capacitor/index.html" class="card">
-          <div class="card-icon">04</div>
-          <h3>Electrolytic Capacitor</h3>
-          <p>Explore through-hole electrolytic capacitor value decoding and practical component identification.</p>
-          <div class="card-tags">
-            <span class="tag">Through-Hole</span>
-            <span class="tag">Capacitor Decoder</span>
-          </div>
-        </a>
-
-        <a href="smd-electrolytic-capacitor/index.html" class="card">
-          <div class="card-icon">05</div>
-          <h3>SMD Electrolytic Capacitor</h3>
-          <p>Decode SMD electrolytic capacitor markings with a fast reference page for surface-mount parts.</p>
-          <div class="card-tags">
-            <span class="tag">SMD</span>
-            <span class="tag">Markings</span>
-          </div>
-        </a>
-
-        <a href="resistor/index.html" class="card">
-          <div class="card-icon">06</div>
-          <h3>Resistor</h3>
-          <p>Calculate resistor values from color bands and quickly confirm tolerance and resistance.</p>
-          <div class="card-tags">
-            <span class="tag">Color Code</span>
-            <span class="tag">Calculator</span>
-          </div>
-        </a>
-
-        <a href="smd-resistor/index.html" class="card">
-          <div class="card-icon">07</div>
-          <h3>SMD Resistor</h3>
-          <p>Decode SMD resistor markings and map compact codes to standard resistance values.</p>
-          <div class="card-tags">
-            <span class="tag">SMD Code</span>
-            <span class="tag">Resistance</span>
-          </div>
-        </a>
-
-        <a href="inductor/index.html" class="card">
-          <div class="card-icon">08</div>
-          <h3>Inductor</h3>
-          <p>Read inductor color codes and identify inductance values for common through-hole parts.</p>
-          <div class="card-tags">
-            <span class="tag">Color Code</span>
-            <span class="tag">Inductance</span>
-          </div>
-        </a>
-
-        <a href="smd-inductor/index.html" class="card">
-          <div class="card-icon">09</div>
-          <h3>SMD Inductor</h3>
-          <p>Quickly interpret SMD inductor markings with a streamlined surface-mount reference page.</p>
-          <div class="card-tags">
-            <span class="tag">SMD</span>
-            <span class="tag">Inductor Markings</span>
-          </div>
-        </a>
-
-        <a href="spreadsheets/index.html" class="card">
-          <div class="card-icon">10</div>
-          <h3>Spreadsheets</h3>
-          <p>Practice applied spreadsheet skills with hands-on lab worksheets covering VLOOKUP, INDEX/MATCH, PMT, and statistical functions.</p>
-          <div class="card-tags">
-            <span class="tag">VLOOKUP</span>
-            <span class="tag">INDEX/MATCH</span>
-            <span class="tag">PMT</span>
-            <span class="tag">PivotTable</span>
-          </div>
-        </a>
-      </div>
-    </section>
-
-    <section class="section container">
-      <div class="path-panel">
-        <h2>Recommended Learning Path</h2>
-        <p>A structured path that helps you move from fundamentals to applied problem solving.</p>
-        
-        <ul class="timeline">
-          <li>
-            <div class="timeline-num">1</div>
-            <div class="timeline-content">
-              <h4>Search Fundamentals</h4>
-              <p>Learn foundational graph traversal with Breadth-First and Depth-First Search techniques.</p>
-            </div>
-          </li>
-          <li>
-            <div class="timeline-num">2</div>
-            <div class="timeline-content">
-              <h4>Heuristic Search</h4>
-              <p>Apply A* search to identify efficient paths and strengthen problem-solving skills.</p>
-            </div>
-          </li>
-          <li>
-            <div class="timeline-num">3</div>
-            <div class="timeline-content">
-              <h4>Continuous Logic</h4>
-              <p>Move from Boolean logic to Fuzzy Logic and practical control systems.</p>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </section>
-  </main>
-
-  <footer class="container">
-    <div class="footer-content">
-      <div class="footer-logo">
-        <svg viewBox="0 0 76 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
-        </svg>
-        My Class Room
-      </div>
-      <div class="footer-text">
-        &copy; 2026 My Class Room. Designed as a professional learning experience.
-      </div>
-    </div>
-  </footer>
+  <footer><div class="footer-inner"><span>© 2026 my-class-room</span><span>made with curiosity &amp; markdown</span></div></footer>
 </body>
 </html>
