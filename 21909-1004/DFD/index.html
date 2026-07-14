@@ -42,9 +42,10 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
   <script>
-    const content = document.getElementById('markdown-content');
-    marked.setOptions({ gfm: true, breaks: false });
-    Promise.resolve(document.getElementById('source').textContent).then(markdown => {
+    window.addEventListener('DOMContentLoaded', () => {
+      const content = document.getElementById('markdown-content');
+      marked.setOptions({ gfm: true, breaks: false });
+      Promise.resolve(document.getElementById('source').textContent).then(markdown => {
         content.innerHTML = marked.parse(markdown);
         content.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
           const diagram = document.createElement('div');
@@ -58,6 +59,7 @@
       .catch(() => {
         content.innerHTML = '<p class="error">ไม่สามารถโหลดเอกสารอัตโนมัติได้ กรุณาเปิดไฟล์ <a href="DFD.md"><code>DFD.md</code></a> โดยตรง</p>';
       });
+    });
   </script>
 <script type="text/markdown" id="source">
 # ใบความรู้ที่ 5 — การสร้างแบบจำลองกระบวนการ (Data Flow Diagram)

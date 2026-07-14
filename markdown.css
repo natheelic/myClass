@@ -89,6 +89,50 @@ body input:focus, body select:focus, body button:focus-visible {
   outline-offset: 1px;
 }
 
+/* Spreadsheet lab pages: turn the existing .content documents into rendered Markdown notes. */
+body:has(.content), body:has(.container) {
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 28px 0 !important;
+}
+body:has(.content) .content,
+body:has(.container) .container {
+  width: min(920px, calc(100% - 32px)) !important;
+  margin: 0 auto !important;
+  padding: 42px 52px !important;
+  color: var(--md-ink) !important;
+  background: var(--md-paper) !important;
+  border: 1px solid var(--md-line) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 8px 24px rgba(140, 149, 159, .12) !important;
+}
+body:has(.content) .back-btn {
+  display: block !important;
+  width: min(920px, calc(100% - 32px)) !important;
+  margin: 0 auto 12px !important;
+  padding: 0 !important;
+  color: var(--md-blue) !important;
+  background: transparent !important;
+  font: 500 12px 'IBM Plex Mono', monospace !important;
+}
+body:has(.content) .back-btn:hover { background: transparent !important; }
+body:has(.content) h1, body:has(.container) h1 {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--md-line);
+}
+body:has(.content) table,
+body:has(.container) table { border-collapse: collapse !important; background: var(--md-paper) !important; }
+body:has(.content) th, body:has(.content) td,
+body:has(.container) th, body:has(.container) td {
+  color: var(--md-ink) !important;
+  border: 1px solid var(--md-line) !important;
+}
+body:has(.content) th, body:has(.container) th { background: var(--md-code) !important; }
+body:has(.content) code, body:has(.container) code {
+  color: var(--md-ink) !important;
+  background: var(--md-code) !important;
+}
+
 @media (max-width: 640px) {
   body > #root, body > #root-resistor, body > #app {
     width: calc(100% - 20px) !important;
@@ -96,4 +140,10 @@ body input:focus, body select:focus, body button:focus-visible {
   }
   .site-nav { padding: 0 14px !important; }
   .site-nav .crumb { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  body:has(.content), body:has(.container) { padding: 10px 0 !important; }
+  body:has(.content) .content, body:has(.container) .container {
+    width: calc(100% - 20px) !important;
+    padding: 28px 20px !important;
+  }
+  body:has(.content) .back-btn { width: calc(100% - 20px) !important; }
 }
