@@ -1,118 +1,241 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ใบงานปฏิบัติการ: ระบบจัดการข้อมูลพนักงานและการคำนวณโบนัส (HR & Payroll)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            ใบงานปฏิบัติการ: ระบบจัดการข้อมูลพนักงานและการคำนวณโบนัส (HR &
+            Payroll)
+        </title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap"
+            rel="stylesheet"
+        />
 
-    <style>
-        body {
-            font-family: 'Prompt', sans-serif;
-            line-height: 1.6;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem;
-            color: #f8fafc;
-            background-color: #0a0a0f;
-        }
-        h1, h2, h3, h4 { color: #3b82f6; }
-        h1 { border-bottom: 2px solid #3b82f6; padding-bottom: 0.5rem; }
-        table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
-        th, td { border: 1px solid #334155; padding: 0.75rem; text-align: left; }
-        th { background-color: #1e293b; color: #fff; }
-        code { background-color: #1e293b; padding: 0.2rem 0.4rem; border-radius: 4px; color: #fb7185; }
-        a { color: #60a5fa; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        .back-btn {
-            display: inline-block;
-            margin-bottom: 2rem;
-            padding: 0.5rem 1rem;
-            background: #1e293b;
-            color: #fff;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: background 0.3s;
-        }
-        .back-btn:hover { background: #3b82f6; }
-    </style>
-    <link rel="stylesheet" href="../../markdown.css">
-</head>
-<body>
-    <a href="index.html" class="back-btn">&larr; กลับหน้าหลัก (Back to Portal)</a>
-    <div class="content">
-        <h1>ใบงานปฏิบัติการ: ระบบจัดการข้อมูลพนักงานและการคำนวณโบนัส (HR &amp; Payroll)</h1>
-<p><strong>ระดับชั้น:</strong> ประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.)
-<strong>รายวิชา:</strong> โปรแกรมตารางงานประยุกต์ (Applied Spreadsheet)</p>
-<hr />
-<h2>🎯 วัตถุประสงค์การเรียนรู้</h2>
-<ol>
-<li>สามารถประยุกต์ใช้ฟังก์ชันค้นหาข้อมูลขั้นสูง (<code>INDEX</code> และ <code>MATCH</code>) แทนการใช้ VLOOKUP ได้</li>
-<li>สามารถใช้ฟังก์ชันเงื่อนไขหลายระดับ (<code>IFS</code> หรือ <code>IF</code> ซ้อน) ในการประเมินผล</li>
-<li>สามารถใช้ฟังก์ชัน <code>IFERROR</code> เพื่อจัดการข้อความแจ้งเตือนเมื่อสูตรเกิดข้อผิดพลาด</li>
-</ol>
-<hr />
-<h2>📝 สถานการณ์จำลอง (Scenario)</h2>
-<p>ให้นักศึกษาสวมบทบาทเป็นเจ้าหน้าที่ฝ่ายทรัพยากรบุคคล (HR) ของบริษัท <strong>"Global Tech Solutions"</strong> สิ้นปีนี้บริษัทมีนโยบายปรับเงินเดือนและแจกโบนัสพนักงานตามเกรดการประเมิน (Performance Grade) คุณได้รับมอบหมายให้สร้างระบบตารางเพื่อดึงข้อมูลฐานเงินเดือนของแต่ละตำแหน่ง และคำนวณโบนัสประจำปีได้อย่างแม่นยำ</p>
-<hr />
-<h2>🛠️ ขั้นตอนการปฏิบัติงาน</h2>
-<h3>ส่วนที่ 1: ตารางฐานข้อมูลตำแหน่งและเงินเดือน (Sheet: <code>SalaryBase</code>)</h3>
-<p>สร้าง Sheet ใหม่ชื่อ <code>SalaryBase</code> และสร้างตารางข้อมูลเพื่อใช้เป็นฐานอ้างอิง:
-1. <strong>ตารางฐานเงินเดือน (Salary Matrix):</strong> ให้มีคอลัมน์ <code>รหัสตำแหน่ง (Job_Code)</code>, <code>ชื่อตำแหน่ง (Job_Title)</code>, และ <code>ฐานเงินเดือนเริ่มต้น (Base_Salary)</code> (สร้างข้อมูลจำลอง 5 ตำแหน่ง)
-2. <strong>ตารางเกณฑ์โบนัส (Bonus Criteria):</strong> ให้มีคอลัมน์ <code>เกรดประเมิน (Grade)</code> (A, B, C, D) และ <code>ตัวคูณโบนัส (Bonus_Multiplier)</code> (เช่น A = 3 เดือน, B = 2 เดือน, C = 1 เดือน, D = 0 เดือน)</p>
-<h3>ส่วนที่ 2: ระบบคำนวณเงินเดือนและโบนัส (Sheet: <code>PayrollSummary</code>)</h3>
-<p>สร้าง Sheet ใหม่ชื่อ <code>PayrollSummary</code> จำนวนข้อมูลจำลอง 15 รายการ ประกอบด้วยคอลัมน์ดังนี้:</p>
-<ol>
-<li><strong>รหัสพนักงาน (Emp_ID)</strong></li>
-<li><strong>ชื่อ-นามสกุล (Emp_Name)</strong></li>
-<li><strong>รหัสตำแหน่ง (Job_Code)</strong>: ให้นักศึกษากรอกข้อมูลรหัสตำแหน่ง (เช่น J01, J02)</li>
-<li><strong>ชื่อตำแหน่ง (Job_Title)</strong>: ใช้สูตร <code>INDEX</code> ร่วมกับ <code>MATCH</code> ในการดึงชื่อตำแหน่งจาก Sheet <code>SalaryBase</code></li>
-<li><strong>เงินเดือน (Salary)</strong>: ใช้สูตร <code>INDEX</code> ร่วมกับ <code>MATCH</code> ดึงข้อมูลฐานเงินเดือน และครอบสูตรทั้งหมดด้วย <code>IFERROR</code> เพื่อให้แสดงข้อความ "ไม่พบข้อมูล" หากพิมพ์รหัสตำแหน่งผิด</li>
-<li><strong>ผลการประเมิน (Performance_Grade)</strong>: กรอกเกรด A, B, C, หรือ D</li>
-<li><strong>จำนวนเดือนโบนัส (Bonus_Months)</strong>: ใช้ฟังก์ชัน <code>IFS</code> (หรือ <code>IF</code> ซ้อน) ตรวจสอบเงื่อนไขจากเกรดประเมิน เช่น <code>=IFS(F2="A", 3, F2="B", 2, ...)</code> </li>
-<li><strong>เงินโบนัสรวม (Total_Bonus)</strong>: คำนวณจาก <code>เงินเดือน * จำนวนเดือนโบนัส</code></li>
-<li><strong>รายรับสุทธิเดือนธันวาคม (Net_December_Pay)</strong>: คำนวณจาก <code>เงินเดือน + เงินโบนัสรวม</code></li>
-</ol>
-<hr />
-<h2>📋 เกณฑ์การประเมินผล (Rubric Score) - คะแนนเต็ม 20 คะแนน</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">รายการประเมิน</th>
-<th style="text-align: left;">รายละเอียด</th>
-<th style="text-align: center;">คะแนน</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><strong>1. ฟังก์ชัน INDEX &amp; MATCH</strong></td>
-<td style="text-align: left;">สามารถดึงข้อมูลชื่อตำแหน่งและฐานเงินเดือนได้ถูกต้อง</td>
-<td style="text-align: center;">6</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>2. ฟังก์ชัน IFERROR</strong></td>
-<td style="text-align: left;">สามารถดักจับข้อผิดพลาดในกรณีที่ไม่พบรหัสตำแหน่งได้</td>
-<td style="text-align: center;">3</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>3. ฟังก์ชัน IFS หรือ IF ซ้อน</strong></td>
-<td style="text-align: left;">สามารถแปลงเกรดประเมินเป็นจำนวนเดือนโบนัสได้ถูกต้องตามเงื่อนไข</td>
-<td style="text-align: center;">5</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>4. การคำนวณตัวเลขทางบัญชี</strong></td>
-<td style="text-align: left;">สามารถคำนวณยอดเงินโบนัสและรายรับสุทธิได้ถูกต้อง</td>
-<td style="text-align: center;">4</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>5. การจัดรูปแบบข้อมูล</strong></td>
-<td style="text-align: left;">จัดรูปแบบสกุลเงิน ใส่คอมม่า ทศนิยม และตีเส้นตารางสวยงาม</td>
-<td style="text-align: center;">2</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<p><em>จัดทำโดย: แผนกวิชาคอมพิวเตอร์ธุรกิจ/เทคโนโลยีสารสนเทศ</em></p>
-    </div>
-</body>
+        <style>
+            body {
+                font-family: "Prompt", sans-serif;
+                line-height: 1.6;
+                max-width: 900px;
+                margin: 0 auto;
+                padding: 2rem;
+                color: #f8fafc;
+                background-color: #0a0a0f;
+            }
+            h1,
+            h2,
+            h3,
+            h4 {
+                color: #3b82f6;
+            }
+            h1 {
+                border-bottom: 2px solid #3b82f6;
+                padding-bottom: 0.5rem;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-bottom: 2rem;
+            }
+            th,
+            td {
+                border: 1px solid #334155;
+                padding: 0.75rem;
+                text-align: left;
+            }
+            th {
+                background-color: #1e293b;
+                color: #fff;
+            }
+            code {
+                background-color: #1e293b;
+                padding: 0.2rem 0.4rem;
+                border-radius: 4px;
+                color: #fb7185;
+            }
+            a {
+                color: #60a5fa;
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            .back-btn {
+                display: inline-block;
+                margin-bottom: 2rem;
+                padding: 0.5rem 1rem;
+                background: #1e293b;
+                color: #fff;
+                border-radius: 8px;
+                text-decoration: none;
+                transition: background 0.3s;
+            }
+            .back-btn:hover {
+                background: #3b82f6;
+            }
+        </style>
+        <link rel="stylesheet" href="../../markdown.css" />
+    </head>
+    <body>
+        <div class="page">
+            <nav class="md-nav">
+                <a href="index.html">← spreadsheets</a><span>/</span
+                ><strong>30001-1003 / spreadsheets / hr_payroll</strong>
+            </nav>
+            <main class="article">
+
+                <h2>📝 สถานการณ์จำลอง (Scenario)</h2>
+                <p>
+                    ให้นักศึกษาสวมบทบาทเป็นเจ้าหน้าที่ฝ่ายทรัพยากรบุคคล (HR)
+                    ของบริษัท
+                    <strong>"Global Tech Solutions"</strong>
+                    สิ้นปีนี้บริษัทมีนโยบายปรับเงินเดือนและแจกโบนัสพนักงานตามเกรดการประเมิน
+                    (Performance Grade)
+                    คุณได้รับมอบหมายให้สร้างระบบตารางเพื่อดึงข้อมูลฐานเงินเดือนของแต่ละตำแหน่ง
+                    และคำนวณโบนัสประจำปีได้อย่างแม่นยำ
+                </p>
+                <hr />
+                <h2>🛠️ ขั้นตอนการปฏิบัติงาน</h2>
+                <h3>
+                    ส่วนที่ 1: ตารางฐานข้อมูลตำแหน่งและเงินเดือน (Sheet:
+                    <code>SalaryBase</code>)
+                </h3>
+                <p>
+                    สร้าง Sheet ใหม่ชื่อ
+                    <code>SalaryBase</code>
+                    และสร้างตารางข้อมูลเพื่อใช้เป็นฐานอ้างอิง: 1.
+                    <strong>ตารางฐานเงินเดือน (Salary Matrix):</strong>
+                    ให้มีคอลัมน์ <code>รหัสตำแหน่ง (Job_Code)</code>,
+                    <code>ชื่อตำแหน่ง (Job_Title)</code>, และ
+                    <code>ฐานเงินเดือนเริ่มต้น (Base_Salary)</code>
+                    (สร้างข้อมูลจำลอง 5 ตำแหน่ง) 2.
+                    <strong>ตารางเกณฑ์โบนัส (Bonus Criteria):</strong>
+                    ให้มีคอลัมน์ <code>เกรดประเมิน (Grade)</code> (A, B, C, D)
+                    และ <code>ตัวคูณโบนัส (Bonus_Multiplier)</code> (เช่น A = 3
+                    เดือน, B = 2 เดือน, C = 1 เดือน, D = 0 เดือน)
+                </p>
+                <h3>
+                    ส่วนที่ 2: ระบบคำนวณเงินเดือนและโบนัส (Sheet:
+                    <code>PayrollSummary</code>)
+                </h3>
+                <p>
+                    สร้าง Sheet ใหม่ชื่อ
+                    <code>PayrollSummary</code> จำนวนข้อมูลจำลอง 15 รายการ
+                    ประกอบด้วยคอลัมน์ดังนี้:
+                </p>
+                <ol>
+                    <li><strong>รหัสพนักงาน (Emp_ID)</strong></li>
+                    <li><strong>ชื่อ-นามสกุล (Emp_Name)</strong></li>
+                    <li>
+                        <strong>รหัสตำแหน่ง (Job_Code)</strong>:
+                        ให้นักศึกษากรอกข้อมูลรหัสตำแหน่ง (เช่น J01, J02)
+                    </li>
+                    <li>
+                        <strong>ชื่อตำแหน่ง (Job_Title)</strong>: ใช้สูตร
+                        <code>INDEX</code> ร่วมกับ
+                        <code>MATCH</code> ในการดึงชื่อตำแหน่งจาก Sheet
+                        <code>SalaryBase</code>
+                    </li>
+                    <li>
+                        <strong>เงินเดือน (Salary)</strong>: ใช้สูตร
+                        <code>INDEX</code> ร่วมกับ
+                        <code>MATCH</code> ดึงข้อมูลฐานเงินเดือน
+                        และครอบสูตรทั้งหมดด้วย
+                        <code>IFERROR</code> เพื่อให้แสดงข้อความ "ไม่พบข้อมูล"
+                        หากพิมพ์รหัสตำแหน่งผิด
+                    </li>
+                    <li>
+                        <strong>ผลการประเมิน (Performance_Grade)</strong>:
+                        กรอกเกรด A, B, C, หรือ D
+                    </li>
+                    <li>
+                        <strong>จำนวนเดือนโบนัส (Bonus_Months)</strong>:
+                        ใช้ฟังก์ชัน <code>IFS</code> (หรือ <code>IF</code> ซ้อน)
+                        ตรวจสอบเงื่อนไขจากเกรดประเมิน เช่น
+                        <code>=IFS(F2="A", 3, F2="B", 2, ...)</code>
+                    </li>
+                    <li>
+                        <strong>เงินโบนัสรวม (Total_Bonus)</strong>: คำนวณจาก
+                        <code>เงินเดือน * จำนวนเดือนโบนัส</code>
+                    </li>
+                    <li>
+                        <strong
+                            >รายรับสุทธิเดือนธันวาคม (Net_December_Pay)</strong
+                        >: คำนวณจาก <code>เงินเดือน + เงินโบนัสรวม</code>
+                    </li>
+                </ol>
+                <hr />
+                <h2>
+                    📋 เกณฑ์การประเมินผล (Rubric Score) - คะแนนเต็ม 20 คะแนน
+                </h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="text-align: left">รายการประเมิน</th>
+                            <th style="text-align: left">รายละเอียด</th>
+                            <th style="text-align: center">คะแนน</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: left">
+                                <strong>1. ฟังก์ชัน INDEX &amp; MATCH</strong>
+                            </td>
+                            <td style="text-align: left">
+                                สามารถดึงข้อมูลชื่อตำแหน่งและฐานเงินเดือนได้ถูกต้อง
+                            </td>
+                            <td style="text-align: center">6</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left">
+                                <strong>2. ฟังก์ชัน IFERROR</strong>
+                            </td>
+                            <td style="text-align: left">
+                                สามารถดักจับข้อผิดพลาดในกรณีที่ไม่พบรหัสตำแหน่งได้
+                            </td>
+                            <td style="text-align: center">3</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left">
+                                <strong>3. ฟังก์ชัน IFS หรือ IF ซ้อน</strong>
+                            </td>
+                            <td style="text-align: left">
+                                สามารถแปลงเกรดประเมินเป็นจำนวนเดือนโบนัสได้ถูกต้องตามเงื่อนไข
+                            </td>
+                            <td style="text-align: center">5</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left">
+                                <strong>4. การคำนวณตัวเลขทางบัญชี</strong>
+                            </td>
+                            <td style="text-align: left">
+                                สามารถคำนวณยอดเงินโบนัสและรายรับสุทธิได้ถูกต้อง
+                            </td>
+                            <td style="text-align: center">4</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left">
+                                <strong>5. การจัดรูปแบบข้อมูล</strong>
+                            </td>
+                            <td style="text-align: left">
+                                จัดรูปแบบสกุลเงิน ใส่คอมม่า ทศนิยม
+                                และตีเส้นตารางสวยงาม
+                            </td>
+                            <td style="text-align: center">2</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <hr />
+                <p>
+                    <em
+                        >จัดทำโดย:
+                        แผนกวิชาคอมพิวเตอร์ธุรกิจ/เทคโนโลยีสารสนเทศ</em
+                    >
+                </p>
+            </main>
+            <footer class="md-footer">
+                © 2026 my-class-room · hr_payroll_lab_pws
+            </footer>
+        </div>
+    </body>
 </html>

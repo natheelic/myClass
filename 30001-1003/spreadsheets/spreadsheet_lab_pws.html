@@ -1,156 +1,244 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ใบงานปฏิบัติการ: การประยุกต์ใช้ Spreadsheet สำหรับธุรกิจ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ใบงานปฏิบัติการ: การประยุกต์ใช้ Spreadsheet สำหรับธุรกิจ</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap"
+            rel="stylesheet"
+        />
 
-    <style>
-        body {
-            font-family: 'Prompt', sans-serif;
-            line-height: 1.6;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem;
-            color: #f8fafc;
-            background-color: #0a0a0f;
-        }
-        h1, h2, h3, h4 { color: #3b82f6; }
-        h1 { border-bottom: 2px solid #3b82f6; padding-bottom: 0.5rem; }
-        table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
-        th, td { border: 1px solid #334155; padding: 0.75rem; text-align: left; }
-        th { background-color: #1e293b; color: #fff; }
-        code { background-color: #1e293b; padding: 0.2rem 0.4rem; border-radius: 4px; color: #fb7185; }
-        a { color: #60a5fa; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        .back-btn {
-            display: inline-block;
-            margin-bottom: 2rem;
-            padding: 0.5rem 1rem;
-            background: #1e293b;
-            color: #fff;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: background 0.3s;
-        }
-        .back-btn:hover { background: #3b82f6; }
-    </style>
-    <link rel="stylesheet" href="../../markdown.css">
-</head>
-<body>
-    <a href="index.html" class="back-btn">&larr; กลับหน้าหลัก (Back to Portal)</a>
-    <div class="content">
-        <h1>ใบงานปฏิบัติการ: การประยุกต์ใช้ Spreadsheet สำหรับธุรกิจ</h1>
-<p><strong>ระดับชั้น:</strong> ประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.)
-<strong>รายวิชา:</strong> โปรแกรมตารางงานประยุกต์ (Applied Spreadsheet)</p>
-<hr />
-<h2>🎯 วัตถุประสงค์การเรียนรู้</h2>
-<ol>
-<li>สามารถประยุกต์ใช้เครื่องมือตรวจสอบความถูกต้องของข้อมูล (Data Validation) ได้</li>
-<li>สามารถใช้ฟังก์ชันค้นหาและอ้างอิงข้อมูล (<code>VLOOKUP</code>) ร่วมกับตารางข้อมูลได้</li>
-<li>สามารถประยุกต์ใช้ฟังก์ชันเงื่อนไข (<code>IF</code>, <code>SUMIF</code>, <code>COUNTIF</code>) ในการวิเคราะห์และสรุปผลข้อมูล</li>
-<li>สามารถสร้างและปรับแต่ง PivotTable และ PivotChart เพื่อสรุปข้อมูลสำหรับผู้บริหารได้</li>
-</ol>
-<hr />
-<h2>📝 สถานการณ์จำลอง (Scenario)</h2>
-<p>ให้นักศึกษาสวมบทบาทเป็นพนักงานฝ่ายข้อมูลของร้าน <strong>"IT Smart Solutions"</strong> ซึ่งจำหน่ายอุปกรณ์คอมพิวเตอร์ ผู้จัดการร้านต้องการให้คุณสร้างระบบบันทึกการขายและสรุปยอดขายประจำเดือนบนโปรแกรม Spreadsheet (Excel หรือ Google Sheets) เพื่อให้การกรอกข้อมูลรวดเร็วขึ้นและลดข้อผิดพลาด</p>
-<hr />
-<h2>🛠️ ขั้นตอนการปฏิบัติงาน</h2>
-<h3>ส่วนที่ 1: การสร้างฐานข้อมูลอ้างอิง (Sheet: <code>MasterData</code>)</h3>
-<p>ให้นักศึกษาสร้าง Sheet ใหม่ชื่อ <code>MasterData</code> และสร้างตารางข้อมูล 2 ตารางดังนี้:</p>
-<p><strong>ตารางที่ 1.1: ฐานข้อมูลสินค้า (Products)</strong>
-| รหัสสินค้า (Product_ID) | ชื่อสินค้า (Product_Name) | หมวดหมู่ (Category) | ราคาต่อหน่วย (Price) |
-| :--- | :--- | :--- | :--- |
-| P001 | Mouse Wireless | Accessories | 450 |
-| P002 | Mechanical Keyboard | Accessories | 1,290 |
-| P003 | Monitor 24" | Hardware | 3,500 |
-| P004 | SSD 1TB | Hardware | 2,890 |
-| P005 | USB Hub Type-C | Accessories | 690 |</p>
-<p><strong>ตารางที่ 1.2: ฐานข้อมูลสมาชิก (Members)</strong>
-| รหัสสมาชิก (Member_ID) | ชื่อ-นามสกุล (Member_Name) | ประเภทสมาชิก (Tier) |
-| :--- | :--- | :--- |
-| M001 | สมชาย ใจดี | VIP |
-| M002 | สมหญิง รักเรียน | Regular |
-| M003 | มานะ พากเพียร | VIP |
-| M004 | ปิติ รักสงบ | Regular |</p>
-<p><em>(หมายเหตุ: แนะนำให้ตั้งชื่อกลุ่มเซลล์ (Named Range) เพื่อความสะดวกในการเขียนสูตรในขั้นตอนต่อไป)</em></p>
-<hr />
-<h3>ส่วนที่ 2: การสร้างระบบบันทึกการขาย (Sheet: <code>SalesTransaction</code>)</h3>
-<p>สร้าง Sheet ใหม่ชื่อ <code>SalesTransaction</code> และสร้างตารางที่มีหัวข้อคอลัมน์ดังต่อไปนี้:</p>
-<ol>
-<li><strong>ลำดับ (No.)</strong></li>
-<li><strong>วันที่ (Date)</strong></li>
-<li><strong>รหัสสมาชิก (Member_ID)</strong>: <em>ให้ทำ Data Validation แบบ Drop-down list โดยดึงข้อมูลจาก Sheet <code>MasterData</code></em></li>
-<li><strong>ชื่อลูกค้า (Customer_Name)</strong>: <em>ใช้สูตร <code>VLOOKUP</code> ดึงข้อมูลอัตโนมัติ</em></li>
-<li><strong>รหัสสินค้า (Product_ID)</strong>: <em>ให้ทำ Data Validation แบบ Drop-down list</em></li>
-<li><strong>ชื่อสินค้า (Product_Name)</strong>: <em>ใช้สูตร <code>VLOOKUP</code> ดึงข้อมูลอัตโนมัติ</em></li>
-<li><strong>ราคาต่อหน่วย (Unit_Price)</strong>: <em>ใช้สูตร <code>VLOOKUP</code> ดึงข้อมูลอัตโนมัติ</em></li>
-<li><strong>จำนวน (Quantity)</strong>: <em>(กรอกตัวเลขด้วยตนเอง)</em></li>
-<li><strong>รวมเป็นเงิน (Total)</strong>: <code>= ราคาต่อหน่วย * จำนวน</code></li>
-<li><strong>ส่วนลด (Discount)</strong>: <em>ใช้ฟังก์ชัน <code>IF</code> คำนวณ โดยมีเงื่อนไขดังนี้</em><ul>
-<li>หากลูกค้ารหัสนั้นมีประเภทสมาชิก (Tier) เป็น <strong>"VIP"</strong> ให้ส่วนลด <strong>10%</strong> ของรวมเป็นเงิน</li>
-<li>หากลูกค้ารหัสนั้นมีประเภทสมาชิก (Tier) เป็น <strong>"Regular"</strong> ให้ส่วนลด <strong>5%</strong> ของรวมเป็นเงิน</li>
-<li><em>(คำใบ้: อาจต้องใช้ VLOOKUP ซ้อนใน IF หรือดึงประเภทสมาชิกมาไว้ในคอลัมน์ซ่อนก่อน)</em></li>
-</ul>
-</li>
-<li><strong>ยอดสุทธิ (Net_Total)</strong>: <code>= รวมเป็นเงิน - ส่วนลด</code></li>
-</ol>
-<p><strong>คำสั่งเพิ่มเติม:</strong>
-- ให้นักศึกษากรองข้อมูลจำลอง (Mockup Data) การซื้อขายอย่างน้อย <strong>15 รายการ</strong>
-- จัดรูปแบบเซลล์ (Cell Formatting) ในส่วนของตัวเงินให้มีคอมม่า (,) และทศนิยม 2 ตำแหน่ง
-- ใช้ Conditional Formatting ไฮไลท์แถวที่มียอดสุทธิมากกว่า 5,000 บาท ด้วยสีเขียวอ่อน</p>
-<hr />
-<h3>ส่วนที่ 3: การสรุปผลระดับบริหาร (Sheet: <code>Dashboard</code>)</h3>
-<p>สร้าง Sheet ใหม่ชื่อ <code>Dashboard</code> และวิเคราะห์ข้อมูลจาก Sheet <code>SalesTransaction</code> ดังนี้:</p>
-<ol>
-<li><strong>สรุปข้อมูลด้วยสูตร:</strong></li>
-<li>ใช้ <code>SUMIF</code> หา "ยอดสุทธิรวม" แยกตามหมวดหมู่สินค้า (Accessories และ Hardware)</li>
-<li>ใช้ <code>COUNTIF</code> นับจำนวนครั้งที่มีการใช้บริการของสมาชิกระดับ "VIP"</li>
-<li><strong>การใช้ PivotTable และ PivotChart:</strong></li>
-<li>สร้าง <strong>PivotTable</strong> แสดง "ยอดสุทธิ" (Net_Total) แยกตาม "ชื่อสินค้า" (Row) และ "ประเภทสมาชิก" (Column)</li>
-<li>สร้าง <strong>PivotChart</strong> แบบกราฟแท่ง (Bar Chart หรือ Column Chart) จาก PivotTable ในข้อที่แล้ว พร้อมทั้งใส่ชื่อกราฟ และแกนให้ชัดเจน</li>
-</ol>
-<hr />
-<h2>📋 เกณฑ์การประเมินผล (Rubric Score) - คะแนนเต็ม 20 คะแนน</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">รายการประเมิน</th>
-<th style="text-align: left;">รายละเอียด</th>
-<th style="text-align: center;">คะแนน</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><strong>1. Data Validation &amp; Naming</strong></td>
-<td style="text-align: left;">สร้าง Drop-down list ได้ถูกต้อง และอ้างอิงข้อมูลได้</td>
-<td style="text-align: center;">3</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>2. ฟังก์ชัน VLOOKUP</strong></td>
-<td style="text-align: left;">ดึงข้อมูลชื่อลูกค้า สินค้า และราคาได้อย่างถูกต้องแม่นยำ</td>
-<td style="text-align: center;">5</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>3. ฟังก์ชัน IF &amp; การคำนวณ</strong></td>
-<td style="text-align: left;">เขียนเงื่อนไขคำนวณส่วนลดตามประเภทสมาชิก และรวมยอดได้ถูกต้อง</td>
-<td style="text-align: center;">5</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>4. การวิเคราะห์ (Pivot &amp; SUMIF)</strong></td>
-<td style="text-align: left;">สร้าง PivotTable, PivotChart และใช้ SUMIF/COUNTIF ได้ถูกต้อง</td>
-<td style="text-align: center;">5</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>5. ความสวยงามและการจัดรูปแบบ</strong></td>
-<td style="text-align: left;">จัดรูปแบบตาราง สี กราฟ และรูปแบบตัวเลขได้สวยงาม น่าอ่าน</td>
-<td style="text-align: center;">2</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<p><em>จัดทำโดย: แผนกวิชาคอมพิวเตอร์ธุรกิจ/เทคโนโลยีสารสนเทศ</em></p>
-    </div>
-</body>
+        <style>
+            body {
+                font-family: "Prompt", sans-serif;
+                line-height: 1.6;
+                max-width: 900px;
+                margin: 0 auto;
+                padding: 2rem;
+                color: #f8fafc;
+                background-color: #0a0a0f;
+            }
+            h1,
+            h2,
+            h3,
+            h4 {
+                color: #3b82f6;
+            }
+            h1 {
+                border-bottom: 2px solid #3b82f6;
+                padding-bottom: 0.5rem;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-bottom: 2rem;
+            }
+            th,
+            td {
+                border: 1px solid #334155;
+                padding: 0.75rem;
+                text-align: left;
+            }
+            th {
+                background-color: #1e293b;
+                color: #fff;
+            }
+            code {
+                background-color: #1e293b;
+                padding: 0.2rem 0.4rem;
+                border-radius: 4px;
+                color: #fb7185;
+            }
+            a {
+                color: #60a5fa;
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            .back-btn {
+                display: inline-block;
+                margin-bottom: 2rem;
+                padding: 0.5rem 1rem;
+                background: #1e293b;
+                color: #fff;
+                border-radius: 8px;
+                text-decoration: none;
+                transition: background 0.3s;
+            }
+            .back-btn:hover {
+                background: #3b82f6;
+            }
+        </style>
+        <link rel="stylesheet" href="../../markdown.css" />
+    </head>
+    <body>
+        <div class="page">
+            <nav class="md-nav">
+                <a href="index.html">← spreadsheets</a><span>/</span
+                ><strong>30001-1003 / spreadsheets / sales</strong>
+            </nav>
+            <main class="article">
+                <h2>📝 สถานการณ์จำลอง (Scenario)</h2>
+                <p>
+                    ให้นักศึกษาสวมบทบาทเป็นพนักงานฝ่ายข้อมูลของร้าน
+                    <strong>"IT Smart Solutions"</strong>
+                    ซึ่งจำหน่ายอุปกรณ์คอมพิวเตอร์
+                    ผู้จัดการร้านต้องการให้คุณสร้างระบบบันทึกการขายและสรุปยอดขายประจำเดือนบนโปรแกรม
+                    Spreadsheet (Excel หรือ Google Sheets)
+                    เพื่อให้การกรอกข้อมูลรวดเร็วขึ้นและลดข้อผิดพลาด
+                </p>
+                <hr />
+                <h2>🛠️ ขั้นตอนการปฏิบัติงาน</h2>
+                <h3>
+                    ส่วนที่ 1: การสร้างฐานข้อมูลอ้างอิง (Sheet:
+                    <code>MasterData</code>)
+                </h3>
+                <p>
+                    ให้นักศึกษาสร้าง Sheet ใหม่ชื่อ
+                    <code>MasterData</code> และสร้างตารางข้อมูล 2 ตารางดังนี้:
+                </p>
+                <p>
+                    <strong>ตารางที่ 1.1: ฐานข้อมูลสินค้า (Products)</strong> |
+                    รหัสสินค้า (Product_ID) | ชื่อสินค้า (Product_Name) |
+                    หมวดหมู่ (Category) | ราคาต่อหน่วย (Price) | | :--- | :--- |
+                    :--- | :--- | | P001 | Mouse Wireless | Accessories | 450 |
+                    | P002 | Mechanical Keyboard | Accessories | 1,290 | | P003
+                    | Monitor 24" | Hardware | 3,500 | | P004 | SSD 1TB |
+                    Hardware | 2,890 | | P005 | USB Hub Type-C | Accessories |
+                    690 |
+                </p>
+                <p>
+                    <strong>ตารางที่ 1.2: ฐานข้อมูลสมาชิก (Members)</strong> |
+                    รหัสสมาชิก (Member_ID) | ชื่อ-นามสกุล (Member_Name) |
+                    ประเภทสมาชิก (Tier) | | :--- | :--- | :--- | | M001 | สมชาย
+                    ใจดี | VIP | | M002 | สมหญิง รักเรียน | Regular | | M003 |
+                    มานะ พากเพียร | VIP | | M004 | ปิติ รักสงบ | Regular |
+                </p>
+                <p>
+                    <em
+                        >(หมายเหตุ: แนะนำให้ตั้งชื่อกลุ่มเซลล์ (Named Range)
+                        เพื่อความสะดวกในการเขียนสูตรในขั้นตอนต่อไป)</em
+                    >
+                </p>
+                <hr />
+                <h3>
+                    ส่วนที่ 2: การสร้างระบบบันทึกการขาย (Sheet:
+                    <code>SalesTransaction</code>)
+                </h3>
+                <p>
+                    สร้าง Sheet ใหม่ชื่อ
+                    <code>SalesTransaction</code>
+                    และสร้างตารางที่มีหัวข้อคอลัมน์ดังต่อไปนี้:
+                </p>
+                <ol>
+                    <li><strong>ลำดับ (No.)</strong></li>
+                    <li><strong>วันที่ (Date)</strong></li>
+                    <li>
+                        <strong>รหัสสมาชิก (Member_ID)</strong>:
+                        <em
+                            >ให้ทำ Data Validation แบบ Drop-down list
+                            โดยดึงข้อมูลจาก Sheet <code>MasterData</code></em
+                        >
+                    </li>
+                    <li>
+                        <strong>ชื่อลูกค้า (Customer_Name)</strong>:
+                        <em>ใช้สูตร <code>VLOOKUP</code> ดึงข้อมูลอัตโนมัติ</em>
+                    </li>
+                    <li>
+                        <strong>รหัสสินค้า (Product_ID)</strong>:
+                        <em>ให้ทำ Data Validation แบบ Drop-down list</em>
+                    </li>
+                    <li>
+                        <strong>ชื่อสินค้า (Product_Name)</strong>:
+                        <em>ใช้สูตร <code>VLOOKUP</code> ดึงข้อมูลอัตโนมัติ</em>
+                    </li>
+                    <li>
+                        <strong>ราคาต่อหน่วย (Unit_Price)</strong>:
+                        <em>ใช้สูตร <code>VLOOKUP</code> ดึงข้อมูลอัตโนมัติ</em>
+                    </li>
+                    <li>
+                        <strong>จำนวน (Quantity)</strong>:
+                        <em>(กรอกตัวเลขด้วยตนเอง)</em>
+                    </li>
+                    <li>
+                        <strong>รวมเป็นเงิน (Total)</strong>:
+                        <code>= ราคาต่อหน่วย * จำนวน</code>
+                    </li>
+                    <li>
+                        <strong>ส่วนลด (Discount)</strong>:
+                        <em
+                            >ใช้ฟังก์ชัน <code>IF</code> คำนวณ
+                            โดยมีเงื่อนไขดังนี้</em
+                        >
+                        <ul>
+                            <li>
+                                หากลูกค้ารหัสนั้นมีประเภทสมาชิก (Tier) เป็น
+                                <strong>"VIP"</strong> ให้ส่วนลด
+                                <strong>10%</strong> ของรวมเป็นเงิน
+                            </li>
+                            <li>
+                                หากลูกค้ารหัสนั้นมีประเภทสมาชิก (Tier) เป็น
+                                <strong>"Regular"</strong> ให้ส่วนลด
+                                <strong>5%</strong> ของรวมเป็นเงิน
+                            </li>
+                            <li>
+                                <em
+                                    >(คำใบ้: อาจต้องใช้ VLOOKUP ซ้อนใน IF
+                                    หรือดึงประเภทสมาชิกมาไว้ในคอลัมน์ซ่อนก่อน)</em
+                                >
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>ยอดสุทธิ (Net_Total)</strong>:
+                        <code>= รวมเป็นเงิน - ส่วนลด</code>
+                    </li>
+                </ol>
+                <p>
+                    <strong>คำสั่งเพิ่มเติม:</strong> -
+                    ให้นักศึกษากรองข้อมูลจำลอง (Mockup Data) การซื้อขายอย่างน้อย
+                    <strong>15 รายการ</strong> - จัดรูปแบบเซลล์ (Cell
+                    Formatting) ในส่วนของตัวเงินให้มีคอมม่า (,) และทศนิยม 2
+                    ตำแหน่ง - ใช้ Conditional Formatting
+                    ไฮไลท์แถวที่มียอดสุทธิมากกว่า 5,000 บาท ด้วยสีเขียวอ่อน
+                </p>
+                <hr />
+                <h3>
+                    ส่วนที่ 3: การสรุปผลระดับบริหาร (Sheet:
+                    <code>Dashboard</code>)
+                </h3>
+                <p>
+                    สร้าง Sheet ใหม่ชื่อ
+                    <code>Dashboard</code> และวิเคราะห์ข้อมูลจาก Sheet
+                    <code>SalesTransaction</code> ดังนี้:
+                </p>
+                <ol>
+                    <li><strong>สรุปข้อมูลด้วยสูตร:</strong></li>
+                    <li>
+                        ใช้ <code>SUMIF</code> หา "ยอดสุทธิรวม"
+                        แยกตามหมวดหมู่สินค้า (Accessories และ Hardware)
+                    </li>
+                    <li>
+                        ใช้
+                        <code>COUNTIF</code>
+                        นับจำนวนครั้งที่มีการใช้บริการของสมาชิกระดับ "VIP"
+                    </li>
+                    <li><strong>การใช้ PivotTable และ PivotChart:</strong></li>
+                    <li>
+                        สร้าง <strong>PivotTable</strong> แสดง "ยอดสุทธิ"
+                        (Net_Total) แยกตาม "ชื่อสินค้า" (Row) และ "ประเภทสมาชิก"
+                        (Column)
+                    </li>
+                    <li>
+                        สร้าง <strong>PivotChart</strong> แบบกราฟแท่ง (Bar Chart
+                        หรือ Column Chart) จาก PivotTable ในข้อที่แล้ว
+                        พร้อมทั้งใส่ชื่อกราฟ และแกนให้ชัดเจน
+                    </li>
+                </ol>
+                <hr />
+            </main>
+        </div>
+    </body>
 </html>
