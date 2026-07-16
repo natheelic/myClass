@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="th">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="ระบบปฏิบัติการ 31909-1001 — หน่วยที่ 6 การจัดการระบบแฟ้มบน Linux">
+	<title>ระบบปฏิบัติการ 31909-1001 | หน่วยที่ 6</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="../markdown.css">
+	<style>
+		:root {
+			--course-yellow: #f2c94c;
+			--course-cyan: #00a6a6;
+			--course-blue: #0969da;
+			--course-ink: #24292f;
+			--course-muted: #57606a;
+			--course-line: #d0d7de;
+			--course-canvas: #f6f8fa;
+			--course-paper: #ffffff;
+		}
+
+		* { box-sizing: border-box; }
+		body { min-width: 320px; margin: 0; padding: 0; line-height: 1.6; }
+		a { color: inherit; text-decoration: none; }
+		a:focus-visible { outline: 3px solid #54aeff; outline-offset: 3px; }
+
+		.skip-link { position: absolute; top: -50px; left: 16px; z-index: 10; padding: 8px 12px; color: #fff; background: var(--course-ink); border-radius: 5px; }
+		.skip-link:focus { top: 12px; }
+		.site-header { border-bottom: 1px solid var(--course-line); background: var(--course-paper); }
+		.topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; width: min(1080px, calc(100% - 40px)); min-height: 66px; margin: 0 auto; }
+		.brand { display: flex; align-items: center; gap: 10px; color: var(--course-ink); font: 600 14px 'IBM Plex Mono', monospace; }
+		.brand-mark { display: grid; place-items: center; width: 29px; height: 29px; color: var(--course-ink); background: var(--course-yellow); border: 1px solid #d4a72c; border-radius: 5px; }
+		.back-link { color: var(--course-muted); font: 500 12px 'IBM Plex Mono', monospace; }
+		.back-link:hover { color: var(--course-blue); }
+
+		.shell { width: min(1080px, calc(100% - 40px)); margin: 0 auto; padding: 46px 0 64px; }
+		.hero { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 44px; align-items: end; padding: 0 0 36px; border-bottom: 1px solid var(--course-line); }
+		.eyebrow { margin: 0 0 13px; color: var(--course-cyan); font: 600 12px 'IBM Plex Mono', monospace; }
+		h1 { max-width: 720px; margin: 0; color: var(--course-ink); font-size: clamp(32px, 5vw, 52px); line-height: 1.18; letter-spacing: 0; }
+		.lead { max-width: 670px; margin: 16px 0 0; color: var(--course-muted); font-size: 17px; }
+		.session { padding: 20px; background: #fff8d8; border: 1px solid #e6c660; border-radius: 6px; }
+		.session-label { margin: 0 0 5px; color: #735c0f; font: 600 11px 'IBM Plex Mono', monospace; text-transform: uppercase; }
+		.session strong { display: block; color: var(--course-ink); font-size: 18px; }
+		.session p { margin: 4px 0 0; color: #735c0f; font-size: 13px; }
+
+		.content { display: grid; grid-template-columns: minmax(0, 1fr) 230px; gap: 44px; padding-top: 38px; }
+		.section-label { margin: 0 0 14px; color: var(--course-ink); font: 600 13px 'IBM Plex Mono', monospace; }
+		.resources { border-top: 1px solid var(--course-line); }
+		.resource { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 22px 0; border-bottom: 1px solid var(--course-line); }
+		.resource:hover .resource-title { color: var(--course-blue); }
+		.resource-icon { display: grid; place-items: center; width: 48px; height: 48px; color: var(--course-ink); background: #ddf4ff; border: 1px solid #80ccff; border-radius: 6px; }
+		.resource-icon.lab { background: #dafbe1; border-color: #aceebb; }
+		.resource-kind { margin: 0 0 3px; color: var(--course-cyan); font: 600 11px 'IBM Plex Mono', monospace; }
+		.resource-title { margin: 0; color: var(--course-ink); font-size: 20px; line-height: 1.35; }
+		.resource-summary { margin: 6px 0 0; color: var(--course-muted); font-size: 14px; }
+		.resource-arrow { color: var(--course-blue); font-size: 25px; }
+
+		.course-note { align-self: start; padding: 20px; background: var(--course-paper); border: 1px solid var(--course-line); border-radius: 6px; }
+		.course-note h2 { margin: 0 0 14px; color: var(--course-ink); font-size: 17px; }
+		.course-note dl { display: grid; gap: 13px; margin: 0; }
+		.course-note div { padding-bottom: 12px; border-bottom: 1px solid #eaeef2; }
+		.course-note div:last-child { padding-bottom: 0; border: 0; }
+		.course-note dt { color: var(--course-muted); font: 500 10px 'IBM Plex Mono', monospace; text-transform: uppercase; }
+		.course-note dd { margin: 3px 0 0; color: var(--course-ink); font-size: 13px; }
+		.topic-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 24px; }
+		.topic { padding: 4px 7px; color: var(--course-muted); background: var(--course-canvas); border: 1px solid var(--course-line); border-radius: 4px; font: 500 10px 'IBM Plex Mono', monospace; }
+
+		footer { color: var(--course-muted); border-top: 1px solid var(--course-line); background: var(--course-paper); }
+		.footer-inner { display: flex; justify-content: space-between; gap: 20px; width: min(1080px, calc(100% - 40px)); margin: 0 auto; padding: 21px 0; font: 11px 'IBM Plex Mono', monospace; }
+
+		@media (max-width: 760px) {
+			.hero, .content { grid-template-columns: 1fr; gap: 28px; }
+			.hero { align-items: start; }
+			.session { max-width: 360px; }
+			.course-note { max-width: 460px; }
+		}
+		@media (max-width: 520px) {
+			.topbar, .shell, .footer-inner { width: calc(100% - 28px); }
+			.shell { padding: 31px 0 44px; }
+			.back-link { font-size: 10px; }
+			.resource { grid-template-columns: 42px minmax(0, 1fr) auto; gap: 12px; }
+			.resource-icon { width: 42px; height: 42px; }
+			.resource-title { font-size: 17px; }
+			.footer-inner { flex-direction: column; gap: 4px; }
+		}
+	</style>
+</head>
+<body>
+	<a class="skip-link" href="#resources">ข้ามไปยังเอกสาร</a>
+	<header class="site-header">
+		<div class="topbar">
+			<a class="brand" href="../index.html" aria-label="กลับสู่ my-class-room"><span class="brand-mark">&gt;_</span><span>my-class-room</span></a>
+			<a class="back-link" href="../index.html">&larr; all notes</a>
+		</div>
+	</header>
+
+	<main class="shell">
+		<section class="hero" aria-labelledby="course-title">
+			<div>
+				<p class="eyebrow">31909-1001 / OPERATING SYSTEMS</p>
+				<h1 id="course-title">การจัดการระบบแฟ้มบน Linux</h1>
+				<p class="lead">หน่วยที่ 6 ครอบคลุมโครงสร้างระบบแฟ้ม การจัดการพาร์ทิชัน การ mount สิทธิ์ ACL และการสำรองข้อมูลอย่างปลอดภัย</p>
+			</div>
+			<aside class="session" aria-label="รายละเอียดการสอน">
+				<p class="session-label">Unit 06</p>
+				<strong>สอนครั้งที่ 10</strong>
+				<p>ทฤษฎี 2 ชม. / ปฏิบัติ 3 ชม.</p>
+			</aside>
+		</section>
+
+		<div class="content">
+			<section id="resources" aria-labelledby="resources-title">
+				<h2 id="resources-title" class="section-label">[ เอกสารในหน่วยนี้ ]</h2>
+				<div class="resources">
+					<a class="resource" href="sheet06.html">
+						<span class="resource-icon" aria-hidden="true"><i data-lucide="book-open" aria-hidden="true"></i></span>
+						<span>
+							<span class="resource-kind">KNOWLEDGE SHEET / SHEET06</span>
+							<strong class="resource-title">ใบความรู้ที่ 6</strong>
+							<span class="resource-summary">แนวคิดระบบแฟ้ม, inode, FHS, filesystem, partition, mount, permissions และ backup</span>
+						</span>
+						<span class="resource-arrow" aria-hidden="true">&rarr;</span>
+					</a>
+					<a class="resource" href="lab06.html">
+						<span class="resource-icon lab" aria-hidden="true"><i data-lucide="terminal-square" aria-hidden="true"></i></span>
+						<span>
+							<span class="resource-kind">PRACTICAL LAB / LAB06</span>
+							<strong class="resource-title">ใบงานที่ 6</strong>
+							<span class="resource-summary">ฝึกใช้งาน Loop Device, parted, mkfs, mount, chmod, ACL, links, tar และ rsync</span>
+						</span>
+						<span class="resource-arrow" aria-hidden="true">&rarr;</span>
+					</a>
+				</div>
+			</section>
+
+			<aside class="course-note" aria-label="ข้อมูลรายวิชา">
+				<h2>ภาพรวมหน่วย</h2>
+				<dl>
+					<div><dt>รายวิชา</dt><dd>ระบบปฏิบัติการ</dd></div>
+					<div><dt>สมรรถนะ</dt><dd>ปรับแต่งระบบแฟ้มและสิทธิ์</dd></div>
+					<div><dt>ระบบเป้าหมาย</dt><dd>Linux / Ubuntu 22.04 LTS</dd></div>
+				</dl>
+				<div class="topic-list" aria-label="หัวข้อสำคัญ">
+					<span class="topic">ext4</span><span class="topic">mount</span><span class="topic">ACL</span><span class="topic">fstab</span><span class="topic">backup</span>
+				</div>
+			</aside>
+		</div>
+	</main>
+
+	<footer><div class="footer-inner"><span>&copy; 2026 my-class-room</span><span>31909-1001 / Unit 06</span></div></footer>
+	<script src="https://unpkg.com/lucide@latest"></script>
+	<script>lucide.createIcons();</script>
+</body>
+</html>

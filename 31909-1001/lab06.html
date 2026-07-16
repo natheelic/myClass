@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="th">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="ใบงานที่ 6 — การจัดการระบบแฟ้มบน Linux">
+	<title>ใบงานที่ 6 — การจัดการระบบแฟ้ม Linux</title>
+	<link rel="stylesheet" href="../markdown.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+	<style>
+		body { margin: 0; padding: 28px 0; line-height: 1.7; }
+		.article h2 { margin-top: 38px; }
+		.article h3 { margin-top: 30px; font-size: 19px; }
+		.article p, .article li { color: var(--md-muted); }
+		.article table { margin: 18px 0 24px; font-size: 14px; }
+		.article th { color: var(--md-ink); font-weight: 600; }
+		.article pre { padding: 16px; overflow: auto; background: var(--md-code); border: 1px solid var(--md-line); border-radius: 6px; font: 13px/1.6 'IBM Plex Mono', monospace; }
+		.article code { padding: 2px 5px; color: var(--md-ink); background: var(--md-code); border-radius: 4px; font: 13px 'IBM Plex Mono', monospace; }
+		.article pre code { padding: 0; background: transparent; }
+		.article blockquote { margin: 20px 0; padding: 12px 16px; color: var(--md-muted); border-left: 3px solid var(--md-blue); }
+		.article hr { height: 1px; margin: 32px 0; border: 0; background: var(--md-line); }
+	</style>
+</head>
+<body>
+	<div class="page">
+		<nav class="md-nav" aria-label="Breadcrumb"><a href="../index.html">&larr; my-class-room</a><span>/</span><strong>31909-1001 / LAB06.md</strong></nav>
+		<main id="markdown-content" class="article"></main>
+		<footer class="md-footer">Rendered from <code>LAB06.md</code> &middot; &copy; 2026 my-class-room</footer>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+	<script type="text/markdown" id="source">
+# LAB 06 — ใบงานที่ 6 (หน่วยที่ 6)
+
+| | | |
+|---|---|---|
+| **ใบงานที่ 6** | **รหัสวิชา 31909-1001 วิชา ระบบปฏิบัติการ** | **หน่วยที่ 6** |
+| **ชื่อหน่วยการเรียนรู้:** การจัดการระบบแฟ้ม | **สอนครั้งที่ 10** | **ทฤษฎี 2 ชม. / ปฏิบัติ 3 ชม.** |
+
+**ชื่องาน:** การจัดการระบบแฟ้มบน Linux — พาร์ทิชัน ฟอร์แมต mount สิทธิ์ ACL และการสำรองข้อมูล
+
+---
+
+## 1. ผลลัพธ์การเรียนรู้จากการปฏิบัติงาน
+
+ผู้เรียนสามารถแบ่งพาร์ทิชัน ฟอร์แมตระบบแฟ้ม mount ตั้งค่าสิทธิ์การเข้าถึง จัดการ ACL สร้าง hard/symbolic link และสำรอง-กู้คืนข้อมูลบน Linux ได้อย่างถูกต้อง ปลอดภัย รอบคอบ และเป็นระเบียบ พร้อมสามารถวินิจฉัยและแก้ปัญหาระบบแฟ้มเบื้องต้นได้
+
+## 2. อ้างอิงมาตรฐาน/เชื่อมโยงกลุ่มอาชีพ
+
+มาตรฐานอาชีพ: มาตรฐานฝีมือแรงงานแห่งชาติ กรมพัฒนาฝีมือแรงงาน อาชีพช่างซ่อมไมโครคอมพิวเตอร์ ระดับ 2 เชื่อมโยง กลุ่มอาชีพฮาร์ดแวร์ สาขาวิชาเทคโนโลยีคอมพิวเตอร์ สมรรถนะย่อย 02.5 ปรับแต่งระบบแฟ้มและสิทธิ์
+
+## 3. สมรรถนะการปฏิบัติงาน
+
+3.1 แบ่งพาร์ทิชัน ฟอร์แมต และ mount ระบบแฟ้มบน Linux ได้
+
+3.2 จัดการสิทธิ์การเข้าถึงไฟล์ด้วย chmod, chown และ ACL ได้
+
+3.3 สร้างและทดสอบ hard link และ symbolic link ได้
+
+3.4 สำรองและกู้คืนข้อมูลด้วย tar และ rsync ได้
+
+3.5 ตรวจสอบ ซ่อม และวินิจฉัยระบบแฟ้มได้อย่างปลอดภัย
+
+## 4. จุดประสงค์เชิงพฤติกรรม
+
+4.1 ใช้ fdisk/parted แบ่งพาร์ทิชัน และ mkfs ฟอร์แมตได้ถูกต้อง
+
+4.2 ตั้งค่า /etc/fstab ให้ mount อัตโนมัติอย่างปลอดภัย
+
+4.3 ตั้งสิทธิ์ด้วย chmod (ตัวเลข/สัญลักษณ์), chown และ SUID/SGID/Sticky bit ได้
+
+4.4 ใช้ getfacl/setfacl จัดการ ACL ได้
+
+4.5 ทำงานปลอดภัย รอบคอบ ละเอียด เป็นระเบียบ และบันทึกผลครบถ้วน
+
+---
+
+## 5. เครื่องมือ วัสดุ และอุปกรณ์
+
+5.1 เครื่องคอมพิวเตอร์ที่ติดตั้ง Ubuntu 22.04 LTS หรือ Linux distro ใกล้เคียง
+
+5.2 บัญชีผู้ใช้ที่มีสิทธิ์ sudo
+
+5.3 USB Flash drive สำหรับทดสอบแบ่งพาร์ทิชัน/ฟอร์แมต (จุข้อมูล ≥ 4 GB, **ข้อมูลจะถูกลบทั้งหมด**)
+   หรือ **แนะนำ**: สร้างไฟล์ Loop Device เพื่อฝึกอย่างปลอดภัยแทน USB จริง (ดูกิจกรรมที่ 2)
+
+5.4 การเชื่อมต่ออินเทอร์เน็ตเพื่อ apt install เครื่องมือที่ต้องใช้
+
+5.5 ใบบันทึกผลของใบงาน (ตอนท้าย)
+
+## 6. คำแนะนำ/ข้อควรระวัง
+
+6.1 **ห้ามทำกิจกรรมนี้บนดิสก์ระบบ** (/, /boot, /home) เด็ดขาด ให้ใช้ USB Flash drive หรือ Loop Device เท่านั้น
+
+6.2 ตรวจสอบชื่ออุปกรณ์ (/dev/sdX) ให้แน่ใจก่อนใช้คำสั่ง mkfs, dd, fdisk ทุกครั้ง — พิมพ์ผิดตัวเดียวอาจลบข้อมูลทั้งดิสก์
+
+6.3 การฟอร์แมตจะลบข้อมูลทั้งหมด สำรองข้อมูลก่อนเสมอ
+
+6.4 การแก้ /etc/fstab หากผิดพลาดอาจทำให้บูตไม่ขึ้น ใช้ option `nofail` และทดสอบด้วย `sudo mount -a` ก่อนรีบูตทุกครั้ง
+
+6.5 สำรอง /etc/fstab เป็น /etc/fstab.bak ก่อนแก้ไข
+
+> ⚠ **คำเตือน:** ในกิจกรรมที่ใช้ `dd` และ `mkfs` ให้ตรวจสอบ device ด้วย `lsblk` ก่อนเสมอ และแนะนำให้ใช้ **Loop Device** (กิจกรรมที่ 2) แทน USB จริงเพื่อความปลอดภัยสูงสุด
+
+---
+
+## 7. ขั้นตอนการปฏิบัติงาน
+
+### กิจกรรมที่ 1: เตรียมเครื่องและสำรวจระบบแฟ้ม (15 นาที)
+
+1.1 เปิด Terminal (Ctrl+Alt+T) และติดตั้งเครื่องมือ
+
+```bash
+$ sudo apt update
+$ sudo apt install -y util-linux e2fsprogs dosfstools exfatprogs xfsprogs acl rsync ncdu tree
+```
+
+1.2 บันทึกข้อมูลพื้นฐานของเครื่อง
+
+```bash
+$ lsb_release -a
+$ uname -r
+$ df -Th
+```
+
+- Distro/Version: ____________________________________
+- Kernel version: ____________________________________
+- ระบบแฟ้มของ / (root): ____________________________________
+
+1.3 ดูระบบแฟ้มที่ Kernel รองรับ และโครงสร้างไดเรกทอรีระดับ 1
+
+```bash
+$ cat /proc/filesystems
+$ tree -L 1 /
+```
+
+- ระบบแฟ้มที่รองรับ (ยกตัวอย่าง 5 ชนิด): ____________________________________
+
+---
+
+### กิจกรรมที่ 2: สร้าง Loop Device สำหรับฝึกอย่างปลอดภัย (20 นาที)
+
+> **แนะนำให้ใช้ Loop Device แทน USB จริง** เพื่อฝึกแบ่งพาร์ทิชัน/ฟอร์แมตโดยไม่เสี่ยงต่อข้อมูลจริง
+> หากต้องการใช้ USB จริง ให้ข้ามไปกิจกรรมที่ 3 และแทน `/dev/loopX` ด้วย `/dev/sdX`
+
+2.1 สร้างไฟล์ขนาด 1 GB เพื่อจำลองเป็นดิสก์
+
+```bash
+$ mkdir -p ~/lab6
+$ cd ~/lab6
+$ dd if=/dev/zero of=disk.img bs=1M count=1024 status=progress
+```
+
+2.2 ผูกไฟล์กับ Loop Device
+
+```bash
+$ sudo losetup -fP disk.img
+$ losetup -a                     # ดูว่าใช้ /dev/loopX ตัวไหน
+```
+
+- Loop device ที่ได้ (/dev/loopX): ____________________________________
+
+2.3 ตรวจสอบด้วย lsblk
+
+```bash
+$ lsblk | grep loop
+```
+
+---
+
+### กิจกรรมที่ 3: แบ่งพาร์ทิชันแบบ GPT ด้วย parted (25 นาที)
+
+> แทน `/dev/loopX` ด้วยอุปกรณ์จริงของคุณ (Loop Device หรือ USB `/dev/sdX`)
+
+3.1 สร้าง Partition Table แบบ GPT
+
+```bash
+$ sudo parted /dev/loopX mklabel gpt
+```
+
+3.2 สร้าง 2 พาร์ทิชัน (แต่ละพาร์ทิชัน ~ 500 MB)
+
+```bash
+$ sudo parted -a optimal /dev/loopX mkpart primary ext4 1MiB 512MiB
+$ sudo parted -a optimal /dev/loopX mkpart primary fat32 512MiB 100%
+$ sudo partprobe /dev/loopX
+$ lsblk /dev/loopX
+```
+
+3.3 ตรวจสอบผลการแบ่งพาร์ทิชัน
+
+```bash
+$ sudo parted /dev/loopX print
+```
+
+- จำนวนพาร์ทิชันที่สร้างได้: ____________________________________
+- ชนิด Partition Table: ____________________________________
+
+---
+
+### กิจกรรมที่ 4: ฟอร์แมตระบบแฟ้ม (20 นาที)
+
+4.1 ฟอร์แมตพาร์ทิชันที่ 1 เป็น ext4 พร้อม Label
+
+```bash
+$ sudo mkfs.ext4 -L LABDATA /dev/loopXp1
+```
+
+4.2 ฟอร์แมตพาร์ทิชันที่ 2 เป็น FAT32 พร้อม Label
+
+```bash
+$ sudo mkfs.vfat -F 32 -n LABFAT /dev/loopXp2
+```
+
+4.3 ตรวจสอบผล
+
+```bash
+$ lsblk -f /dev/loopX
+$ sudo blkid /dev/loopXp1 /dev/loopXp2
+```
+
+- UUID ของพาร์ทิชัน ext4: ____________________________________
+- UUID ของพาร์ทิชัน FAT32: ____________________________________
+
+4.4 ดูข้อมูล superblock ของ ext4
+
+```bash
+$ sudo tune2fs -l /dev/loopXp1 | grep -E 'Block count|Inode count|Block size'
+```
+
+- Block size: ____________________________________
+- Inode count: ____________________________________
+
+---
+
+### กิจกรรมที่ 5: Mount และทดสอบข้อจำกัดของ FAT32 (20 นาที)
+
+5.1 สร้างจุด mount และ mount ทั้งสองพาร์ทิชัน
+
+```bash
+$ sudo mkdir -p /mnt/labext /mnt/labfat
+$ sudo mount /dev/loopXp1 /mnt/labext
+$ sudo mount /dev/loopXp2 /mnt/labfat
+$ findmnt /mnt/labext
+$ findmnt /mnt/labfat
+```
+
+5.2 เปลี่ยนเจ้าของ /mnt/labext ให้ผู้ใช้ปัจจุบัน แล้วสร้างไฟล์ทดสอบ
+
+```bash
+$ sudo chown $USER:$USER /mnt/labext
+$ echo "hello ext4" > /mnt/labext/test.txt
+$ ls -l /mnt/labext
+```
+
+5.3 **ทดสอบข้อจำกัด FAT32** — ลองสร้างไฟล์ขนาด 5 GB บน FAT32 (ควร error เพราะไฟล์ ≤ 4 GB)
+
+```bash
+$ sudo dd if=/dev/zero of=/mnt/labfat/bigfile bs=1M count=5000 status=progress
+```
+
+- ผลที่เกิดขึ้น (สำเร็จ/ล้มเหลว และข้อความ): ____________________________________
+- อธิบายสาเหตุ: __________________________________________________________________
+
+5.4 ลบไฟล์ทดสอบ (ถ้ามี)
+
+```bash
+$ sudo rm -f /mnt/labfat/bigfile
+```
+
+---
+
+### กิจกรรมที่ 6: จัดการสิทธิ์การเข้าถึงด้วย chmod และ chown (25 นาที)
+
+6.1 สร้างไฟล์และไดเรกทอรีทดสอบใน /mnt/labext
+
+```bash
+$ cd /mnt/labext
+$ touch file1.txt file2.sh
+$ mkdir project
+$ ls -l
+```
+
+6.2 ตั้งสิทธิ์แบบตัวเลข (Octal)
+
+```bash
+$ chmod 644 file1.txt        # rw-r--r--
+$ chmod 755 file2.sh         # rwxr-xr-x
+$ chmod 700 project          # rwx------
+$ ls -l
+```
+
+- สิทธิ์ของ file1.txt (จาก ls -l): ____________________________________
+- สิทธิ์ของ file2.sh: ____________________________________
+
+6.3 ตั้งสิทธิ์แบบสัญลักษณ์
+
+```bash
+$ chmod u+x file1.txt        # เพิ่ม execute ให้ owner
+$ chmod go-r file1.txt       # ถอด read จาก group และ others
+$ ls -l file1.txt
+```
+
+- สิทธิ์ใหม่ของ file1.txt: ____________________________________
+
+6.4 ทดลอง Special Permissions
+
+```bash
+$ chmod 2755 project         # SGID
+$ ls -ld project             # สังเกต s ใน group
+$ chmod 1777 project         # Sticky bit
+$ ls -ld project             # สังเกต t ท้ายสุด
+```
+
+- ผล ls -ld ของ project หลังตั้ง SGID: ____________________________________
+- ผล ls -ld ของ project หลังตั้ง Sticky bit: ____________________________________
+
+6.5 เปลี่ยนเจ้าของ (ต้องมีผู้ใช้ทดสอบ หากไม่มีให้สร้าง)
+
+```bash
+$ sudo useradd -m labuser 2>/dev/null; echo "ok"
+$ sudo chown labuser:labuser file2.sh
+$ ls -l file2.sh
+```
+
+- Owner:Group ใหม่ของ file2.sh: ____________________________________
+
+---
+
+### กิจกรรมที่ 7: Access Control List (ACL) (20 นาที)
+
+7.1 ดู ACL ปัจจุบันของไฟล์
+
+```bash
+$ getfacl /mnt/labext/file1.txt
+```
+
+7.2 กำหนดสิทธิ์เพิ่มเติมให้ labuser อ่าน-เขียน โดยไม่กระทบสิทธิ์เดิม
+
+```bash
+$ setfacl -m u:labuser:rw /mnt/labext/file1.txt
+$ getfacl /mnt/labext/file1.txt
+$ ls -l /mnt/labext/file1.txt      # สังเกตเครื่องหมาย + ท้ายสิทธิ์
+```
+
+- บรรทัด ACL ของ labuser: ____________________________________
+- สังเกตเครื่องหมาย + หรือไม่: ____________________________________
+
+7.3 ตั้ง Default ACL ให้ไดเรกทอรี (ไฟล์ใหม่จะสืบทอด)
+
+```bash
+$ setfacl -d -m u:labuser:rwx /mnt/labext/project
+$ touch /mnt/labext/project/newfile
+$ getfacl /mnt/labext/project/newfile
+```
+
+7.4 ลบ ACL ของ labuser
+
+```bash
+$ setfacl -x u:labuser /mnt/labext/file1.txt
+$ getfacl /mnt/labext/file1.txt
+```
+
+---
+
+### กิจกรรมที่ 8: Hard Link และ Symbolic Link (15 นาที)
+
+8.1 สร้างไฟล์ต้นฉบับและดู inode
+
+```bash
+$ cd /mnt/labext
+$ echo "original data" > original.txt
+$ ls -li original.txt
+```
+
+- inode number ของ original.txt: ____________________________________
+
+8.2 สร้าง hard link และ symbolic link
+
+```bash
+$ ln original.txt hardlink.txt
+$ ln -s original.txt softlink.txt
+$ ls -li original.txt hardlink.txt softlink.txt
+```
+
+- inode ของ hardlink.txt (เทียบกับ original): ____________________________________
+- inode ของ softlink.txt: ____________________________________
+- Link count ของ original.txt (คอลัมน์ที่ 3): ____________________________________
+
+8.3 ทดสอบลบต้นฉบับ
+
+```bash
+$ rm original.txt
+$ cat hardlink.txt        # ยังอ่านได้หรือไม่?
+$ cat softlink.txt        # ยังอ่านได้หรือไม่?
+```
+
+- hardlink.txt อ่านได้/ไม่ได้: ____________________________________
+- softlink.txt อ่านได้/ไม่ได้: ____________________________________
+- อธิบายสาเหตุ: __________________________________________________________________
+
+---
+
+### กิจกรรมที่ 9: สำรองและกู้คืนข้อมูลด้วย tar และ rsync (20 นาที)
+
+9.1 สร้างข้อมูลตัวอย่าง
+
+```bash
+$ mkdir -p /mnt/labext/docs
+$ echo "file A" > /mnt/labext/docs/a.txt
+$ echo "file B" > /mnt/labext/docs/b.txt
+```
+
+9.2 สำรองด้วย tar (บีบอัด gzip)
+
+```bash
+$ tar -czvf ~/lab6/backup.tar.gz -C /mnt/labext docs
+$ ls -lh ~/lab6/backup.tar.gz
+```
+
+- ขนาดไฟล์ backup: ____________________________________
+
+9.3 กู้คืนด้วย tar
+
+```bash
+$ mkdir -p ~/lab6/restore
+$ tar -xzvf ~/lab6/backup.tar.gz -C ~/lab6/restore
+$ ls -R ~/lab6/restore
+```
+
+9.4 สำรองแบบ incremental ด้วย rsync
+
+```bash
+$ rsync -avh /mnt/labext/docs/ ~/lab6/rsync_backup/
+$ echo "file C" > /mnt/labext/docs/c.txt
+$ rsync -avh /mnt/labext/docs/ ~/lab6/rsync_backup/    # ครั้งที่ 2 copy เฉพาะไฟล์ใหม่
+```
+
+- สังเกตว่า rsync ครั้งที่ 2 คัดลอกกี่ไฟล์: ____________________________________
+
+---
+
+### กิจกรรมที่ 10: ตรวจสอบและซ่อมระบบแฟ้ม (15 นาที)
+
+10.1 unmount ก่อนตรวจสอบ (fsck ต้องทำบน filesystem ที่ไม่ได้ mount)
+
+```bash
+$ sudo umount /mnt/labext
+```
+
+10.2 ตรวจสอบระบบแฟ้ม ext4
+
+```bash
+$ sudo e2fsck -f /dev/loopXp1
+```
+
+- ผลการตรวจสอบ (clean/พบ error): ____________________________________
+
+10.3 ดูการใช้ inode และพื้นที่
+
+```bash
+$ sudo mount /dev/loopXp1 /mnt/labext
+$ df -i /mnt/labext        # inode ที่ใช้/เหลือ
+$ df -h /mnt/labext        # พื้นที่ที่ใช้/เหลือ
+$ du -sh /mnt/labext/*
+```
+
+- inode ที่ใช้ไป (IUsed): ____________________________________
+- พื้นที่ที่ใช้ไป (Used): ____________________________________
+
+---
+
+### กิจกรรมที่ 11: ตั้ง /etc/fstab (Optional) และคืนค่าระบบ (15 นาที)
+
+11.1 (Optional) สำรอง fstab และเพิ่มบรรทัดสำหรับ ext4 (ใช้ UUID จากกิจกรรม 4)
+
+```bash
+$ sudo cp /etc/fstab /etc/fstab.bak
+$ echo 'UUID=<UUID-ext4>  /mnt/labext  ext4  defaults,noatime,nofail  0  2' | sudo tee -a /etc/fstab
+$ sudo systemctl daemon-reload
+$ sudo umount /mnt/labext
+$ sudo mount -a
+$ findmnt /mnt/labext
+```
+
+11.2 **คืนค่า /etc/fstab**
+
+```bash
+$ sudo cp /etc/fstab.bak /etc/fstab
+$ sudo systemctl daemon-reload
+```
+
+11.3 ทำความสะอาด: unmount, ปลด loop device, ลบไฟล์
+
+```bash
+$ sudo umount /mnt/labext /mnt/labfat 2>/dev/null
+$ sudo losetup -d /dev/loopX
+$ rm -rf ~/lab6
+$ sudo rmdir /mnt/labext /mnt/labfat
+$ sudo userdel -r labuser 2>/dev/null; echo "cleanup done"
+```
+
+---
+
+## 8. สรุปและวิจารณ์ผล
+
+8.1 สรุปสิ่งที่ได้เรียนรู้จากการปฏิบัติงานครั้งนี้ (อย่างน้อย 5 ข้อ)
+
+- (1) __________________________________________________________________
+- (2) __________________________________________________________________
+- (3) __________________________________________________________________
+- (4) __________________________________________________________________
+- (5) __________________________________________________________________
+
+8.2 อธิบายผลการทดสอบข้อจำกัดของ FAT32 ในกิจกรรมที่ 5 และเหตุผลเชิงเทคนิค
+
+__________________________________________________________________________________
+
+8.3 อธิบายความแตกต่างที่สังเกตได้ระหว่าง Hard link และ Symbolic link จากกิจกรรมที่ 8
+
+__________________________________________________________________________________
+
+8.4 **วิเคราะห์:** ถ้าต้องออกแบบระบบแฟ้มและสิทธิ์สำหรับห้อง Lab ที่มีครูและนักศึกษาใช้ร่วมกัน โดยครูแก้ไขได้ทุกไฟล์ นักศึกษาแก้ได้เฉพาะไฟล์ของตนเอง ควรใช้ระบบแฟ้ม สิทธิ์ และ ACL อย่างไร
+
+__________________________________________________________________________________
+
+---
+
+## 9. เอกสารอ้างอิง / เอกสารค้นคว้าเพิ่มเติม
+
+1. Linux man pages: `parted(8)`, `mkfs(8)`, `mount(8)`, `fstab(5)`, `chmod(1)`, `chown(1)`, `setfacl(1)`, `getfacl(1)`, `ln(1)`, `tar(1)`, `rsync(1)`, `e2fsck(8)`, `losetup(8)`
+2. Filesystem Hierarchy Standard (FHS) 3.0: https://refspecs.linuxfoundation.org/FHS_3.0/fhs/index.html
+3. Silberschatz, A., Galvin, P. B., & Gagne, G. (2018). *Operating System Concepts* (10th ed.). Wiley.
+4. Nemeth, E., et al. (2017). *UNIX and Linux System Administration Handbook* (5th ed.). Addison-Wesley.
+5. Ubuntu Server Guide. https://ubuntu.com/server/docs
+6. ext4 Documentation: https://www.kernel.org/doc/html/latest/filesystems/ext4/
+
+---
+</script>
+	<script>
+		const content = document.getElementById('markdown-content');
+		content.innerHTML = marked.parse(document.getElementById('source').textContent, { gfm: true, breaks: false });
+	</script>
+</body>
+</html>
