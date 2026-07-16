@@ -1,6 +1,8 @@
 image: node:lts
 
 create-pages:
+  tags:
+    - macos
   script:
     - mkdir -p public
     - git archive --format=tar HEAD | tar -x -C public
